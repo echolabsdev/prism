@@ -1,0 +1,16 @@
+{
+  "name": "echolabs/sparkle",
+  "description": "Add a sparkle of AI to your awesome projects",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "TJ Miller",
+      "email": "tj@echolabs.dev"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "laravel/framework": "^10.0"
+  }
+}
