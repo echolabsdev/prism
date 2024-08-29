@@ -57,10 +57,12 @@ To define an agent, create a class in your `App\Agents` directory:
 ```php
 <?php
 
-namespace App\Agents;
+declare(strict_types=1);
+
+namespace Workbench\App\Agents;
 
 use EchoLabs\Sparkle\Facades\Agent;
-use EchoLabs\Sparkle\Tool;
+use EchoLabs\Sparkle\Facades\Tool;
 
 class MultiToolAgent
 {
@@ -77,34 +79,36 @@ class MultiToolAgent
             ->withTools($this->tools());
     }
 
-    protected function prompt(): string
+    private function prompt(): string
     {
-        return "MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]! \n" .
-               "Nyx is the cutest, most friendly, Cthulhu around. \n" .
-               'The current datetime is ' . now()->toDateTimeString();
+        $prompt = "MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]! \r\n";
+        $prompt .= "Nyx is the cutest, most friendly, Cthulhu around. \r\n";
+        $prompt .= 'The current datetime is '.now()->toDateTimeString();
+
+        return $prompt;
     }
 
-    protected function tools(): array
+    /** @return array<int, Tool> */
+    public function tools(): array
     {
         return [
-            (new Tool)
-                ->as('search')
+            Tool::as('search')
                 ->for('useful when you need to search for current events')
                 ->withParameter('query', 'the search query string', 'string', true)
                 ->using(function (string $query): string {
-                    // Simulate request to a search endpoint
+                    // simulate API request
                     sleep(3);
+
                     return 'The tigers game is at 3pm eastern in Detroit';
                 }),
-
-            (new Tool)
-                ->as('weather')
+            Tool::as('weather')
                 ->for('useful when you need to search for current weather conditions')
                 ->withParameter('city', 'The city that you want the weather for', 'string', true)
                 ->withParameter('datetime', 'the datetime for the weather conditions. format 2022-08-14 20:24:38', 'string', true)
                 ->using(function (string $city, string $datetime): string {
-                    // Simulate request to a weather API
+                    // simulate API request
                     sleep(3);
+
                     return 'The weather will be 75° and sunny';
                 }),
         ];
@@ -145,8 +149,9 @@ Tools in Sparkle represent discrete units of functionality that an agent can use
 Tools are defined using the `Tool` class, allowing you to specify parameters and the logic that executes when the tool is called.
 
 ```php
-(new Tool)
-    ->as('search')
+<?php
+
+Tool::as('search')
     ->for('useful when you need to search for current events')
     ->withParameter('query', 'The search query string', 'string')
     ->using(function (string $query): string {
