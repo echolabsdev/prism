@@ -4,6 +4,8 @@
 
 # Sparkle
 
+[Sponsor me!](https://github.com/sponsors/sixlive)
+
 Sparkle provides a streamlined way to build AI-driven features in your application using Large Language Models (LLMs). This guide will walk you through creating and managing agents, defining tools, and interacting with various LLM providers, such as OpenAI.
 
 ## Getting Started
