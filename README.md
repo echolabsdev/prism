@@ -36,8 +36,6 @@ The configuration file allows you to set your default LLM provider and model:
 return [
     'providers' => [
         'openai' => [
-            'driver' => 'openai',
-            'url' => 'https://api.openai.com/v1',
             'api_key' => env('OPENAI_API_KEY'),
         ],
     ],
@@ -61,7 +59,7 @@ To define an agent, create a class in your `App\Agents` directory:
 
 declare(strict_types=1);
 
-namespace Workbench\App\Agents;
+namespace App\Agents;
 
 use EchoLabs\Sparkle\Facades\Agent;
 use EchoLabs\Sparkle\Facades\Tool;
@@ -125,6 +123,7 @@ class MultiToolAgent
 - **Options:** Configuration options that modify the behavior of the LLM. (`max_tokens`, `temperature`)
 - **Prompt:** The initial text prompt that sets the context for the model.
 - **Tools:** Custom logic or external APIs that the agent can call.
+- **Memory:** Memory holds the conversation history.
 
 ### Running an Agent
 
@@ -138,6 +137,68 @@ class MultiToolAgent
 
 (new MultiToolAgent)()
   ->stream();
+```
+
+### Memory
+
+Agents use the `ArrayBuffer` memory driver by default. You can access the underlying memory provider via `$agent->memory()` which allows to you add messages ex. `$agent->memory()->addMessage(Message::user('Who are you?'))`.
+
+#### Adding memory to an Agent
+
+```php
+<?php
+
+use EchoLabs\Sparkle\MemoryProviders\ArrayBuffer;
+
+$searchTool = Tool::as('search')
+    ->for('useful when you need to search for current events')
+    ->withParameter('query', 'the search query string', 'string', true)
+    ->using(function (string $query): string {
+        // simulate API request
+        sleep(3);
+
+        return 'The tigers game is at 3pm eastern in Detroit';
+    });
+
+$agent = Agent::provider('openai')
+    ->using('gpt-4')
+    ->withOptions([
+        'top_p' => 1,
+        'temperature' => 0.8,
+        'max_tokens' => 2048,
+    ])
+    ->withPrompt(view('prompts.nova'))
+    ->withTools([$searchTool])
+    ->withMemory(new ArrayBuffer([
+        Message::user('What time is the Tigers game today?'),
+    ]));
+
+  // The tigers game is scheduled for today at 3pm in Detroit
+  dd($agent->run()->content);
+```
+
+#### Creating your own memory driver
+For example, if you wanted to create a Eloquent memory driver you just need to implement the `MemoryProvider` contract.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace EchoLabs\Sparkle\Contracts;
+
+use EchoLabs\Sparkle\Message;
+
+interface MemoryProvider
+{
+    public function addMessage(Message $message): self;
+
+    /** @param array<int, Message> $messages */
+    public function addMessages(array $messages): self;
+
+    /** @return array<int, Message> */
+    public function messages(): array;
+}
 ```
 
 ---
