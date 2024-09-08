@@ -83,7 +83,7 @@ class MultiToolAgent
     {
         $prompt = "MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]! \r\n";
         $prompt .= "Nyx is the cutest, most friendly, Cthulhu around. \r\n";
-        $prompt .= 'The current datetime is '.now()->toDateTimeString();
+        $prompt .= 'The current date and time is '.now()->toDateTimeString();
 
         return $prompt;
     }
@@ -141,7 +141,7 @@ class MultiToolAgent
 
 ### Memory
 
-Agents use the `ArrayBuffer` memory driver by default. You can access the underlying memory provider via `$agent->memory()` which allows to you add messages ex. `$agent->memory()->addMessage(Message::user('Who are you?'))`.
+Agents use the `ArrayBuffer` memory driver by default. You can access the underlying memory provider via `$agent->memory()` which allows you to add messages ex. `$agent->memory()->addMessage(Message::user('Who are you?'))`.
 
 #### Adding memory to an Agent
 
@@ -178,7 +178,7 @@ $agent = Agent::provider('openai')
 ```
 
 #### Creating your own memory driver
-For example, if you wanted to create a Eloquent memory driver you just need to implement the `MemoryProvider` contract.
+For example, if you wanted to create an Eloquent memory driver you just need to implement the `MemoryProvider` contract.
 
 ```php
 <?php
@@ -249,9 +249,9 @@ Agents are registered with the `SparkleServer` facade in a service provider. Her
 
 namespace App\Providers;
 
+use App\Agents\MultiToolAgent;
 use EchoLabs\Sparkle\Facades\SparkleServer;
 use Illuminate\Support\ServiceProvider;
-use Workbench\App\Agents\MultiToolAgent;
 
 class AppServiceProvider extends ServiceProvider
 {
