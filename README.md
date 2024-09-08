@@ -247,13 +247,13 @@ Agents are registered with the `SparkleServer` facade in a service provider. Her
 ```php
 <?php
 
-namespace Workbench\App\Providers;
+namespace App\Providers;
 
 use EchoLabs\Sparkle\Facades\SparkleServer;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Agents\MultiToolAgent;
 
-class WorkbenchServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
