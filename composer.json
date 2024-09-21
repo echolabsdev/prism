@@ -1,6 +1,6 @@
 {
-  "name": "echolabs/prism",
-  "description": "AI",
+  "name": "echolabsdev/prism",
+  "description": "A powerful Laravel package for integrating Large Language Models (LLMs) into your applications.",
   "type": "library",
   "license": "MIT",
   "autoload": {
@@ -15,6 +15,7 @@
     }
   ],
   "require": {
+    "php": "^8.3",
     "laravel/framework": "^11.0"
   },
   "config": {
@@ -25,22 +26,33 @@
     }
   },
   "require-dev": {
-    "pestphp/pest": "^2.34",
+    "pestphp/pest": "^3.0",
     "laravel/pint": "^1.14",
     "phpstan/phpstan": "^1.11",
-    "pestphp/pest-plugin-arch": "^2.7",
-    "pestphp/pest-plugin-laravel": "^2.4",
+    "pestphp/pest-plugin-arch": "^3.0",
+    "pestphp/pest-plugin-laravel": "^3.0",
     "phpstan/extension-installer": "^1.3",
     "phpstan/phpstan-deprecation-rules": "^1.2",
     "rector/rector": "^1.1",
-    "projektgopher/whisky": "^0.7.0"
+    "projektgopher/whisky": "^0.7.0",
+    "orchestra/testbench": "^9.4",
+    "mockery/mockery": "^1.6"
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests/"
+      "Tests\\": "tests/",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
     }
   },
   "scripts": {
+    "post-install-cmd": [
+      "whisky update"
+    ],
+    "post-update-cmd": [
+      "whisky update"
+    ],
     "post-autoload-dump": [
       "@clear",
       "@prepare"
@@ -54,6 +66,31 @@
     ],
     "test": [
       "@php vendor/bin/pest"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve --ansi"
+    ],
+    "lint": [
+      "@php vendor/bin/pint --ansi",
+      "@php vendor/bin/phpstan analyse --verbose --ansi"
+    ],
+    "toc": [
+      "markdown-toc -i README.md"
     ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "EchoLabs\\Prism\\PrismServiceProvider"
+      ],
+      "aliases": {
+        "PrismServer": "EchoLabs\\Prism\\Facades\\PrismServer"
+      }
+    }
   }
 }

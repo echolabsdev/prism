@@ -4,4 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Contracts;
 
-interface Provider {}
+interface Message
+{
+    public function content(): string;
+}

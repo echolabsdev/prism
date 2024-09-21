@@ -4,7 +4,7 @@ return [
     /*
     * This settings controls whether data should be sent to Ray.
     */
-    'enable' => $_ENV['RAY_ENABLED'] ?? false,
+    'enable' => true,
 
     /*
      *  The host used to communicate with the Ray app.
@@ -16,7 +16,7 @@ return [
      */
     // 'port' => 23517,
     // Buggerator config
-    'port' => 8000,
+    'port' => 8001,
 
     /*
      *  Absolute base path for your sites or projects in Homestead, Vagrant, Docker, or another remote development server.

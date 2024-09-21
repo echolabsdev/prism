@@ -3,3 +3,5 @@ composer.lock
 /build/
 task/
 .idea/
+scratch
+phpunit.xml

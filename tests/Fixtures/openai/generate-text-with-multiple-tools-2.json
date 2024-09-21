@@ -1,0 +1,40 @@
+{
+  "id": "chatcmpl-AFOxc5qfND52WFM53oRSZmyRIYKZU",
+  "object": "chat.completion",
+  "created": 1728234232,
+  "model": "gpt-4-0613",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_Tqe4RA15vGrQTItFGLvbVTCQ",
+            "type": "function",
+            "function": {
+              "name": "weather",
+              "arguments": "{\n  \"city\": \"Detroit\"\n}"
+            }
+          }
+        ],
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 137,
+    "completion_tokens": 14,
+    "total_tokens": 151,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "system_fingerprint": null
+}

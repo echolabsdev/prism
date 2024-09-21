@@ -11,7 +11,7 @@
 |
 */
 
-// uses(Tests\TestCase::class)->in('Feature');
+uses(Tests\TestCase::class)->in(__DIR__);
 
 /*
 |--------------------------------------------------------------------------

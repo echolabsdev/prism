@@ -1,5 +1,5 @@
 providers:
-  - EchoLabs\Sparkle\SparkleProvider
+  - EchoLabs\Prism\PrismServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:

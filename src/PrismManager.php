@@ -2,42 +2,35 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Sparkle;
+namespace EchoLabs\Prism;
 
 use Closure;
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Providers\Anthropic\Anthropic;
-use EchoLabs\Prism\Providers\OpenAI\OpenAI;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Arr;
+use EchoLabs\Prism\Contracts\Driver;
+use EchoLabs\Prism\Drivers\Anthropic\Anthropic;
+use EchoLabs\Prism\Drivers\OpenAI\OpenAI;
+use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
+use RuntimeException;
 
-class ProviderManager
+class PrismManager
 {
+    /** @var array<string, Closure> */
     protected $customCreators = [];
 
     public function __construct(
         protected Application $app
     ) {}
 
-    #[\Override]
-    public function getDefaultDriver()
-    {
-        return 'anthropic';
-    }
-
     /**
      * @throws InvalidArgumentException
      */
-    public function resolve(string $name): Provider
+    public function resolve(string $name): Driver
     {
         $config = $this->getConfig($name);
 
         if (is_null($config)) {
             throw new InvalidArgumentException("Provider [{$name}] is not defined.");
         }
-
-        $config = Arr::add($config, 'store', $name);
 
         if (isset($this->customCreators[$config['driver']])) {
             return $this->callCustomCreator($config);
@@ -58,7 +51,7 @@ class ProviderManager
     protected function createOpenaiDriver(array $config): OpenAI
     {
         return new OpenAI(
-            $config['api_key'],
+            $config['api_key'] ?? '',
             $config['url'],
         );
     }
@@ -70,29 +63,32 @@ class ProviderManager
     {
         return new Anthropic(
             $config['api_key'],
-            $config['api_version'],
+            $config['version'],
         );
     }
 
     /**
      * @param  array<string, mixed>  $config
      */
-    protected function callCustomCreator(array $config)
+    protected function callCustomCreator(array $config): Driver
     {
         return $this->customCreators[$config['driver']]($this->app, $config);
     }
 
     /**
-     * Register a custom driver creator Closure.
-     *
-     * @param  string  $driver
-     * @return $this
+     * @throws RuntimeException
      */
-    public function extend($driver, Closure $callback)
+    public function extend(string $driver, Closure $callback): self
     {
-        $this->customCreators[$driver] = $callback->bindTo($this, $this);
+        if (($callback = $callback->bindTo($this, $this)) instanceof \Closure) {
+            $this->customCreators[$driver] = $callback;
 
-        return $this;
+            return $this;
+        }
+
+        throw new RuntimeException(
+            sprintf('Couldn\'t bind %s', $driver)
+        );
     }
 
     /**
@@ -101,7 +97,7 @@ class ProviderManager
     protected function getConfig(string $name): ?array
     {
         if ($name !== '' && $name !== '0') {
-            return $this->app['config']["prism.providers.{$name}"];
+            return config("prism.providers.{$name}");
         }
 
         return ['driver' => 'null'];
