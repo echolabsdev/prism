@@ -1,0 +1,27 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  setup:
+    cmds:
+      - composer install
+    sources:
+      - composer.json
+      - composer.lock
+    generates:
+      - vendor/autoload.php
+
+  push:
+    cmds:
+      - git remote | xargs -I{} git push {{.CLI_ARGS}} {}
+
+  format:
+    cmds:
+      - vendor/bin/rector
+      - vendor/bin/pint
+
+  validate:
+    cmds:
+      - vendor/bin/pest --compact
+      - vendor/bin/phpstan

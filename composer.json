@@ -1,0 +1,59 @@
+{
+  "name": "echolabs/prism",
+  "description": "AI",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "EchoLabs\\Prism\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "TJ Miller",
+      "email": "hello@echolabs.dev"
+    }
+  ],
+  "require": {
+    "laravel/framework": "^11.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true,
+      "pestphp/pest-plugin": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "require-dev": {
+    "pestphp/pest": "^2.34",
+    "laravel/pint": "^1.14",
+    "phpstan/phpstan": "^1.11",
+    "pestphp/pest-plugin-arch": "^2.7",
+    "pestphp/pest-plugin-laravel": "^2.4",
+    "phpstan/extension-installer": "^1.3",
+    "phpstan/phpstan-deprecation-rules": "^1.2",
+    "rector/rector": "^1.1",
+    "projektgopher/whisky": "^0.7.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "phpstan": [
+      "phpstan analyse -c phpstan.neon.dist"
+    ],
+    "format": [
+      "pint",
+      "rector process --no-diffs"
+    ],
+    "test": [
+      "@php vendor/bin/pest"
+    ]
+  }
+}

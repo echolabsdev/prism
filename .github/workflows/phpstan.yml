@@ -1,0 +1,31 @@
+name: PHPStan
+
+on:
+  push:
+    paths:
+      - "**.php"
+      - "phpstan.neon.dist"
+      - ".github/workflows/phpstan.yml"
+
+env:
+  phpv: 8.3
+
+jobs:
+  phpstan:
+    name: phpstan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.phpv }}
+          coverage: none
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan --error-format=github

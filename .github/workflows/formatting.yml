@@ -1,0 +1,37 @@
+name: Formatting
+
+on:
+  push:
+    paths:
+      - "**.php"
+      - ".github/workflows/formatting.yml"
+
+env:
+  phpv: 8.3
+
+jobs:
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.phpv }}
+          coverage: none
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Run Pint
+        run: |
+          vendor/bin/pint
+          git diff --exit-code
+
+      - name: Run Rector
+        run: |
+          vendor/bin/rector
+          git diff --exit-code
