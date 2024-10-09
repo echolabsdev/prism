@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Tests\Drivers;
 
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Tests\Fixtures\FixtureResponse;
 
-define( 'GEMINI_MODEL', 'gemini-1.5-flash');
+define('GEMINI_MODEL', 'gemini-1.5-flash');
 
 beforeEach(function (): void {
     config()->set('prism.providers.gemini.api_key', 'YOUR_TEST_API_KEY');
@@ -51,11 +52,11 @@ it('can generate text using multiple tools and multiple steps', function (): voi
         Tool::as('get_weather')
             ->for('Get the weather for a city')
             ->withParameter('city', 'The city to get weather for')
-            ->using(fn(string $city): string => 'The weather will be 75° and sunny'),
+            ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
         Tool::as('search')
             ->for('Search for current events or data')
             ->withParameter('query', 'The detailed search query')
-            ->using(fn(string $query): string => 'The tigers game is at 3pm in Detroit'),
+            ->using(fn (string $query): string => 'The tigers game is at 3pm in Detroit'),
     ];
 
     $response = Prism::text()
@@ -107,3 +108,23 @@ it('can generate text using multiple tools and multiple steps', function (): voi
         ->and($response->text)->toBe("You should be fine without a coat! \n");
 });
 
+it('throws an exception for invalid model name', function (): void {
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', 'not-a-model', 'YOUR_TEST_API_KEY'), 'gemini/invalid-model');
+    $this->expectException(PrismException::class);
+    $this->expectExceptionMessage('models/not-a-model is not found for API');
+
+    Prism::text()
+        ->using('gemini', 'not-a-model')
+        ->withPrompt('This should fail due to invalid model')();
+});
+
+it('throws an exception for a missing api key', function (): void {
+    config()->set('prism.providers.gemini.api_key', '');
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=', GEMINI_MODEL), 'gemini/missing-api-key');
+    $this->expectException(PrismException::class);
+    $this->expectExceptionMessage("[403] Method doesn't allow unregistered callers");
+
+    Prism::text()
+        ->using('gemini', GEMINI_MODEL)
+        ->withPrompt('This should fail due to invalid model')();
+});
