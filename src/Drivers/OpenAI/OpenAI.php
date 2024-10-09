@@ -68,11 +68,14 @@ class OpenAI implements Driver
             ));
         }
 
-        $toolCalls = array_map(fn (array $toolCall): ToolCall => new ToolCall(
-            id: data_get($toolCall, 'id'),
-            name: data_get($toolCall, 'function.name'),
-            arguments: data_get($toolCall, 'function.arguments'),
-        ), data_get($data, 'choices.0.message.tool_calls', []));
+        $toolCalls = [];
+        if ($rawToolCalls = data_get($data, 'choices.0.message.tool_calls')) {
+            $toolCalls = array_map(fn (array $toolCall): ToolCall => new ToolCall(
+                id: data_get($toolCall, 'id'),
+                name: data_get($toolCall, 'function.name'),
+                arguments: data_get($toolCall, 'function.arguments'),
+            ), $rawToolCalls);
+        }
 
         return new DriverResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
