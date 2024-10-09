@@ -17,7 +17,7 @@ class GeminiMessageMap
     private ?string $systemInstruction = null;
 
     /**
-     * @param array<int, Message> $messages
+     * @param  array<int, Message>  $messages
      */
     public function __construct(public readonly array $messages)
     {

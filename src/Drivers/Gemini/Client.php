@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 class Client
 {
     private readonly PendingRequest $client;
+
     private const string BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
 
     public function __construct(
@@ -30,15 +31,15 @@ class Client
         $endpoint = "models/{$model}:generateContent";
 
         $payload = [
-            'contents' => array_map(fn($content): array => [
+            'contents' => array_map(fn ($content): array => [
                 'role' => $content['role'] ?? 'user',
-                'parts' => array_map(fn($part) => is_string($part) ? ['text' => $part] : $part, $content['parts'] ?? [$content])
-            ], $contents)
+                'parts' => array_map(fn ($part) => is_string($part) ? ['text' => $part] : $part, $content['parts'] ?? [$content]),
+            ], $contents),
         ];
 
         if ($systemInstruction !== null) {
             $payload['system_instruction'] = [
-                'parts' => [['text' => $systemInstruction]]
+                'parts' => [['text' => $systemInstruction]],
             ];
         }
 
@@ -54,6 +55,6 @@ class Client
             $payload['safetySettings'] = $safetySettings;
         }
 
-        return $this->client->post($endpoint . '?key=' . $this->apiKey, $payload);
+        return $this->client->post($endpoint.'?key='.$this->apiKey, $payload);
     }
 }
