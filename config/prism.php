@@ -15,6 +15,10 @@ return [
             'api_key' => env('ANTHROPIC_API_KEY'),
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
         ],
+        'gemini' => [
+            'driver' => 'gemini',
+            'api_key' => env('GEMINI_API_KEY'),
+        ],
         'ollama' => [
             'driver' => 'openai',
             'url' => env('OLLAMA_URL', 'http://localhost:11434/v1'),

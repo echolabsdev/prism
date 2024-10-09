@@ -7,6 +7,7 @@ namespace EchoLabs\Prism;
 use Closure;
 use EchoLabs\Prism\Contracts\Driver;
 use EchoLabs\Prism\Drivers\Anthropic\Anthropic;
+use EchoLabs\Prism\Drivers\Gemini\Gemini;
 use EchoLabs\Prism\Drivers\OpenAI\OpenAI;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
@@ -64,6 +65,16 @@ class PrismManager
         return new Anthropic(
             $config['api_key'],
             $config['version'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createGeminiDriver(array $config): Gemini
+    {
+        return new Gemini(
+            $config['api_key'],
         );
     }
 
