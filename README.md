@@ -31,6 +31,8 @@ This will create a new file at `config/prism.php`. We'll explore how to configur
 
 ## Usage
 
+For more information about using Prism, please visit the documentation site at [prism.echolabs.dev](https://prism.echolabs.dev).
+
 ```php
 <?php
 
@@ -42,8 +44,7 @@ $prism = Prism::text()
     ->withSystemPrompt(view('prompts.nyx'))
     ->withPrompt('Explain quantum computing to a 5-year-old.');
 
-$response = $prism();
-echo $response->text;
+echo $prism()->text;
 
 // Usage example for OpenAI.
 $prism = Prism::text()
