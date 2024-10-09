@@ -17,7 +17,15 @@ class Client
         public readonly string $organization,
         public readonly string $url,
     ) {
-        $this->client = Http::withHeaders([
+$headers = [
+    'Authorization' => sprintf('Bearer %s', $this->apiKey),
+];
+
+if (!empty($this->organization)) {
+    $headers['OpenAI-Organization'] = $this->organization;
+}
+
+$this->client = Http::withHeaders($headers)->baseUrl($this->url);
             'Authorization' => sprintf('Bearer %s', $this->apiKey),
             $this->organization !== '' && $this->organization !== null ? ['OpenAI-Organization' => $this->organization] : null,
         ])->baseUrl($this->url);
