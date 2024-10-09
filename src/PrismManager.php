@@ -52,6 +52,7 @@ class PrismManager
     {
         return new OpenAI(
             $config['api_key'] ?? '',
+            $config['organization'] ?? '',
             $config['url'],
         );
     }

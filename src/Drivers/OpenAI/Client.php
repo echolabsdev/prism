@@ -14,10 +14,12 @@ class Client
 
     public function __construct(
         public readonly string $apiKey,
+        public readonly string $organization,
         public readonly string $url,
     ) {
         $this->client = Http::withHeaders([
             'Authorization' => sprintf('Bearer %s', $this->apiKey),
+            $this->organization !== '' && $this->organization !== null ? ['OpenAI-Organization' => $this->organization] : null,
         ])->baseUrl($this->url);
     }
 
