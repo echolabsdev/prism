@@ -59,8 +59,7 @@ it('handles addition of organization for OpenAI', function (): void {
 it('handles not having an organization for OpenAI', function (): void {
     $this->client = new Client(
         apiKey: 'test-api-key',
-        url: 'https://api.openai.com/v1',
-        organization: '',
+        url: 'https://api.openai.com/v1'
     );
 
     $this->client->messages(

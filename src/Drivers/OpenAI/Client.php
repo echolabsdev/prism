@@ -14,15 +14,15 @@ class Client
 
     public function __construct(
         public readonly string $apiKey,
-        public readonly string $organization,
         public readonly string $url,
+        public readonly ?string $organization = null,
     ) {
 
         $headers = [
             'Authorization' => sprintf('Bearer %s', $this->apiKey),
         ];
 
-        if ($this->organization !== '' && $this->organization !== '0') {
+        if ($this->organization) {
             $headers['OpenAI-Organization'] = $this->organization;
         }
 
