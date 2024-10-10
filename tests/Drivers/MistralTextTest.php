@@ -88,6 +88,6 @@ it('can generate text using multiple tools and multiple steps', function (): voi
 
     // Assert final text content
     expect($response->text)->toBe(
-        "The tigers game is at 3pm in Detroit. The weather will be 75° and sunny. You should not wear a coat"
+        'The tigers game is at 3pm in Detroit. The weather will be 75° and sunny. You should not wear a coat'
     );
 });
