@@ -6,6 +6,8 @@ namespace Tests\Drivers;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
@@ -93,4 +95,28 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     expect($response->text)->toBe(
         "The game is at 3pm in Detroit. The weather there will be 75° and sunny. You probably won't need a coat."
     );
+});
+
+it('sends the organization header when set', function (): void {
+    config()->set('prism.providers.openai.organization', 'echolabs');
+
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
+
+    Prism::text()
+        ->using('openai', 'gpt-4')
+        ->withPrompt('Who are you?')();
+
+    Http::assertSent(fn (Request $request): bool => $request->header('OpenAI-Organization')[0] === 'echolabs');
+});
+
+it('does not sends the organization header', function (): void {
+    config()->offsetUnset('prism.providers.openai.organization');
+
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
+
+    Prism::text()
+        ->using('openai', 'gpt-4')
+        ->withPrompt('Who are you?')();
+
+    Http::assertSent(fn (Request $request): bool => empty($request->header('OpenAI-Organization')));
 });
