@@ -74,6 +74,7 @@ class PrismManager
     protected function createGeminiDriver(array $config): Gemini
     {
         return new Gemini(
+            $config['base_url'],
             $config['api_key'],
         );
     }

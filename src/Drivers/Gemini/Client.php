@@ -10,12 +10,11 @@ class Client
 {
     private readonly PendingRequest $client;
 
-    private const string BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
-
     public function __construct(
+        protected readonly string $baseUrl,
         protected readonly string $apiKey
     ) {
-        $this->client = Http::baseUrl(self::BASE_URL)->withHeaders([
+        $this->client = Http::baseUrl($this->baseUrl)->withHeaders([
             'Content-Type' => 'application/json',
         ]);
     }

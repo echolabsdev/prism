@@ -17,6 +17,7 @@ return [
         ],
         'gemini' => [
             'driver' => 'gemini',
+            'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
             'api_key' => env('GEMINI_API_KEY'),
         ],
         'ollama' => [

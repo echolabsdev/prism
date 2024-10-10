@@ -19,9 +19,11 @@ class Gemini implements Driver
 
     protected string $model; // A reasonable default, adjust as needed
 
-    public function __construct(protected readonly string $apiKey)
-    {
-        $this->client = new Client($this->apiKey);
+    public function __construct(
+        protected readonly string $baseUrl,
+        protected readonly string $apiKey
+    ) {
+        $this->client = new Client($this->baseUrl, $this->apiKey);
     }
 
     #[\Override]
