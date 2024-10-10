@@ -1,6 +1,6 @@
 <?php
 
-namespace EchoLabs\Prism\Drivers\Gemini;
+namespace EchoLabs\Prism\Drivers\Google;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;

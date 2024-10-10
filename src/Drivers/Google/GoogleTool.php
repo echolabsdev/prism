@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Gemini;
+namespace EchoLabs\Prism\Drivers\Google;
 
 use EchoLabs\Prism\Drivers\DriverTool;
 use EchoLabs\Prism\Tool;
 
-class GeminiTool extends DriverTool
+class GoogleTool extends DriverTool
 {
     #[\Override]
     public static function toArray(Tool $tool): array

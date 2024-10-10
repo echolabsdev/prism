@@ -15,14 +15,14 @@ use Tests\Fixtures\FixtureResponse;
 define('GEMINI_MODEL', 'gemini-1.5-flash');
 
 beforeEach(function (): void {
-    config()->set('prism.providers.gemini.api_key', 'YOUR_TEST_API_KEY');
+    config()->set('prism.providers.google.api_key', 'YOUR_TEST_API_KEY');
 });
 
 it('can generate text with a prompt', function (): void {
-    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', GEMINI_MODEL, 'YOUR_TEST_API_KEY'), 'gemini/generate-text-with-a-prompt');
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', GEMINI_MODEL, 'YOUR_TEST_API_KEY'), 'google/generate-text-with-a-prompt');
 
     $response = Prism::text()
-        ->using('gemini', GEMINI_MODEL)
+        ->using('google', GEMINI_MODEL)
         ->withPrompt('Hello, how are you?')();
 
     expect($response->usage->promptTokens)->toBe(6)
@@ -32,10 +32,10 @@ it('can generate text with a prompt', function (): void {
 });
 
 it('can generate text with a system prompt', function (): void {
-    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', GEMINI_MODEL, 'YOUR_TEST_API_KEY'), 'gemini/generate-text-with-system-prompt');
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', GEMINI_MODEL, 'YOUR_TEST_API_KEY'), 'google/generate-text-with-system-prompt');
 
     $response = Prism::text()
-        ->using('gemini', GEMINI_MODEL)
+        ->using('google', GEMINI_MODEL)
         ->withSystemPrompt('You are Yoda. Always respond like the master Jedi.')
         ->withPrompt('Introduce yourself.')();
 
@@ -46,7 +46,7 @@ it('can generate text with a system prompt', function (): void {
 });
 
 it('can generate text using multiple tools and multiple steps', function (): void {
-    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', GEMINI_MODEL, 'YOUR_TEST_API_KEY'), 'gemini/generate-text-with-multiple-tools');
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', GEMINI_MODEL, 'YOUR_TEST_API_KEY'), 'google/generate-text-with-multiple-tools');
 
     $tools = [
         Tool::as('get_weather')
@@ -60,7 +60,7 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     ];
 
     $response = Prism::text()
-        ->using('gemini', GEMINI_MODEL)
+        ->using('google', GEMINI_MODEL)
         ->withTools($tools)
         ->withMaxSteps(3)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')();
@@ -109,22 +109,22 @@ it('can generate text using multiple tools and multiple steps', function (): voi
 });
 
 it('throws an exception for invalid model name', function (): void {
-    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', 'not-a-model', 'YOUR_TEST_API_KEY'), 'gemini/invalid-model');
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=%s', 'not-a-model', 'YOUR_TEST_API_KEY'), 'google/invalid-model');
     $this->expectException(PrismException::class);
     $this->expectExceptionMessage('models/not-a-model is not found for API');
 
     Prism::text()
-        ->using('gemini', 'not-a-model')
+        ->using('google', 'not-a-model')
         ->withPrompt('This should fail due to invalid model')();
 });
 
 it('throws an exception for a missing api key', function (): void {
-    config()->set('prism.providers.gemini.api_key', '');
-    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=', GEMINI_MODEL), 'gemini/missing-api-key');
+    config()->set('prism.providers.google.api_key', '');
+    FixtureResponse::fakeResponseSequence(sprintf('v1beta/models/%s:generateContent?key=', GEMINI_MODEL), 'google/missing-api-key');
     $this->expectException(PrismException::class);
     $this->expectExceptionMessage("[403] Method doesn't allow unregistered callers");
 
     Prism::text()
-        ->using('gemini', GEMINI_MODEL)
+        ->using('google', GEMINI_MODEL)
         ->withPrompt('This should fail due to invalid model')();
 });

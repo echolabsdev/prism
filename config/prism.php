@@ -15,10 +15,10 @@ return [
             'api_key' => env('ANTHROPIC_API_KEY'),
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
         ],
-        'gemini' => [
-            'driver' => 'gemini',
-            'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
-            'api_key' => env('GEMINI_API_KEY'),
+        'google' => [
+            'driver' => 'google',
+            'base_url' => env('GOOGLE_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+            'api_key' => env('GOOGLE_API_KEY'),
         ],
         'ollama' => [
             'driver' => 'openai',

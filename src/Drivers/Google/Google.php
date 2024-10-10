@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Gemini;
+namespace EchoLabs\Prism\Drivers\Google;
 
 use EchoLabs\Prism\Contracts\Driver;
 use EchoLabs\Prism\Drivers\DriverResponse;
@@ -13,7 +13,7 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Throwable;
 
-class Gemini implements Driver
+class Google implements Driver
 {
     protected Client $client;
 
@@ -37,9 +37,9 @@ class Gemini implements Driver
     #[\Override]
     public function text(TextRequest $request): DriverResponse
     {
-        $messageMap = new GeminiMessageMap($request->messages);
+        $messageMap = new GoogleMessageMap($request->messages);
         $mappedMessages = $messageMap();
-        $tools = GeminiTool::map($request->tools);
+        $tools = GoogleTool::map($request->tools);
         $toolMap = collect($request->tools)->keyBy->name();
 
         $finalText = '';
@@ -70,7 +70,7 @@ class Gemini implements Driver
 
             if (isset($data['error'])) {
                 throw PrismException::providerResponseError(
-                    "Gemini Error: [{$data['error']['code']}] {$data['error']['message']}"
+                    "Google Error: [{$data['error']['code']}] {$data['error']['message']}"
                 );
             }
 

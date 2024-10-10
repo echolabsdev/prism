@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Gemini;
+namespace EchoLabs\Prism\Drivers\Google;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -12,7 +12,7 @@ use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
 
-class GeminiMessageMap
+class GoogleMessageMap
 {
     private ?string $systemInstruction = null;
 
