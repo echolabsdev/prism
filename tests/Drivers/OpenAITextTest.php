@@ -109,7 +109,7 @@ it('sends the organization header when set', function (): void {
     Http::assertSent(fn (Request $request): bool => $request->header('OpenAI-Organization')[0] === 'echolabs');
 });
 
-it('does not sends the organization header', function (): void {
+it('does not send the organization header if one is not given', function (): void {
     config()->offsetUnset('prism.providers.openai.organization');
 
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
