@@ -2,13 +2,10 @@ name: Formatting
 
 on:
   push:
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
+    branches:
+      - main
+      - "*.x"
   pull_request:
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
 
 env:
   phpv: 8.3
