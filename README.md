@@ -31,15 +31,36 @@ This will create a new file at `config/prism.php`. We'll explore how to configur
 
 ## Usage
 
+For more information about using Prism, please visit the documentation site at [prism.echolabs.dev](https://prism.echolabs.dev).
+
 ```php
 <?php
 
-$response = Prism::using('anthropic', 'claude-3-5-sonnet-20240620')
-    ->generateText()
-    ->withSystemMessage(view('prompts.nyx'))
-    ->withPrompt('Explain quantum computing to a 5-year-old.')();
+use EchoLabs\Prism\Prism;
 
-echo $response->text;
+// Usage example for Anthropic.
+$prism = Prism::text()
+    ->using('anthropic', 'claude-3-5-sonnet-20240620')
+    ->withSystemPrompt(view('prompts.nyx'))
+    ->withPrompt('Explain quantum computing to a 5-year-old.');
+
+echo $prism()->text;
+
+// Usage example for OpenAI.
+$prism = Prism::text()
+    ->using('openai', 'gpt-4o')
+    ->withSystemPrompt(view('prompts.nyx'))
+    ->withPrompt('Explain quantum computing to a 5-year-old.');
+
+echo $prism()->text;
+
+// Usage example for Ollama.
+$prism = Prism::text()
+    ->using('ollama', 'qwen2.5:14b')
+    ->withSystemPrompt(view('prompts.nyx'))
+    ->withPrompt('Explain quantum computing to a 5-year-old.');
+
+echo $prism()->text;
 ```
 
 ## Authors

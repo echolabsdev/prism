@@ -2,12 +2,14 @@ name: Tests
 
 on:
   push:
-    paths:
-      - "**.php"
-      - ".github/workflows/tests.yml"
-      - "phpunit.xml.dist"
-      - "composer.json"
-      - "composer.lock"
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+  pull_request:
+    types: [ready_for_review, synchronize, opened]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
 
 jobs:
   test:
