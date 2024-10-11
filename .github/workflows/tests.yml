@@ -2,14 +2,10 @@ name: Tests
 
 on:
   push:
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
+    branches:
+      - main
+      - "*.x"
   pull_request:
-    types: [ready_for_review, synchronize, opened]
-    paths-ignore:
-      - "docs/**"
-      - "README.md"
 
 jobs:
   test:
