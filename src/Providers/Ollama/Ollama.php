@@ -2,33 +2,40 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\OpenAI;
+namespace EchoLabs\Prism\Providers\Ollama;
 
-use EchoLabs\Prism\Contracts\Driver;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\DriverResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Throwable;
 
-class OpenAI implements Driver
+class Ollama implements Provider
 {
     protected Client $client;
 
     protected string $model;
 
     public function __construct(
-        public readonly string $apiKey,
         public readonly string $url,
-        public readonly ?string $organization,
+        public readonly ?string $apiKey,
     ) {
         $this->client = new Client(
-            apiKey: $this->apiKey,
             url: $this->url,
-            organization: $this->organization,
+            apiKey: $this->apiKey,
         );
+    }
+
+    #[\Override]
+    public static function make(string $model): Provider
+    {
+        return (new self(
+            apiKey: config('prism.providers.openai.api_key'),
+            url: config('prism.providers.openai.url'),
+        ))->usingModel($model);
     }
 
     #[\Override]
@@ -45,14 +52,14 @@ class OpenAI implements Driver
         try {
             $response = $this->client->messages(
                 model: $this->model,
-                messages: (new OpenAIMessageMap(
+                messages: (new MessageMap(
                     $request->messages,
                     $request->systemPrompt ?? '',
                 ))(),
                 maxTokens: $request->maxTokens,
                 temperature: $request->temperature,
                 topP: $request->topP,
-                tools: OpenAITool::map($request->tools),
+                tools: Tool::map($request->tools),
             );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($this->model, $e);

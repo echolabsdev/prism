@@ -6,17 +6,19 @@ namespace Tests\Drivers;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Providers\Anthropic\Anthropic;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
     config()->set('prism.providers.anthropic.api_key', env('ANTHROPIC_API_KEY', 'sk-1234'));
+    config()->set('prism.providers.anthropic.api_version', '2023-06-01');
 });
 
 it('can generate text with a prompt', function (): void {
     FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-a-prompt');
 
     $response = Prism::text()
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using(Anthropic::make('claude-3-5-sonnet-20240620'))
         ->withPrompt('Who are you?')();
 
     expect($response->usage->promptTokens)->toBe(11);
@@ -32,7 +34,7 @@ it('can generate text with a system prompt', function (): void {
     FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-system-prompt');
 
     $response = Prism::text()
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using(Anthropic::make('claude-3-5-sonnet-20240620'))
         ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withPrompt('Who are you?')();
 
@@ -60,7 +62,7 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     ];
 
     $response = Prism::text()
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using(Anthropic::make('claude-3-5-sonnet-20240620'))
         ->withTools($tools)
         ->withMaxSteps(3)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')();

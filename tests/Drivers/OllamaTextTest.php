@@ -6,10 +6,10 @@ namespace Tests\Providers;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Providers\Ollama\Ollama;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
-    config()->set('prism.providers.ollama.driver', 'openai');
     config()->set('prism.providers.ollama.url', 'http://localhost:11434/v1');
 });
 
@@ -17,7 +17,7 @@ it('can generate text with a prompt', function (): void {
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-a-prompt');
 
     $response = Prism::text()
-        ->using('ollama', 'qwen2.5:14b')
+        ->using(Ollama::make('qwen2.5:14b'))
         ->withPrompt('Who are you?')();
 
     expect($response->usage->promptTokens)->toBe(33);
@@ -33,7 +33,7 @@ it('can generate text with a system prompt', function (): void {
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-system-prompt');
 
     $response = Prism::text()
-        ->using('ollama', 'qwen2.5:14b')
+        ->using(Ollama::make('qwen2.5:14b'))
         ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withPrompt('Who are you?')();
 
@@ -61,7 +61,7 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     ];
 
     $response = Prism::text()
-        ->using('ollama', 'qwen2.5:14b')
+        ->using(Ollama::make('qwen2.5:14b'))
         ->withTools($tools)
         ->withMaxSteps(3)
         ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')();

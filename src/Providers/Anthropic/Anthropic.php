@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Anthropic;
+namespace EchoLabs\Prism\Providers\Anthropic;
 
-use EchoLabs\Prism\Contracts\Driver;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\DriverResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Throwable;
 
-class Anthropic implements Driver
+class Anthropic implements Provider
 {
     protected Client $client;
 
@@ -27,6 +27,15 @@ class Anthropic implements Driver
             $this->apiKey,
             $this->apiVersion,
         );
+    }
+
+    #[\Override]
+    public static function make(string $model): Provider
+    {
+        return (new self(
+            apiKey: config('prism.providers.anthropic.api_key'),
+            apiVersion: config('prism.providers.anthropic.api_version'),
+        ))->usingModel($model);
     }
 
     #[\Override]

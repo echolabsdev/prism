@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Anthropic;
+namespace EchoLabs\Prism\Providers\Ollama;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -13,13 +13,12 @@ class Client
     protected PendingRequest $client;
 
     public function __construct(
-        public readonly string $apiKey,
-        public readonly string $apiVersion,
+        public readonly string $url,
+        public readonly ?string $apiKey,
     ) {
-        $this->client = Http::withHeaders([
-            'x-api-key' => $this->apiKey,
-            'anthropic-version' => $this->apiVersion,
-        ])->baseUrl('https://api.anthropic.com/v1');
+        $this->client = Http::withHeaders(array_filter([
+            'Authorization' => sprintf('Bearer %s', $this->apiKey),
+        ]))->baseUrl($this->url);
     }
 
     /**
@@ -32,17 +31,15 @@ class Client
         ?int $maxTokens,
         int|float|null $temperature,
         int|float|null $topP,
-        ?string $systemPrompt,
         ?array $tools,
     ): Response {
         return $this->client->post(
-            'messages',
+            'chat/completions',
             array_merge([
                 'model' => $model,
                 'messages' => $messages,
                 'max_tokens' => $maxTokens ?? 2048,
             ], array_filter([
-                'system' => $systemPrompt,
                 'temperature' => $temperature,
                 'top_p' => $topP,
                 'tools' => $tools,

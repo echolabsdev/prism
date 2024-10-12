@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Anthropic;
+namespace EchoLabs\Prism\Providers\Anthropic;
 
-use EchoLabs\Prism\Drivers\DriverTool;
+use EchoLabs\Prism\Providers\ProviderTool;
 use EchoLabs\Prism\Tool;
 
-class AnthropicTool extends DriverTool
+class AnthropicTool extends ProviderTool
 {
     #[\Override]
     public static function toArray(Tool $tool): array

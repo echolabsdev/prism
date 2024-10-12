@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\OpenAI;
+namespace EchoLabs\Prism\Providers\OpenAI;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -18,7 +18,7 @@ class Client
         public readonly ?string $organization = null,
     ) {
         $this->client = Http::withHeaders(array_filter([
-            'Authorization' => $this->apiKey !== '' && $this->apiKey !== '0' ? sprintf('Bearer %s', $this->apiKey) : null,
+            'Authorization' => sprintf('Bearer %s', $this->apiKey),
             'OpenAI-Organization' => $this->organization,
         ]))->baseUrl($this->url);
     }

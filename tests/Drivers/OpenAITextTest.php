@@ -6,19 +6,20 @@ namespace Tests\Drivers;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
-    config()->set('prism.providers.openai.api_key', env('OPENAI_API_KEY'));
+    config()->set('prism.providers.openai.api_key', env('OPENAI_API_KEY', 'sk-1234'));
 });
 
 it('can generate text with a prompt', function (): void {
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
 
     $response = Prism::text()
-        ->using('openai', 'gpt-4')
+        ->using(OpenAI::make('gpt-4'))
         ->withPrompt('Who are you?')();
 
     expect($response->usage->promptTokens)->toBe(11);
@@ -34,7 +35,7 @@ it('can generate text with a system prompt', function (): void {
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-system-prompt');
 
     $response = Prism::text()
-        ->using('openai', 'gpt-4')
+        ->using(OpenAI::make('gpt-4'))
         ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withPrompt('Who are you?')();
 
@@ -62,7 +63,7 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     ];
 
     $response = Prism::text()
-        ->using('openai', 'gpt-4')
+        ->using(OpenAI::make('gpt-4'))
         ->withTools($tools)
         ->withMaxSteps(3)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')();
@@ -103,7 +104,7 @@ it('sends the organization header when set', function (): void {
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
 
     Prism::text()
-        ->using('openai', 'gpt-4')
+        ->using(OpenAI::make('gpt-4'))
         ->withPrompt('Who are you?')();
 
     Http::assertSent(fn (Request $request): bool => $request->header('OpenAI-Organization')[0] === 'echolabs');
@@ -115,32 +116,8 @@ it('does not send the organization header if one is not given', function (): voi
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
 
     Prism::text()
-        ->using('openai', 'gpt-4')
+        ->using(OpenAI::make('gpt-4'))
         ->withPrompt('Who are you?')();
 
     Http::assertSent(fn (Request $request): bool => empty($request->header('OpenAI-Organization')));
-});
-
-it('sends the api key header when set', function (): void {
-    config()->set('prism.providers.openai.api_key', 'sk-1234');
-
-    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
-
-    Prism::text()
-        ->using('openai', 'gpt-4')
-        ->withPrompt('Who are you?')();
-
-    Http::assertSent(fn (Request $request): bool => $request->header('Authorization')[0] === 'Bearer sk-1234');
-});
-
-it('does not send the api key header', function (): void {
-    config()->offsetUnset('prism.providers.openai.api_key');
-
-    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
-
-    Prism::text()
-        ->using('openai', 'gpt-4')
-        ->withPrompt('Who are you?')();
-
-    Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
 });

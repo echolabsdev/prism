@@ -26,11 +26,6 @@ class PrismServiceProvider extends ServiceProvider
         );
 
         $this->app->singleton(
-            'prism-manager',
-            fn (): PrismManager => new PrismManager($this->app)
-        );
-
-        $this->app->singleton(
             'prism-server',
             fn (): PrismServer => new PrismServer
         );

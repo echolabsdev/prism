@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Generators;
 
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
-use EchoLabs\Prism\Concerns\HasDriver;
+use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Drivers\DriverResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\DriverResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\Responses\TextResponse;
 use EchoLabs\Prism\States\TextState;
@@ -24,7 +24,7 @@ use Illuminate\Contracts\View\View;
 
 class TextGenerator
 {
-    use HandlesToolCalls, HasDriver;
+    use HandlesToolCalls, HasProvider;
 
     protected ?string $prompt = null;
 
@@ -160,7 +160,7 @@ class TextGenerator
 
     protected function sendProviderRequest(): DriverResponse
     {
-        return tap($this->driver->text(new TextRequest(
+        return tap($this->provider->text(new TextRequest(
             systemPrompt: $this->systemPrompt,
             messages: $this->state->messages()->toArray(),
             temperature: $this->temperature,
