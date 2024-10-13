@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic;
 
 use EchoLabs\Prism\Providers\ProviderTool;
-use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\Tool as PrismTool;
 
-class AnthropicTool extends ProviderTool
+class Tool extends ProviderTool
 {
     #[\Override]
-    public static function toArray(Tool $tool): array
+    public static function toArray(PrismTool $tool): array
     {
         return [
             'name' => $tool->name(),

@@ -13,7 +13,7 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
 
-class AnthropicMessageMap
+class MessageMap
 {
     /**
      * @param  array<int, Message>  $messages

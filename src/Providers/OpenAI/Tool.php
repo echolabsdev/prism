@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Providers\ProviderTool;
-use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\Tool as PrismTool;
 
-class OpenAITool extends ProviderTool
+class Tool extends ProviderTool
 {
     #[\Override]
-    public static function toArray(Tool $tool): array
+    public static function toArray(PrismTool $tool): array
     {
         return [
             'type' => 'function',

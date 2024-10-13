@@ -44,11 +44,11 @@ class Anthropic implements Provider
             $response = $this->client->messages(
                 model: $this->model,
                 systemPrompt: $request->systemPrompt,
-                messages: (new AnthropicMessageMap($request->messages))(),
+                messages: (new MessageMap($request->messages))(),
                 maxTokens: $request->maxTokens,
                 temperature: $request->temperature,
                 topP: $request->topP,
-                tools: AnthropicTool::map($request->tools),
+                tools: Tool::map($request->tools),
             );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($this->model, $e);

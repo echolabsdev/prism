@@ -45,14 +45,14 @@ class OpenAI implements Provider
         try {
             $response = $this->client->messages(
                 model: $this->model,
-                messages: (new OpenAIMessageMap(
+                messages: (new MessageMap(
                     $request->messages,
                     $request->systemPrompt ?? '',
                 ))(),
                 maxTokens: $request->maxTokens,
                 temperature: $request->temperature,
                 topP: $request->topP,
-                tools: OpenAITool::map($request->tools),
+                tools: Tool::map($request->tools),
             );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($this->model, $e);
