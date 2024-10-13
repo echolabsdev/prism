@@ -53,21 +53,7 @@ class TextGenerator
 
     public function __invoke(): TextResponse
     {
-        $response = $this->sendProviderRequest();
-
-        if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->handleToolCalls($response);
-        }
-
-        $this->state->addStep(
-            $this->resultFromResponse($response, $toolResults ?? [])
-        );
-
-        if ($this->shouldContinue($response)) {
-            return $this();
-        }
-
-        return new TextResponse($this->state);
+        return $this->generate();
     }
 
     public function withPrompt(string|View $prompt): self
@@ -142,6 +128,25 @@ class TextGenerator
         return $this;
     }
 
+    public function generate(): TextResponse
+    {
+        $response = $this->sendProviderRequest();
+
+        if ($response->finishReason === FinishReason::ToolCalls) {
+            $toolResults = $this->handleToolCalls($response);
+        }
+
+        $this->state->addStep(
+            $this->resultFromResponse($response, $toolResults ?? [])
+        );
+
+        if ($this->shouldContinue($response)) {
+            return $this();
+        }
+
+        return new TextResponse($this->state);
+    }
+
     /**
      * @param  array<int, ToolResult>  $toolResults
      */
@@ -160,19 +165,28 @@ class TextGenerator
 
     protected function sendProviderRequest(): DriverResponse
     {
-        return tap($this->driver->text(new TextRequest(
+        $response = $this->driver->text($this->textRequest());
+
+        $this->state->addResponseMessage(
+            new AssistantMessage(
+                $response->text,
+                $response->toolCalls
+            )
+        );
+
+        return $response;
+    }
+
+    protected function textRequest(): TextRequest
+    {
+        return new TextRequest(
             systemPrompt: $this->systemPrompt,
             messages: $this->state->messages()->toArray(),
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
             topP: $this->topP,
             tools: $this->tools,
-        )), function (DriverResponse $response): void {
-            $this->state->addResponseMessage(new AssistantMessage(
-                $response->text,
-                $response->toolCalls
-            ));
-        });
+        );
     }
 
     /**
