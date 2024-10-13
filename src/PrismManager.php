@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace EchoLabs\Prism;
 
 use Closure;
-use EchoLabs\Prism\Contracts\Driver;
-use EchoLabs\Prism\Drivers\Anthropic\Anthropic;
-use EchoLabs\Prism\Drivers\OpenAI\OpenAI;
+use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Ollama\Ollama;
+use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
 use RuntimeException;
@@ -24,31 +25,42 @@ class PrismManager
     /**
      * @throws InvalidArgumentException
      */
-    public function resolve(string $name): Driver
+    public function resolve(string $name): Provider
     {
+        $name = $this->resolveName($name);
+
         $config = $this->getConfig($name);
 
         if (is_null($config)) {
-            throw new InvalidArgumentException("Provider [{$name}] is not defined.");
+            throw new InvalidArgumentException("Provider [{$name}] config is not defined.");
         }
 
-        if (isset($this->customCreators[$config['driver']])) {
+        if (isset($this->customCreators[$name])) {
             return $this->callCustomCreator($config);
         }
 
-        $driverMethod = 'create'.ucfirst((string) $config['driver']).'Driver';
+        $factory = sprintf('create%sProvider', ucfirst($name));
 
-        if (method_exists($this, $driverMethod)) {
-            return $this->{$driverMethod}($config);
+        if (method_exists($this, $factory)) {
+            return $this->{$factory}($config);
         }
 
-        throw new InvalidArgumentException("Driver [{$config['driver']}] is not supported.");
+        throw new InvalidArgumentException("Provider [{$name}] is not supported.");
+    }
+
+    protected function resolveName(string $name): string
+    {
+        if (class_exists($name)) {
+            $name = class_basename($name);
+        }
+
+        return strtolower($name);
     }
 
     /**
      * @param  array<string, string>  $config
      */
-    protected function createOpenaiDriver(array $config): OpenAI
+    protected function createOpenaiProvider(array $config): OpenAI
     {
         return new OpenAI(
             apiKey: $config['api_key'] ?? '',
@@ -60,7 +72,18 @@ class PrismManager
     /**
      * @param  array<string, string>  $config
      */
-    protected function createAnthropicDriver(array $config): Anthropic
+    protected function createOllamaProvider(array $config): Ollama
+    {
+        return new Ollama(
+            apiKey: $config['api_key'] ?? '',
+            url: $config['url'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createAnthropicProvider(array $config): Anthropic
     {
         return new Anthropic(
             $config['api_key'],
@@ -71,7 +94,7 @@ class PrismManager
     /**
      * @param  array<string, mixed>  $config
      */
-    protected function callCustomCreator(array $config): Driver
+    protected function callCustomCreator(array $config): Provider
     {
         return $this->customCreators[$config['driver']]($this->app, $config);
     }

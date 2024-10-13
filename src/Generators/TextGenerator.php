@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Generators;
 
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
-use EchoLabs\Prism\Concerns\HasDriver;
+use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\Responses\TextResponse;
 use EchoLabs\Prism\States\TextState;
@@ -24,7 +25,7 @@ use Illuminate\Contracts\View\View;
 
 class TextGenerator
 {
-    use HandlesToolCalls, HasDriver;
+    use HandlesToolCalls, HasProvider;
 
     protected ?string $prompt = null;
 
@@ -54,6 +55,11 @@ class TextGenerator
     public function __invoke(): TextResponse
     {
         return $this->generate();
+    }
+
+    public function provider(): Provider
+    {
+        return $this->provider;
     }
 
     public function withPrompt(string|View $prompt): self
@@ -150,7 +156,7 @@ class TextGenerator
     /**
      * @param  array<int, ToolResult>  $toolResults
      */
-    protected function resultFromResponse(DriverResponse $response, array $toolResults): TextResult
+    protected function resultFromResponse(ProviderResponse $response, array $toolResults): TextResult
     {
         return new TextResult(
             text: $response->text,
@@ -163,9 +169,9 @@ class TextGenerator
         );
     }
 
-    protected function sendProviderRequest(): DriverResponse
+    protected function sendProviderRequest(): ProviderResponse
     {
-        $response = $this->driver->text($this->textRequest());
+        $response = $this->provider->text($this->textRequest());
 
         $this->state->addResponseMessage(
             new AssistantMessage(
@@ -192,7 +198,7 @@ class TextGenerator
     /**
      * @return array<int, ToolResult>
      */
-    protected function handleToolCalls(DriverResponse $response): array
+    protected function handleToolCalls(ProviderResponse $response): array
     {
         $toolResults = array_map(function (ToolCall $toolCall): ToolResult {
             $result = $this->handleToolCall($this->tools, $toolCall);
@@ -210,7 +216,7 @@ class TextGenerator
         return $toolResults;
     }
 
-    protected function shouldContinue(DriverResponse $response): bool
+    protected function shouldContinue(ProviderResponse $response): bool
     {
         return $this->state->steps()->count() < $this->maxSteps
             && $response->finishReason !== FinishReason::Stop;

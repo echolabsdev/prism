@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Anthropic;
+namespace EchoLabs\Prism\Providers\Anthropic;
 
-use EchoLabs\Prism\Contracts\Driver;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Throwable;
 
-class Anthropic implements Driver
+class Anthropic implements Provider
 {
     protected Client $client;
 
@@ -38,7 +38,7 @@ class Anthropic implements Driver
     }
 
     #[\Override]
-    public function text(TextRequest $request): DriverResponse
+    public function text(TextRequest $request): ProviderResponse
     {
         try {
             $response = $this->client->messages(
@@ -83,7 +83,7 @@ class Anthropic implements Driver
             }
         }
 
-        return new DriverResponse(
+        return new ProviderResponse(
             text: $text,
             toolCalls: $toolCalls,
             usage: new Usage(
