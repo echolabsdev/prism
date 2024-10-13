@@ -6,6 +6,7 @@ namespace EchoLabs\Prism;
 
 use Closure;
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
@@ -25,7 +26,7 @@ class PrismManager
     /**
      * @throws InvalidArgumentException
      */
-    public function resolve(string $name): Provider
+    public function resolve(ProviderEnum|string $name): Provider
     {
         $name = $this->resolveName($name);
 
@@ -48,10 +49,10 @@ class PrismManager
         throw new InvalidArgumentException("Provider [{$name}] is not supported.");
     }
 
-    protected function resolveName(string $name): string
+    protected function resolveName(ProviderEnum|string $name): string
     {
-        if (class_exists($name)) {
-            $name = class_basename($name);
+        if ($name instanceof ProviderEnum) {
+            $name = $name->value;
         }
 
         return strtolower($name);
