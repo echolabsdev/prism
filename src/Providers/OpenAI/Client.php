@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\OpenAI;
+namespace EchoLabs\Prism\Providers\OpenAI;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;

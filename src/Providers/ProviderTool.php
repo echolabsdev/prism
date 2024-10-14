@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers;
+namespace EchoLabs\Prism\Providers;
 
 use EchoLabs\Prism\Tool;
 
-abstract class DriverTool
+abstract class ProviderTool
 {
     /**
      * @return array<string, mixed>

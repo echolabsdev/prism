@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Generators;
 
-use EchoLabs\Prism\Contracts\Driver;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Generators\TextGenerator;
 use EchoLabs\Prism\PrismManager;
+use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
@@ -20,7 +20,7 @@ use EchoLabs\Prism\ValueObjects\Usage;
 use Mockery;
 
 it('correctly resolves a driver', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
@@ -36,7 +36,7 @@ it('correctly resolves a driver', function (): void {
 });
 
 it('correctly builds requests', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
@@ -56,7 +56,7 @@ it('correctly builds requests', function (): void {
 
             return true;
         })
-        ->andReturn(new DriverResponse(
+        ->andReturn(new ProviderResponse(
             text: "I'm nyx!",
             toolCalls: [],
             usage: new Usage(10, 10),
@@ -81,7 +81,7 @@ it('correctly builds requests', function (): void {
 });
 
 it('correctly builds requests with messages', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
@@ -97,7 +97,7 @@ it('correctly builds requests with messages', function (): void {
 
             return true;
         })
-        ->andReturn(new DriverResponse(
+        ->andReturn(new ProviderResponse(
             text: "I'm nyx!",
             toolCalls: [],
             usage: new Usage(10, 10),
@@ -121,7 +121,7 @@ it('correctly builds requests with messages', function (): void {
 });
 
 it('correctly generates a request with tools', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
@@ -134,7 +134,7 @@ it('correctly generates a request with tools', function (): void {
 
             return true;
         })
-        ->andReturn(new DriverResponse(
+        ->andReturn(new ProviderResponse(
             text: "I'm nyx!",
             toolCalls: [],
             usage: new Usage(10, 10),
@@ -161,14 +161,14 @@ it('correctly generates a request with tools', function (): void {
 });
 
 it('generates a response from the driver', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
     $driver->expects('text')
         ->once()
-        ->andReturn(new DriverResponse(
+        ->andReturn(new ProviderResponse(
             text: "I'm nyx!",
             toolCalls: [],
             usage: new Usage(10, 10),
@@ -228,13 +228,13 @@ it('generates a response from the driver', function (): void {
 });
 
 it('generates a response from the driver with tools and max steps', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
     $driver->expects('text')
-        ->andReturn(new DriverResponse(
+        ->andReturn(new ProviderResponse(
             text: '',
             toolCalls: [
                 new ToolCall(
@@ -290,10 +290,10 @@ it('generates a response from the driver with tools and max steps', function ():
 });
 
 it('correctly stops using max steps', function (): void {
-    $driver = Mockery::mock(Driver::class);
+    $driver = Mockery::mock(Provider::class);
     $driver->expects('usingModel');
 
-    $toolResponse = new DriverResponse(
+    $toolResponse = new ProviderResponse(
         text: '',
         toolCalls: [
             new ToolCall(
@@ -309,7 +309,7 @@ it('correctly stops using max steps', function (): void {
         response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
     );
 
-    $finalResponse = new DriverResponse(
+    $finalResponse = new ProviderResponse(
         text: 'The weather is 75 and sunny!',
         toolCalls: [],
         usage: new Usage(10, 10),

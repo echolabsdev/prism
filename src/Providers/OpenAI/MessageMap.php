@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\OpenAI;
+namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -12,7 +12,7 @@ use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
 
-class OpenAIMessageMap
+class MessageMap
 {
     /** @var array<int, mixed> */
     protected $mappedMessages = [];

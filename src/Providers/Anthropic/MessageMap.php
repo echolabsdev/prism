@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\Anthropic;
+namespace EchoLabs\Prism\Providers\Anthropic;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -13,7 +13,7 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
 
-class AnthropicMessageMap
+class MessageMap
 {
     /**
      * @param  array<int, Message>  $messages
