@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Drivers\OpenAI;
+namespace EchoLabs\Prism\Providers\OpenAI;
 
-use EchoLabs\Prism\Contracts\Driver;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Throwable;
 
-class OpenAI implements Driver
+class OpenAI implements Provider
 {
     protected Client $client;
 
@@ -40,19 +40,19 @@ class OpenAI implements Driver
     }
 
     #[\Override]
-    public function text(TextRequest $request): DriverResponse
+    public function text(TextRequest $request): ProviderResponse
     {
         try {
             $response = $this->client->messages(
                 model: $this->model,
-                messages: (new OpenAIMessageMap(
+                messages: (new MessageMap(
                     $request->messages,
                     $request->systemPrompt ?? '',
                 ))(),
                 maxTokens: $request->maxTokens,
                 temperature: $request->temperature,
                 topP: $request->topP,
-                tools: OpenAITool::map($request->tools),
+                tools: Tool::map($request->tools),
             );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($this->model, $e);
@@ -76,7 +76,7 @@ class OpenAI implements Driver
             arguments: data_get($toolCall, 'function.arguments'),
         ), data_get($data, 'choices.0.message.tool_calls', []) ?? []);
 
-        return new DriverResponse(
+        return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
             toolCalls: $toolCalls,
             usage: new Usage(

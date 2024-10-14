@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Generators;
 
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
-use EchoLabs\Prism\Concerns\HasDriver;
+use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Drivers\DriverResponse;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\Responses\TextResponse;
 use EchoLabs\Prism\States\TextState;
@@ -24,7 +25,7 @@ use Illuminate\Contracts\View\View;
 
 class TextGenerator
 {
-    use HandlesToolCalls, HasDriver;
+    use HandlesToolCalls, HasProvider;
 
     protected ?string $prompt = null;
 
@@ -53,21 +54,12 @@ class TextGenerator
 
     public function __invoke(): TextResponse
     {
-        $response = $this->sendProviderRequest();
+        return $this->generate();
+    }
 
-        if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->handleToolCalls($response);
-        }
-
-        $this->state->addStep(
-            $this->resultFromResponse($response, $toolResults ?? [])
-        );
-
-        if ($this->shouldContinue($response)) {
-            return $this();
-        }
-
-        return new TextResponse($this->state);
+    public function provider(): Provider
+    {
+        return $this->provider;
     }
 
     public function withPrompt(string|View $prompt): self
@@ -142,10 +134,29 @@ class TextGenerator
         return $this;
     }
 
+    public function generate(): TextResponse
+    {
+        $response = $this->sendProviderRequest();
+
+        if ($response->finishReason === FinishReason::ToolCalls) {
+            $toolResults = $this->handleToolCalls($response);
+        }
+
+        $this->state->addStep(
+            $this->resultFromResponse($response, $toolResults ?? [])
+        );
+
+        if ($this->shouldContinue($response)) {
+            return $this();
+        }
+
+        return new TextResponse($this->state);
+    }
+
     /**
      * @param  array<int, ToolResult>  $toolResults
      */
-    protected function resultFromResponse(DriverResponse $response, array $toolResults): TextResult
+    protected function resultFromResponse(ProviderResponse $response, array $toolResults): TextResult
     {
         return new TextResult(
             text: $response->text,
@@ -158,27 +169,36 @@ class TextGenerator
         );
     }
 
-    protected function sendProviderRequest(): DriverResponse
+    protected function sendProviderRequest(): ProviderResponse
     {
-        return tap($this->driver->text(new TextRequest(
+        $response = $this->provider->text($this->textRequest());
+
+        $this->state->addResponseMessage(
+            new AssistantMessage(
+                $response->text,
+                $response->toolCalls
+            )
+        );
+
+        return $response;
+    }
+
+    protected function textRequest(): TextRequest
+    {
+        return new TextRequest(
             systemPrompt: $this->systemPrompt,
             messages: $this->state->messages()->toArray(),
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
             topP: $this->topP,
             tools: $this->tools,
-        )), function (DriverResponse $response): void {
-            $this->state->addResponseMessage(new AssistantMessage(
-                $response->text,
-                $response->toolCalls
-            ));
-        });
+        );
     }
 
     /**
      * @return array<int, ToolResult>
      */
-    protected function handleToolCalls(DriverResponse $response): array
+    protected function handleToolCalls(ProviderResponse $response): array
     {
         $toolResults = array_map(function (ToolCall $toolCall): ToolResult {
             $result = $this->handleToolCall($this->tools, $toolCall);
@@ -196,7 +216,7 @@ class TextGenerator
         return $toolResults;
     }
 
-    protected function shouldContinue(DriverResponse $response): bool
+    protected function shouldContinue(ProviderResponse $response): bool
     {
         return $this->state->steps()->count() < $this->maxSteps
             && $response->finishReason !== FinishReason::Stop;
