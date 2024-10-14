@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Drivers;
+namespace Tests\Providers;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
