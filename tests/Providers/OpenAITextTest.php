@@ -53,16 +53,16 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     $tools = [
         Tool::as('weather')
             ->for('useful when you need to search for current weather conditions')
-            ->withParameter('city', 'The city that you want the weather for')
+            ->withString('city', 'The city that you want the weather for')
             ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
         Tool::as('search')
             ->for('useful for searching curret events or data')
-            ->withParameter('query', 'The detailed search query')
+            ->withString('query', 'The detailed search query')
             ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
     ];
 
     $response = Prism::text()
-        ->using('openai', 'gpt-4')
+        ->using('openai', 'gpt-4o')
         ->withTools($tools)
         ->withMaxSteps(3)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')();

@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism;
 
 use Closure;
+use EchoLabs\Prism\Contracts\Parameter;
+use EchoLabs\Prism\ValueObjects\Parameters\ArrayParameter;
+use EchoLabs\Prism\ValueObjects\Parameters\BooleanParameter;
+use EchoLabs\Prism\ValueObjects\Parameters\NumberParameter;
+use EchoLabs\Prism\ValueObjects\Parameters\ObjectParameter;
+use EchoLabs\Prism\ValueObjects\Parameters\StringParameter;
 
 class Tool
 {
@@ -12,8 +18,11 @@ class Tool
 
     protected string $description;
 
-    /** @var array<int, array<string, string|bool>> */
+    /** @var array<string, array<string, mixed>> */
     protected array $parameters;
+
+    /** @var array <int, string> */
+    protected array $requiredParameters = [];
 
     /** @var Closure():string|callable():string */
     protected $fn;
@@ -40,14 +49,66 @@ class Tool
         return $this;
     }
 
-    public function withParameter(string $name, string $description, string $type = 'string', bool $required = true): self
+    public function withParameter(Parameter $parameter, $required = true): self
     {
-        $this->parameters[] = [
-            'name' => $name,
-            'description' => $description,
-            'type' => $type,
-            'required' => $required,
-        ];
+        $this->parameters[$parameter->name()] = $parameter->toArray();
+
+        if ($required) {
+            $this->requiredParameters[] = $parameter->name();
+        }
+
+        return $this;
+    }
+
+    public function withString(string $name, string $description, bool $required = true): self
+    {
+        $this->withParameter(new StringParameter($name, $description), $required);
+
+        return $this;
+    }
+
+    public function withNumber(string $name, string $description, bool $required = true): self
+    {
+        $this->withParameter(new NumberParameter($name, $description), $required);
+
+        return $this;
+    }
+
+    public function withBoolean(string $name, string $description, bool $required = true): self
+    {
+        $this->withParameter(new BooleanParameter($name, $description), $required);
+
+        return $this;
+    }
+
+    public function withArray(
+        string $name,
+        string $description,
+        string $itemType,
+        string $itemDescription,
+        bool $required = true,
+    ): self {
+        $this->withParameter(new ArrayParameter($name, $description, $itemType, $itemDescription), $required);
+
+        return $this;
+    }
+
+    public function withObject(
+        string $name,
+        string $description,
+        array $properties,
+        array $requiredFields = [],
+        bool $allowAdditionalProperties = false,
+        bool $required = true,
+    ): self {
+
+        $this->withParameter(new ObjectParameter(
+            $name,
+            $description,
+            $properties,
+            $requiredFields,
+            $allowAdditionalProperties,
+        ), $required);
 
         return $this;
     }
@@ -55,14 +116,12 @@ class Tool
     /** @return array<int, string> */
     public function requiredParameters(): array
     {
-        return collect($this->parameters)
-            ->filter(fn (array $params): bool => (bool) $params['required'])
-            ->keyBy('name')
-            ->keys()
-            ->all();
+        return $this->requiredParameters;
     }
 
-    /** @return array<int, array<string, string|bool>> */
+    /**
+     * @return array<string, array<string, mixed>>
+     */
     public function parameters(): array
     {
         return $this->parameters;

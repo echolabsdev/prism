@@ -6,12 +6,14 @@ namespace Tests;
 
 use EchoLabs\Prism\Facades\Tool as ToolFacade;
 use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\ValueObjects\Parameters\BooleanParameter;
+use EchoLabs\Prism\ValueObjects\Parameters\StringParameter;
 
 it('can return tool details', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringParameter('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -21,11 +23,9 @@ it('can return tool details', function (): void {
     expect($searchTool->name())->toBe('search');
     expect($searchTool->description())->toBe('useful for searching current data');
     expect($searchTool->parameters())->toBe([
-        [
-            'name' => 'query',
+        'query' => [
             'description' => 'the search query',
             'type' => 'string',
-            'required' => true,
         ],
     ]);
 
@@ -36,7 +36,7 @@ it('can use a closure', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringParameter('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -51,7 +51,7 @@ it('can use a closure', function (): void {
 it('can be used via facade', function (): void {
     $searchTool = ToolFacade::as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringParameter('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -77,9 +77,83 @@ it('can use an invokeable', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringParameter('query', 'the search query'))
         ->using($fn);
 
     expect($searchTool->handle('What time is the event?'))
         ->toBe('The event is at 3pm eastern');
+});
+
+it('can have fluent parameters', function (): void {
+    $tool = (new Tool)
+        ->as('test tool')
+        ->for('not really useful for anything')
+        ->withString(name: 'query', description: 'the search query', required: false)
+        ->withNumber('age', 'the users age')
+        ->withBoolean('active', 'active status')
+        ->withArray(
+            name: 'items',
+            description: 'user requested items',
+            itemType: 'string',
+            itemDescription: 'the items in the basket',
+        )
+        ->withObject(
+            name: 'user',
+            description: 'the user object',
+            properties: [
+                new StringParameter('name', 'the users name'),
+                new BooleanParameter('active_status', 'user active status'),
+            ],
+            requiredFields: [
+                'name',
+            ]
+        );
+
+    expect($tool->parameters()['query'])->toBe([
+        'description' => 'the search query',
+        'type' => 'string',
+    ]);
+
+    expect($tool->parameters()['age'])->toBe([
+        'description' => 'the users age',
+        'type' => 'number',
+    ]);
+
+    expect($tool->parameters()['active'])->toBe([
+        'description' => 'active status',
+        'type' => 'boolean',
+    ]);
+
+    expect($tool->parameters()['items'])->toBe([
+        'description' => 'user requested items',
+        'type' => 'array',
+        'items' => [
+            'type' => 'string',
+            'description' => 'the items in the basket',
+        ],
+    ]);
+
+    expect($tool->parameters()['user'])->toBe([
+        'description' => 'the user object',
+        'type' => 'object',
+        'properties' => [
+            'name' => [
+                'description' => 'the users name',
+                'type' => 'string',
+            ],
+            'active_status' => [
+                'description' => 'user active status',
+                'type' => 'boolean',
+            ],
+        ],
+        'required' => ['name'],
+        'additionalProperties' => false,
+    ]);
+
+    expect($tool->requiredParameters())->toBe([
+        'age',
+        'active',
+        'items',
+        'user',
+    ]);
 });
