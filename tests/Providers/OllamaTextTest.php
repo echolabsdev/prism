@@ -47,7 +47,7 @@ it('can generate text with a system prompt', function (): void {
 });
 
 it('can generate text using multiple tools and multiple steps', function (): void {
-    // FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-multiple-tools');
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-multiple-tools');
 
     $tools = [
         Tool::as('weather')
