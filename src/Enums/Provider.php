@@ -9,4 +9,5 @@ enum Provider: string
     case Anthropic = 'anthropic';
     case Ollama = 'ollama';
     case OpenAI = 'openai';
+    case Mistral = 'mistral';
 }

@@ -10,6 +10,7 @@ use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
+use EchoLabs\Prism\Providers\Mistral\Mistral;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
 use RuntimeException;
@@ -76,6 +77,17 @@ class PrismManager
     protected function createOllamaProvider(array $config): Ollama
     {
         return new Ollama(
+            apiKey: $config['api_key'] ?? '',
+            url: $config['url'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createMistralProvider(array $config): Mistral
+    {
+        return new Mistral(
             apiKey: $config['api_key'] ?? '',
             url: $config['url'],
         );
