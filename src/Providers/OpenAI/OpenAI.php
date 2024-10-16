@@ -74,7 +74,7 @@ class OpenAI implements Provider
             id: data_get($toolCall, 'id'),
             name: data_get($toolCall, 'function.name'),
             arguments: data_get($toolCall, 'function.arguments'),
-        ), data_get($data, 'choices.0.message.tool_calls', []) ?? []);
+        ), data_get($data, 'choices.0.message.tool_calls', []));
 
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
