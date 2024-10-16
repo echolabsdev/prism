@@ -8,6 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Parameter;
 use EchoLabs\Prism\ValueObjects\Parameters\ArrayParameter;
 use EchoLabs\Prism\ValueObjects\Parameters\BooleanParameter;
+use EchoLabs\Prism\ValueObjects\Parameters\EnumParameter;
 use EchoLabs\Prism\ValueObjects\Parameters\NumberParameter;
 use EchoLabs\Prism\ValueObjects\Parameters\ObjectParameter;
 use EchoLabs\Prism\ValueObjects\Parameters\StringParameter;
@@ -49,7 +50,7 @@ class Tool
         return $this;
     }
 
-    public function withParameter(Parameter $parameter, $required = true): self
+    public function withParameter(Parameter $parameter, bool $required = true): self
     {
         $this->parameters[$parameter->name()] = $parameter->toArray();
 
@@ -92,6 +93,10 @@ class Tool
         return $this;
     }
 
+    /**
+     * @param  array<int, Parameter>  $properties
+     * @param  array<int, string>  $requiredFields
+     */
     public function withObject(
         string $name,
         string $description,
@@ -108,6 +113,16 @@ class Tool
             $requiredFields,
             $allowAdditionalProperties,
         ), $required);
+
+        return $this;
+    }
+
+    /**
+     * @param  array<int, string|int|float>  $options
+     */
+    public function withEnum(string $name, string $description, array $options): self
+    {
+        $this->withParameter(new EnumParameter($name, $description, $options));
 
         return $this;
     }

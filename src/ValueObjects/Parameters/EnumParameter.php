@@ -8,6 +8,9 @@ use EchoLabs\Prism\Contracts\Parameter;
 
 class EnumParameter implements Parameter
 {
+    /**
+     * @param  array<int, string|int|float>  $options
+     */
     public function __construct(
         public readonly string $name,
         public readonly string $description,

@@ -9,7 +9,8 @@ use EchoLabs\Prism\Contracts\Parameter;
 class ObjectParameter implements Parameter
 {
     /**
-     * @param array<int, Parameter>
+     * @param  array<int, Parameter>  $properties
+     * @param  array<int, string>  $requiredFields
      */
     public function __construct(
         public readonly string $name,
@@ -37,6 +38,9 @@ class ObjectParameter implements Parameter
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function propertiesArray(): array
     {
         return collect($this->properties)
