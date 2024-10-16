@@ -11,8 +11,7 @@ class ArrayParameter implements Parameter
     public function __construct(
         public readonly string $name,
         public readonly string $description,
-        public readonly string $itemType,
-        public readonly string $itemDescription,
+        public readonly Parameter $item,
     ) {}
 
     #[\Override]
@@ -27,10 +26,7 @@ class ArrayParameter implements Parameter
         return [
             'description' => $this->description,
             'type' => 'array',
-            'items' => [
-                'type' => $this->itemType,
-                'description' => $this->itemDescription,
-            ],
+            'items' => $this->item->toArray(),
         ];
     }
 }

@@ -84,11 +84,10 @@ class Tool
     public function withArray(
         string $name,
         string $description,
-        string $itemType,
-        string $itemDescription,
+        Parameter $items,
         bool $required = true,
     ): self {
-        $this->withParameter(new ArrayParameter($name, $description, $itemType, $itemDescription), $required);
+        $this->withParameter(new ArrayParameter($name, $description, $items), $required);
 
         return $this;
     }

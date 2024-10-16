@@ -94,8 +94,7 @@ it('can have fluent parameters', function (): void {
         ->withArray(
             name: 'items',
             description: 'user requested items',
-            itemType: 'string',
-            itemDescription: 'the items in the basket',
+            items: new StringParameter('itemm', 'an item that the user requested'),
         )
         ->withObject(
             name: 'user',
@@ -128,8 +127,8 @@ it('can have fluent parameters', function (): void {
         'description' => 'user requested items',
         'type' => 'array',
         'items' => [
+            'description' => 'an item that the user requested',
             'type' => 'string',
-            'description' => 'the items in the basket',
         ],
     ]);
 

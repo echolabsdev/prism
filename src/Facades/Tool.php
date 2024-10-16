@@ -16,7 +16,7 @@ use EchoLabs\Prism\Tool as ToolConcrete;
  * @method static self withString(string $name, string $description, bool $required = true)
  * @method static self withNumber(string $name, string $description, bool $required = true)
  * @method static self withBoolean(string $name, string $description, bool $required = true)
- * @method static self withArray(string $name, string $description, string $itemType, string $itemDescription, bool $required = true)
+ * @method static self withArray(string $name, string $description, Parameter $items, bool $required = true)
  * @method static self withObject(string $name, string $description, array $properties, array $requiredFields = [], bool $allowAdditionalProperties = false, bool $required = true)
  * @method static array<int, string> requiredParameters()
  * @method static array<string, array<string, mixed>> parameters()

@@ -9,7 +9,7 @@ use EchoLabs\Prism\Contracts\Parameter;
 class ObjectParameter implements Parameter
 {
     /**
-     * @param array<int, StringParameter|ArrayParameter|BooleanParameter>
+     * @param array<int, Parameter>
      */
     public function __construct(
         public readonly string $name,
