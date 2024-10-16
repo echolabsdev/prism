@@ -7,9 +7,9 @@ namespace Tests;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
-use EchoLabs\Prism\Providers\Mistral\Mistral;
 
 it('can resolve Anthropic', function (): void {
     $manager = new PrismManager($this->app);
