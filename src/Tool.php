@@ -61,28 +61,28 @@ class Tool
         return $this;
     }
 
-    public function withString(string $name, string $description, bool $required = true): self
+    public function withStringParameter(string $name, string $description, bool $required = true): self
     {
         $this->withParameter(new StringParameter($name, $description), $required);
 
         return $this;
     }
 
-    public function withNumber(string $name, string $description, bool $required = true): self
+    public function withNumberParameter(string $name, string $description, bool $required = true): self
     {
         $this->withParameter(new NumberParameter($name, $description), $required);
 
         return $this;
     }
 
-    public function withBoolean(string $name, string $description, bool $required = true): self
+    public function withBooleanParameter(string $name, string $description, bool $required = true): self
     {
         $this->withParameter(new BooleanParameter($name, $description), $required);
 
         return $this;
     }
 
-    public function withArray(
+    public function withArrayParameter(
         string $name,
         string $description,
         Parameter $items,
@@ -97,7 +97,7 @@ class Tool
      * @param  array<int, Parameter>  $properties
      * @param  array<int, string>  $requiredFields
      */
-    public function withObject(
+    public function withObjectParameter(
         string $name,
         string $description,
         array $properties,
@@ -120,9 +120,13 @@ class Tool
     /**
      * @param  array<int, string|int|float>  $options
      */
-    public function withEnum(string $name, string $description, array $options): self
-    {
-        $this->withParameter(new EnumParameter($name, $description, $options));
+    public function withEnumParameter(
+        string $name,
+        string $description,
+        array $options,
+        bool $required = true,
+    ): self {
+        $this->withParameter(new EnumParameter($name, $description, $options), $required);
 
         return $this;
     }

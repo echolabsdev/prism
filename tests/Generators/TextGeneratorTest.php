@@ -151,7 +151,7 @@ it('correctly generates a request with tools', function (): void {
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
-        ->withString('city', 'the city that you want the weather for')
+        ->withStringParameter('city', 'the city that you want the weather for')
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
     (new TextGenerator)
@@ -259,7 +259,7 @@ it('generates a response from the driver with tools and max steps', function ():
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
-        ->withString('city', 'the city that you want the weather for')
+        ->withStringParameter('city', 'the city that you want the weather for')
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
     $response = (new TextGenerator)
@@ -333,7 +333,7 @@ it('correctly stops using max steps', function (): void {
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
-        ->withString('city', 'the city that you want the weather for')
+        ->withStringParameter('city', 'the city that you want the weather for')
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
     $response = (new TextGenerator)

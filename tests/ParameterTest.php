@@ -16,7 +16,7 @@ it('they can have nested properties', function (): void {
         description: 'a user object',
         properties: [
             new StringParameter('name', 'the users name'),
-            new NumberParameter('age', 'the users age'),
+            new NumberParameter('age', 'the users age', false),
             new EnumParameter(
                 name: 'status',
                 description: 'the users status',
@@ -39,7 +39,8 @@ it('they can have nested properties', function (): void {
                     new StringParameter('city', 'the city part of the address'),
                     new StringParameter('country', 'the country part of the address'),
                     new NumberParameter('zip', 'the zip code part of the address'),
-                ]
+                ],
+                requiredFields: ['street', 'city', 'country', 'zip']
             ),
         ]
     );
@@ -93,7 +94,7 @@ it('they can have nested properties', function (): void {
                         'type' => 'number',
                     ],
                 ],
-                'required' => [],
+                'required' => ['street', 'city', 'country', 'zip'],
                 'additionalProperties' => false,
             ],
         ],

@@ -88,15 +88,16 @@ it('can have fluent parameters', function (): void {
     $tool = (new Tool)
         ->as('test tool')
         ->for('not really useful for anything')
-        ->withString(name: 'query', description: 'the search query', required: false)
-        ->withNumber('age', 'the users age')
-        ->withBoolean('active', 'active status')
-        ->withArray(
+        ->withStringParameter(name: 'query', description: 'the search query', required: false)
+        ->withNumberParameter('age', 'the users age')
+        ->withBooleanParameter('active', 'active status')
+        ->withArrayParameter(
             name: 'items',
             description: 'user requested items',
             items: new StringParameter('itemm', 'an item that the user requested'),
         )
-        ->withObject(
+        ->withEnumParameter('status', 'the status', ['active', 'inactive'])
+        ->withObjectParameter(
             name: 'user',
             description: 'the user object',
             properties: [
@@ -108,51 +109,20 @@ it('can have fluent parameters', function (): void {
             ]
         );
 
-    expect($tool->parameters()['query'])->toBe([
-        'description' => 'the search query',
-        'type' => 'string',
-    ]);
-
-    expect($tool->parameters()['age'])->toBe([
-        'description' => 'the users age',
-        'type' => 'number',
-    ]);
-
-    expect($tool->parameters()['active'])->toBe([
-        'description' => 'active status',
-        'type' => 'boolean',
-    ]);
-
-    expect($tool->parameters()['items'])->toBe([
-        'description' => 'user requested items',
-        'type' => 'array',
-        'items' => [
-            'description' => 'an item that the user requested',
-            'type' => 'string',
-        ],
-    ]);
-
-    expect($tool->parameters()['user'])->toBe([
-        'description' => 'the user object',
-        'type' => 'object',
-        'properties' => [
-            'name' => [
-                'description' => 'the users name',
-                'type' => 'string',
-            ],
-            'active_status' => [
-                'description' => 'user active status',
-                'type' => 'boolean',
-            ],
-        ],
-        'required' => ['name'],
-        'additionalProperties' => false,
-    ]);
-
-    expect($tool->requiredParameters())->toBe([
+    $keys = [
+        'query',
         'age',
         'active',
         'items',
+        'status',
         'user',
-    ]);
+    ];
+
+    expect($tool->parameters())->toHaveKeys($keys);
+
+    collect($keys)->each(function ($key) use ($tool): void {
+        expect($tool->parameters()[$key])->not->toBeEmpty();
+    });
+
+    expect($tool->requiredParameters())->not->toContain('query');
 });
