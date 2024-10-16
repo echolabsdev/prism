@@ -65,7 +65,7 @@ echo $prism()->text;
 
 ## Authors
 
-This library is created by [TJ Miller](https://tjmiller.me) with contributions from the [Open Source Community](https://github.com/vercel/ai/graphs/contributors).
+This library is created by [TJ Miller](https://tjmiller.me) with contributions from the [Open Source Community](https://github.com/echolabsdev/prism/graphs/contributors).
 
 ## License
 
