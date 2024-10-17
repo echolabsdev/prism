@@ -16,7 +16,7 @@ trait HandlesToolCalls
     /**
      * @param  array<int, Tool>  $tools
      */
-    protected function handleToolCall(array $tools, ToolCall $toolCall): string
+    protected function handleToolCall(array $tools, ToolCall $toolCall): ?string
     {
         try {
             /** @var Tool $tool */

@@ -156,7 +156,7 @@ class Tool
     }
 
     /** @param string|int|float $args */
-    public function handle(...$args): string
+    public function handle(...$args): ?string
     {
         return call_user_func($this->fn, ...$args);
     }
