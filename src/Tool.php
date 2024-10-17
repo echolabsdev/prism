@@ -15,12 +15,12 @@ use EchoLabs\Prism\Schema\StringSchema;
 
 class Tool
 {
-    protected string $name;
+    protected string $name = '';
 
-    protected string $description;
+    protected string $description = '';
 
     /** @var array<string, array<string, mixed>> */
-    protected array $parameters;
+    protected array $parameters = [];
 
     /** @var array <int, string> */
     protected array $requiredParameters = [];
