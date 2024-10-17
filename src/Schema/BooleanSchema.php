@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
-use EchoLabs\Prism\Contracts\Parameter;
+use EchoLabs\Prism\Contracts\Schema;
 
-class BooleanSchema implements Parameter
+class BooleanSchema implements Schema
 {
     public function __construct(
         public readonly string $name,

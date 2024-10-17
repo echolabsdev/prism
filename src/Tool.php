@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism;
 
 use Closure;
-use EchoLabs\Prism\Contracts\Parameter;
+use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\EnumSchema;
@@ -50,7 +50,7 @@ class Tool
         return $this;
     }
 
-    public function withParameter(Parameter $parameter, bool $required = true): self
+    public function withParameter(Schema $parameter, bool $required = true): self
     {
         $this->parameters[$parameter->name()] = $parameter->toArray();
 
@@ -85,7 +85,7 @@ class Tool
     public function withArrayParameter(
         string $name,
         string $description,
-        Parameter $items,
+        Schema $items,
         bool $required = true,
     ): self {
         $this->withParameter(new ArraySchema($name, $description, $items), $required);
@@ -94,7 +94,7 @@ class Tool
     }
 
     /**
-     * @param  array<int, Parameter>  $properties
+     * @param  array<int, Schema>  $properties
      * @param  array<int, string>  $requiredFields
      */
     public function withObjectParameter(

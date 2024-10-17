@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
-use EchoLabs\Prism\Contracts\Parameter;
+use EchoLabs\Prism\Contracts\Schema;
 
-class EnumSchema implements Parameter
+class EnumSchema implements Schema
 {
     /**
      * @param  array<int, string|int|float>  $options

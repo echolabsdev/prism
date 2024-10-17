@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Contracts;
 
-interface Parameter
+interface Schema
 {
     public function name(): string;
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
-use EchoLabs\Prism\Contracts\Parameter;
+use EchoLabs\Prism\Contracts\Schema;
 
-class ObjectSchema implements Parameter
+class ObjectSchema implements Schema
 {
     /**
-     * @param  array<int, Parameter>  $properties
+     * @param  array<int, Schema>  $properties
      * @param  array<int, string>  $requiredFields
      */
     public function __construct(
@@ -44,8 +44,8 @@ class ObjectSchema implements Parameter
     protected function propertiesArray(): array
     {
         return collect($this->properties)
-            ->keyBy(fn (Parameter $parameter): string => $parameter->name())
-            ->map(fn (Parameter $parameter): array => $parameter->toArray())
+            ->keyBy(fn (Schema $parameter): string => $parameter->name())
+            ->map(fn (Schema $parameter): array => $parameter->toArray())
             ->toArray();
     }
 }

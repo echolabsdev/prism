@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
-use EchoLabs\Prism\Contracts\Parameter;
+use EchoLabs\Prism\Contracts\Schema;
 
-class ArraySchema implements Parameter
+class ArraySchema implements Schema
 {
     public function __construct(
         public readonly string $name,
         public readonly string $description,
-        public readonly Parameter $item,
+        public readonly Schema $item,
     ) {}
 
     #[\Override]
