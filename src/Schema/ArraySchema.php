@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Parameters;
+namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Parameter;
 
-class BooleanParameter implements Parameter
+class ArraySchema implements Parameter
 {
     public function __construct(
         public readonly string $name,
         public readonly string $description,
+        public readonly Parameter $item,
     ) {}
 
     #[\Override]
@@ -24,7 +25,8 @@ class BooleanParameter implements Parameter
     {
         return [
             'description' => $this->description,
-            'type' => 'boolean',
+            'type' => 'array',
+            'items' => $this->item->toArray(),
         ];
     }
 }

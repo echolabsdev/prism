@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Parameters;
+namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Parameter;
 
-class EnumParameter implements Parameter
+class EnumSchema implements Parameter
 {
     /**
      * @param  array<int, string|int|float>  $options

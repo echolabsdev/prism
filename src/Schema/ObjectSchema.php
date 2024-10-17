@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Parameters;
+namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Parameter;
 
-class ObjectParameter implements Parameter
+class ObjectSchema implements Parameter
 {
     /**
      * @param  array<int, Parameter>  $properties

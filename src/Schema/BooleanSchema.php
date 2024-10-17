@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Parameters;
+namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Parameter;
 
-class StringParameter implements Parameter
+class BooleanSchema implements Parameter
 {
     public function __construct(
         public readonly string $name,
@@ -24,7 +24,7 @@ class StringParameter implements Parameter
     {
         return [
             'description' => $this->description,
-            'type' => 'string',
+            'type' => 'boolean',
         ];
     }
 }

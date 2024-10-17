@@ -6,12 +6,12 @@ namespace EchoLabs\Prism;
 
 use Closure;
 use EchoLabs\Prism\Contracts\Parameter;
-use EchoLabs\Prism\ValueObjects\Parameters\ArrayParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\BooleanParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\EnumParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\NumberParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\ObjectParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\StringParameter;
+use EchoLabs\Prism\Schema\ArraySchema;
+use EchoLabs\Prism\Schema\BooleanSchema;
+use EchoLabs\Prism\Schema\EnumSchema;
+use EchoLabs\Prism\Schema\NumberSchema;
+use EchoLabs\Prism\Schema\ObjectSchema;
+use EchoLabs\Prism\Schema\StringSchema;
 
 class Tool
 {
@@ -63,21 +63,21 @@ class Tool
 
     public function withStringParameter(string $name, string $description, bool $required = true): self
     {
-        $this->withParameter(new StringParameter($name, $description), $required);
+        $this->withParameter(new StringSchema($name, $description), $required);
 
         return $this;
     }
 
     public function withNumberParameter(string $name, string $description, bool $required = true): self
     {
-        $this->withParameter(new NumberParameter($name, $description), $required);
+        $this->withParameter(new NumberSchema($name, $description), $required);
 
         return $this;
     }
 
     public function withBooleanParameter(string $name, string $description, bool $required = true): self
     {
-        $this->withParameter(new BooleanParameter($name, $description), $required);
+        $this->withParameter(new BooleanSchema($name, $description), $required);
 
         return $this;
     }
@@ -88,7 +88,7 @@ class Tool
         Parameter $items,
         bool $required = true,
     ): self {
-        $this->withParameter(new ArrayParameter($name, $description, $items), $required);
+        $this->withParameter(new ArraySchema($name, $description, $items), $required);
 
         return $this;
     }
@@ -106,7 +106,7 @@ class Tool
         bool $required = true,
     ): self {
 
-        $this->withParameter(new ObjectParameter(
+        $this->withParameter(new ObjectSchema(
             $name,
             $description,
             $properties,
@@ -126,7 +126,7 @@ class Tool
         array $options,
         bool $required = true,
     ): self {
-        $this->withParameter(new EnumParameter($name, $description, $options), $required);
+        $this->withParameter(new EnumSchema($name, $description, $options), $required);
 
         return $this;
     }

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use EchoLabs\Prism\ValueObjects\Parameters\ArrayParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\EnumParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\NumberParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\ObjectParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\StringParameter;
+use EchoLabs\Prism\Schema\ArraySchema;
+use EchoLabs\Prism\Schema\EnumSchema;
+use EchoLabs\Prism\Schema\NumberSchema;
+use EchoLabs\Prism\Schema\ObjectSchema;
+use EchoLabs\Prism\Schema\StringSchema;
 
 it('they can have nested properties', function (): void {
-    $schema = new ObjectParameter(
+    $schema = new ObjectSchema(
         name: 'user',
         description: 'a user object',
         properties: [
-            new StringParameter('name', 'the users name'),
-            new NumberParameter('age', 'the users age', false),
-            new EnumParameter(
+            new StringSchema('name', 'the users name'),
+            new NumberSchema('age', 'the users age', false),
+            new EnumSchema(
                 name: 'status',
                 description: 'the users status',
                 options: [
@@ -26,19 +26,19 @@ it('they can have nested properties', function (): void {
                     'suspended',
                 ]
             ),
-            new ArrayParameter(
+            new ArraySchema(
                 name: 'hobbies',
                 description: 'the users hobbies',
-                item: new StringParameter('hobby', 'the users hobby')
+                item: new StringSchema('hobby', 'the users hobby')
             ),
-            new ObjectParameter(
+            new ObjectSchema(
                 name: 'address',
                 description: 'the users address',
                 properties: [
-                    new StringParameter('street', 'the street part of the address'),
-                    new StringParameter('city', 'the city part of the address'),
-                    new StringParameter('country', 'the country part of the address'),
-                    new NumberParameter('zip', 'the zip code part of the address'),
+                    new StringSchema('street', 'the street part of the address'),
+                    new StringSchema('city', 'the city part of the address'),
+                    new StringSchema('country', 'the country part of the address'),
+                    new NumberSchema('zip', 'the zip code part of the address'),
                 ],
                 requiredFields: ['street', 'city', 'country', 'zip']
             ),

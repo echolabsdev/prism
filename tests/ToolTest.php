@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Tests;
 
 use EchoLabs\Prism\Facades\Tool as ToolFacade;
+use EchoLabs\Prism\Schema\BooleanSchema;
+use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Tool;
-use EchoLabs\Prism\ValueObjects\Parameters\BooleanParameter;
-use EchoLabs\Prism\ValueObjects\Parameters\StringParameter;
 
 it('can return tool details', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter(new StringParameter('query', 'the search query'))
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -36,7 +36,7 @@ it('can use a closure', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter(new StringParameter('query', 'the search query'))
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -51,7 +51,7 @@ it('can use a closure', function (): void {
 it('can be used via facade', function (): void {
     $searchTool = ToolFacade::as('search')
         ->for('useful for searching current data')
-        ->withParameter(new StringParameter('query', 'the search query'))
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -77,7 +77,7 @@ it('can use an invokeable', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter(new StringParameter('query', 'the search query'))
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using($fn);
 
     expect($searchTool->handle('What time is the event?'))
@@ -94,15 +94,15 @@ it('can have fluent parameters', function (): void {
         ->withArrayParameter(
             name: 'items',
             description: 'user requested items',
-            items: new StringParameter('itemm', 'an item that the user requested'),
+            items: new StringSchema('itemm', 'an item that the user requested'),
         )
         ->withEnumParameter('status', 'the status', ['active', 'inactive'])
         ->withObjectParameter(
             name: 'user',
             description: 'the user object',
             properties: [
-                new StringParameter('name', 'the users name'),
-                new BooleanParameter('active_status', 'user active status'),
+                new StringSchema('name', 'the users name'),
+                new BooleanSchema('active_status', 'user active status'),
             ],
             requiredFields: [
                 'name',
