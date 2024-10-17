@@ -17,13 +17,7 @@ class Tool extends ProviderTool
             'description' => $tool->description(),
             'input_schema' => [
                 'type' => 'object',
-                'properties' => collect($tool->parameters())
-                    ->keyBy('name')
-                    ->map(fn (array $field): array => [
-                        'description' => $field['description'],
-                        'type' => $field['type'],
-                    ])
-                    ->toArray(),
+                'properties' => $tool->parameters(),
                 'required' => $tool->requiredParameters(),
             ],
         ];

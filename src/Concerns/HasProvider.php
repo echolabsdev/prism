@@ -11,7 +11,7 @@ trait HasProvider
 {
     protected Provider $provider;
 
-    public function using(ProviderEnum|string $provider, string $model): self
+    public function using(string|ProviderEnum $provider, string $model): self
     {
         $this->provider = app('prism-manager')->resolve($provider);
         $this->provider->usingModel($model);

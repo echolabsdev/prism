@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Tests;
 
 use EchoLabs\Prism\Facades\Tool as ToolFacade;
+use EchoLabs\Prism\Schema\BooleanSchema;
+use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Tool;
 
 it('can return tool details', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -21,11 +23,9 @@ it('can return tool details', function (): void {
     expect($searchTool->name())->toBe('search');
     expect($searchTool->description())->toBe('useful for searching current data');
     expect($searchTool->parameters())->toBe([
-        [
-            'name' => 'query',
+        'query' => [
             'description' => 'the search query',
             'type' => 'string',
-            'required' => true,
         ],
     ]);
 
@@ -36,7 +36,7 @@ it('can use a closure', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -51,7 +51,7 @@ it('can use a closure', function (): void {
 it('can be used via facade', function (): void {
     $searchTool = ToolFacade::as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using(function (string $query): string {
             expect($query)->toBe('What time is the event?');
 
@@ -77,9 +77,52 @@ it('can use an invokeable', function (): void {
     $searchTool = (new Tool)
         ->as('search')
         ->for('useful for searching current data')
-        ->withParameter('query', 'the search query')
+        ->withParameter(new StringSchema('query', 'the search query'))
         ->using($fn);
 
     expect($searchTool->handle('What time is the event?'))
         ->toBe('The event is at 3pm eastern');
+});
+
+it('can have fluent parameters', function (): void {
+    $tool = (new Tool)
+        ->as('test tool')
+        ->for('not really useful for anything')
+        ->withStringParameter(name: 'query', description: 'the search query', required: false)
+        ->withNumberParameter('age', 'the users age')
+        ->withBooleanParameter('active', 'active status')
+        ->withArrayParameter(
+            name: 'items',
+            description: 'user requested items',
+            items: new StringSchema('itemm', 'an item that the user requested'),
+        )
+        ->withEnumParameter('status', 'the status', ['active', 'inactive'])
+        ->withObjectParameter(
+            name: 'user',
+            description: 'the user object',
+            properties: [
+                new StringSchema('name', 'the users name'),
+                new BooleanSchema('active_status', 'user active status'),
+            ],
+            requiredFields: [
+                'name',
+            ]
+        );
+
+    $keys = [
+        'query',
+        'age',
+        'active',
+        'items',
+        'status',
+        'user',
+    ];
+
+    expect($tool->parameters())->toHaveKeys($keys);
+
+    collect($keys)->each(function ($key) use ($tool): void {
+        expect($tool->parameters()[$key])->not->toBeEmpty();
+    });
+
+    expect($tool->requiredParameters())->not->toContain('query');
 });
