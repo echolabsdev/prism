@@ -21,7 +21,7 @@ class Mistral implements Provider
 
     public function __construct(
         public readonly string $url,
-        public readonly ?string $apiKey,
+        public readonly string $apiKey,
     ) {
         $this->client = new Client(
             url: $this->url,

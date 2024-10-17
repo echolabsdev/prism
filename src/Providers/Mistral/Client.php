@@ -14,10 +14,10 @@ class Client
 
     public function __construct(
         public readonly string $url,
-        public readonly ?string $apiKey,
+        public readonly string $apiKey,
     ) {
         $this->client = Http::withHeaders(array_filter([
-            'Authorization' => $this->apiKey ? sprintf('Bearer %s', $this->apiKey) : null,
+            'Authorization' => sprintf('Bearer %s', $this->apiKey),
         ]))->baseUrl($this->url);
     }
 

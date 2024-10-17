@@ -88,7 +88,7 @@ class PrismManager
     protected function createMistralProvider(array $config): Mistral
     {
         return new Mistral(
-            apiKey: $config['api_key'] ?? '',
+            apiKey: $config['api_key'],
             url: $config['url'],
         );
     }
