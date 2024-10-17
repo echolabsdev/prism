@@ -8,6 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 use Illuminate\Contracts\Foundation\Application;
@@ -77,6 +78,17 @@ class PrismManager
     {
         return new Ollama(
             apiKey: $config['api_key'] ?? '',
+            url: $config['url'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createMistralProvider(array $config): Mistral
+    {
+        return new Mistral(
+            apiKey: $config['api_key'],
             url: $config['url'],
         );
     }
