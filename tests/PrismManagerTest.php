@@ -7,6 +7,7 @@ namespace Tests;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
 
@@ -29,4 +30,11 @@ it('can resolve OpenAI', function (): void {
 
     expect($manager->resolve(Provider::OpenAI))->toBeInstanceOf(OpenAI::class);
     expect($manager->resolve('openai'))->toBeInstanceOf(OpenAI::class);
+});
+
+it('can resolve Mistral', function (): void {
+    $manager = new PrismManager($this->app);
+
+    expect($manager->resolve(Provider::Mistral))->toBeInstanceOf(Mistral::class);
+    expect($manager->resolve('mistral'))->toBeInstanceOf(Mistral::class);
 });
