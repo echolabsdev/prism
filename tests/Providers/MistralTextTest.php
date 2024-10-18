@@ -9,7 +9,7 @@ use EchoLabs\Prism\Prism;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
-    config()->set('prism.providers.mistral.api_key', env('MISTRAL_API_KEY'));
+    config()->set('prism.providers.mistral.api_key', env('MISTRAL_API_KEY', 'sk-1234'));
 });
 
 it('can generate text with a prompt', function (): void {
