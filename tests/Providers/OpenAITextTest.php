@@ -19,7 +19,8 @@ it('can generate text with a prompt', function (): void {
 
     $response = Prism::text()
         ->using('openai', 'gpt-4')
-        ->withPrompt('Who are you?')();
+        ->withPrompt('Who are you?')
+        ->generate();
 
     expect($response->usage->promptTokens)->toBe(11);
     expect($response->usage->completionTokens)->toBe(67);

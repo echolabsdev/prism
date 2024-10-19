@@ -18,4 +18,9 @@ trait HasProvider
 
         return $this;
     }
+
+    public function provider(): Provider
+    {
+        return $this->provider;
+    }
 }

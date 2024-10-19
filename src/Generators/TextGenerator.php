@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Generators;
 
+use Closure;
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
 use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -57,9 +57,11 @@ class TextGenerator
         return $this->generate();
     }
 
-    public function provider(): Provider
+    public function withProviderCustomizations(Closure $fn): self
     {
-        return $this->provider;
+        $fn($this->provider);
+
+        return $this;
     }
 
     public function withPrompt(string|View $prompt): self

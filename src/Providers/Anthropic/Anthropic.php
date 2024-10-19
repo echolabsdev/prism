@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic;
 
+use EchoLabs\Prism\Concerns\HasClientOptions;
+use EchoLabs\Prism\Concerns\HasModel;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
@@ -15,33 +17,27 @@ use Throwable;
 
 class Anthropic implements Provider
 {
-    protected Client $client;
-
-    protected string $model;
+    use HasClientOptions, HasModel;
 
     public function __construct(
         public readonly string $apiKey,
         public readonly string $apiVersion,
-    ) {
-        $this->client = new Client(
-            $this->apiKey,
-            $this->apiVersion,
-        );
-    }
+    ) {}
 
-    #[\Override]
-    public function usingModel(string $model): self
+    protected function client(): Client
     {
-        $this->model = $model;
-
-        return $this;
+        return new Client(
+            apiKey: $this->apiKey,
+            apiVersion: $this->apiVersion,
+            options: $this->clientOptions,
+        );
     }
 
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
         try {
-            $response = $this->client->messages(
+            $response = $this->client()->messages(
                 model: $this->model,
                 systemPrompt: $request->systemPrompt,
                 messages: (new MessageMap($request->messages))(),
