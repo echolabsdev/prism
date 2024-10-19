@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\ValueObjects\ImageCall;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ImageCall;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
 
@@ -77,6 +79,25 @@ class MessageMap
 
     protected function mapUserMessage(UserMessage $message): void
     {
+        if ($message->hasImages()) {
+            $this->mappedMessages[] = [
+                'role' => 'user',
+                'content' => [
+                    ...array_map(fn (ImageCall $image) => [
+                        'type' => 'image_url',
+                        'image_url' => [
+                            'url' => $image->url,
+                        ],
+                    ], $message->images),
+                    [
+                        'type' => 'text',
+                        'text' => $message->content(),
+                    ],
+                ],
+            ];
+            return;
+        }
+
         $this->mappedMessages[] = [
             'role' => 'user',
             'content' => $message->content(),
