@@ -36,7 +36,8 @@
     "rector/rector": "^1.1",
     "projektgopher/whisky": "^0.7.0",
     "orchestra/testbench": "^9.4",
-    "mockery/mockery": "^1.6"
+    "mockery/mockery": "^1.6",
+    "symplify/rule-doc-generator-contracts": "^11.2"
   },
   "autoload-dev": {
     "psr-4": {
@@ -57,15 +58,12 @@
       "@clear",
       "@prepare"
     ],
-    "phpstan": [
-      "phpstan analyse -c phpstan.neon.dist"
-    ],
     "format": [
-      "pint",
-      "rector process --no-diffs"
+      "@php vendor/bin/pint --ansi",
+      "@php vendor/bin/rector process --no-diffs"
     ],
     "test": [
-      "@php vendor/bin/pest"
+      "@php vendor/bin/pest --parallel"
     ],
     "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
     "prepare": "@php vendor/bin/testbench package:discover --ansi",
@@ -75,12 +73,8 @@
       "@build",
       "@php vendor/bin/testbench serve --ansi"
     ],
-    "lint": [
-      "@php vendor/bin/pint --ansi",
+    "types": [
       "@php vendor/bin/phpstan analyse --verbose --ansi"
-    ],
-    "toc": [
-      "markdown-toc -i README.md"
     ]
   },
   "extra": {

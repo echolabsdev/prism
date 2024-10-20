@@ -12,14 +12,20 @@ class Client
 {
     protected PendingRequest $client;
 
+    /**
+     * @param  array<string, mixed>  $options
+     */
     public function __construct(
         public readonly string $apiKey,
         public readonly string $apiVersion,
+        public readonly array $options = [],
     ) {
         $this->client = Http::withHeaders([
             'x-api-key' => $this->apiKey,
             'anthropic-version' => $this->apiVersion,
-        ])->baseUrl('https://api.anthropic.com/v1');
+        ])
+            ->withOptions($this->options)
+            ->baseUrl('https://api.anthropic.com/v1');
     }
 
     /**

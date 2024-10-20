@@ -31,14 +31,10 @@ class PrismManager
     {
         $name = $this->resolveName($name);
 
-        $config = $this->getConfig($name);
-
-        if (is_null($config)) {
-            throw new InvalidArgumentException("Provider [{$name}] config is not defined.");
-        }
+        $config = $this->getConfig($name) ?? [];
 
         if (isset($this->customCreators[$name])) {
-            return $this->callCustomCreator($config);
+            return $this->callCustomCreator($name, $config);
         }
 
         $factory = sprintf('create%sProvider', ucfirst($name));
@@ -48,6 +44,22 @@ class PrismManager
         }
 
         throw new InvalidArgumentException("Provider [{$name}] is not supported.");
+    }
+
+    /**
+     * @throws RuntimeException
+     */
+    public function extend(string $provider, Closure $callback): self
+    {
+        if (($callback = $callback->bindTo($this, $this)) instanceof \Closure) {
+            $this->customCreators[$provider] = $callback;
+
+            return $this;
+        }
+
+        throw new RuntimeException(
+            sprintf('Couldn\'t bind %s', $provider)
+        );
     }
 
     protected function resolveName(ProviderEnum|string $name): string
@@ -107,25 +119,9 @@ class PrismManager
     /**
      * @param  array<string, mixed>  $config
      */
-    protected function callCustomCreator(array $config): Provider
+    protected function callCustomCreator(string $provider, array $config): Provider
     {
-        return $this->customCreators[$config['driver']]($this->app, $config);
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    public function extend(string $driver, Closure $callback): self
-    {
-        if (($callback = $callback->bindTo($this, $this)) instanceof \Closure) {
-            $this->customCreators[$driver] = $callback;
-
-            return $this;
-        }
-
-        throw new RuntimeException(
-            sprintf('Couldn\'t bind %s', $driver)
-        );
+        return $this->customCreators[$provider]($this->app, $config);
     }
 
     /**

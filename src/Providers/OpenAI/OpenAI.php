@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\OpenAI;
 
+use EchoLabs\Prism\Concerns\HasClientOptions;
+use EchoLabs\Prism\Concerns\HasModel;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
@@ -15,35 +17,21 @@ use Throwable;
 
 class OpenAI implements Provider
 {
-    protected Client $client;
+    use HasClientOptions, HasModel;
 
-    protected string $model;
+    protected Client $client;
 
     public function __construct(
         public readonly string $apiKey,
         public readonly string $url,
         public readonly ?string $organization,
-    ) {
-        $this->client = new Client(
-            apiKey: $this->apiKey,
-            url: $this->url,
-            organization: $this->organization,
-        );
-    }
-
-    #[\Override]
-    public function usingModel(string $model): self
-    {
-        $this->model = $model;
-
-        return $this;
-    }
+    ) {}
 
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
         try {
-            $response = $this->client->messages(
+            $response = $this->client()->messages(
                 model: $this->model,
                 messages: (new MessageMap(
                     $request->messages,
@@ -88,6 +76,16 @@ class OpenAI implements Provider
                 'id' => data_get($data, 'id'),
                 'model' => data_get($data, 'model'),
             ]
+        );
+    }
+
+    protected function client(): Client
+    {
+        return new Client(
+            apiKey: $this->apiKey,
+            url: $this->url,
+            organization: $this->organization,
+            options: $this->clientOptions,
         );
     }
 

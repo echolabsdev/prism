@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use EchoLabs\Prism\Rectors\ReorderMethodsRector;
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
@@ -15,6 +16,7 @@ return RectorConfig::configure()
     ])
     ->withRules([
         InlineConstructorDefaultToPropertyRector::class,
+        ReorderMethodsRector::class,
     ])
     ->withSets([
         LevelSetList::UP_TO_PHP_83,

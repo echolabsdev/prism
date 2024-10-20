@@ -12,13 +12,19 @@ class Client
 {
     protected PendingRequest $client;
 
+    /**
+     * @param  array<string, mixed>  $options
+     */
     public function __construct(
         public readonly string $url,
         public readonly string $apiKey,
+        public readonly array $options = [],
     ) {
         $this->client = Http::withHeaders(array_filter([
             'Authorization' => sprintf('Bearer %s', $this->apiKey),
-        ]))->baseUrl($this->url);
+        ]))
+            ->withOptions($this->options)
+            ->baseUrl($this->url);
     }
 
     /**

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Generators;
 
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
+use EchoLabs\Prism\Concerns\HasClientOptions;
 use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -25,7 +25,7 @@ use Illuminate\Contracts\View\View;
 
 class TextGenerator
 {
-    use HandlesToolCalls, HasProvider;
+    use HandlesToolCalls, HasClientOptions, HasProvider;
 
     protected ?string $prompt = null;
 
@@ -55,11 +55,6 @@ class TextGenerator
     public function __invoke(): TextResponse
     {
         return $this->generate();
-    }
-
-    public function provider(): Provider
-    {
-        return $this->provider;
     }
 
     public function withPrompt(string|View $prompt): self
@@ -171,7 +166,10 @@ class TextGenerator
 
     protected function sendProviderRequest(): ProviderResponse
     {
-        $response = $this->provider->text($this->textRequest());
+        $response = $this
+            ->provider
+            ->withClientOptions($this->clientOptions)
+            ->text($this->textRequest());
 
         $this->state->addResponseMessage(
             new AssistantMessage(
