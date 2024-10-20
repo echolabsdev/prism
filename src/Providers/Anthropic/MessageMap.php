@@ -9,6 +9,7 @@ use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ImageCall;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
@@ -62,6 +63,26 @@ class MessageMap
      */
     protected function mapUserMessage(UserMessage $message): array
     {
+        if ($message->hasImages()) {
+            return [
+                'role' => 'user',
+                'content' => [
+                    ...array_map(fn (ImageCall $image) => [
+                        'type' => 'image',
+                        'source' => [
+                            'type' => 'base64',
+                            'media_type' => $image->fileType,
+                            'data' => $image->url,
+                        ],
+                    ], $message->images),
+                    [
+                        'type' => 'text',
+                        'text' => $message->content(),
+                    ],
+                ],
+            ];
+        }
+
         return [
             'role' => 'user',
             'content' => $message->content(),
