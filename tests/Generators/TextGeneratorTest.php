@@ -9,7 +9,6 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Generators\TextGenerator;
-use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -20,28 +19,52 @@ use EchoLabs\Prism\ValueObjects\Usage;
 use Mockery;
 
 it('correctly resolves a driver', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel')
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
+    resolve('prism-manager')->extend('test', fn () => $provider);
+
+    (new TextGenerator)->using('test', 'claude-3-5-sonnet-20240620');
+});
+
+it('allows for client options', function (): void {
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('withClientOptions')
+        ->with(['timeout' => '100'])
+        ->andReturnSelf();
+
+    $provider->expects('usingModel')
         ->once()
-        ->andReturns($driver);
+        ->with('claude-3-5-sonnet-20240620');
 
-    $this->swap('prism-manager', $manager);
+    $provider->expects('text')->andReturn(new ProviderResponse(
+        text: "I'm nyx!",
+        toolCalls: [],
+        usage: new Usage(10, 10),
+        finishReason: FinishReason::Stop,
+        response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+    ));
 
-    (new TextGenerator)->using('anthropic', 'claude-3-5-sonnet-20240620');
+    resolve('prism-manager')->extend('test', fn () => $provider);
+
+    (new TextGenerator)
+        ->using('test', 'claude-3-5-sonnet-20240620')
+        ->withClientOptions(['timeout' => '100'])
+        ->generate();
 });
 
 it('correctly builds requests', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel')
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
-    $driver->expects('text')
+    $provider->expects('withClientOptions')
+        ->andReturnSelf();
+
+    $provider->expects('text')
         ->once()
         ->withArgs(function (TextRequest $request): true {
             expect($request->systemPrompt)->toBe(
@@ -64,15 +87,10 @@ it('correctly builds requests', function (): void {
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         ));
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
-        ->once()
-        ->andReturns($driver);
-
-    $this->swap('prism-manager', $manager);
+    resolve('prism-manager')->extend('test', fn () => $provider);
 
     (new TextGenerator)
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using('test', 'claude-3-5-sonnet-20240620')
         ->withMaxTokens(500)
         ->usingTopP(0.8)
         ->usingTemperature(1)
@@ -81,12 +99,16 @@ it('correctly builds requests', function (): void {
 });
 
 it('correctly builds requests with messages', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel')
+    $provider = Mockery::mock(Provider::class);
+
+    $provider->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
-    $driver->expects('text')
+    $provider->expects('withClientOptions')
+        ->andReturnSelf();
+
+    $provider->expects('text')
         ->once()
         ->withArgs(function (TextRequest $request): true {
             expect($request->systemPrompt)->toBe(
@@ -105,15 +127,10 @@ it('correctly builds requests with messages', function (): void {
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         ));
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
-        ->once()
-        ->andReturns($driver);
-
-    $this->swap('prism-manager', $manager);
+    resolve('prism-manager')->extend('test', fn () => $provider);
 
     (new TextGenerator)
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using('test', 'claude-3-5-sonnet-20240620')
         ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withMessages([
             new UserMessage('Who are you?'),
@@ -121,12 +138,15 @@ it('correctly builds requests with messages', function (): void {
 });
 
 it('correctly generates a request with tools', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel')
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
-    $driver->expects('text')
+    $provider->expects('withClientOptions')
+        ->andReturnSelf();
+
+    $provider->expects('text')
         ->once()
         ->withArgs(function (TextRequest $request): true {
             expect($request->tools)->toHaveCount(1);
@@ -142,12 +162,7 @@ it('correctly generates a request with tools', function (): void {
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         ));
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
-        ->once()
-        ->andReturns($driver);
-
-    $this->swap('prism-manager', $manager);
+    resolve('prism-manager')->extend('test', fn () => $provider);
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
@@ -155,18 +170,21 @@ it('correctly generates a request with tools', function (): void {
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
     (new TextGenerator)
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withTools([$tool])();
 });
 
 it('generates a response from the driver', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel')
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
-    $driver->expects('text')
+    $provider->expects('withClientOptions')
+        ->andReturnSelf();
+
+    $provider->expects('text')
         ->once()
         ->andReturn(new ProviderResponse(
             text: "I'm nyx!",
@@ -176,15 +194,10 @@ it('generates a response from the driver', function (): void {
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         ));
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
-        ->once()
-        ->andReturns($driver);
-
-    $this->swap('prism-manager', $manager);
+    resolve('prism-manager')->extend('test', fn () => $provider);
 
     $response = (new TextGenerator)
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')();
 
     // Assert response
@@ -228,12 +241,15 @@ it('generates a response from the driver', function (): void {
 });
 
 it('generates a response from the driver with tools and max steps', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel')
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('usingModel')
         ->once()
         ->with('claude-3-5-sonnet-20240620');
 
-    $driver->expects('text')
+    $provider->expects('withClientOptions')
+        ->andReturnSelf();
+
+    $provider->expects('text')
         ->andReturn(new ProviderResponse(
             text: '',
             toolCalls: [
@@ -250,12 +266,7 @@ it('generates a response from the driver with tools and max steps', function ():
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         ));
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
-        ->once()
-        ->andReturns($driver);
-
-    $this->swap('prism-manager', $manager);
+    resolve('prism-manager')->extend('test', fn () => $provider);
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
@@ -263,7 +274,7 @@ it('generates a response from the driver with tools and max steps', function ():
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
     $response = (new TextGenerator)
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withTools([$tool])();
 
@@ -290,8 +301,12 @@ it('generates a response from the driver with tools and max steps', function ():
 });
 
 it('correctly stops using max steps', function (): void {
-    $driver = Mockery::mock(Provider::class);
-    $driver->expects('usingModel');
+    $provider = Mockery::mock(Provider::class);
+    $provider->expects('usingModel');
+
+    $provider->expects('withClientOptions')
+        ->zeroOrMoreTimes()
+        ->andReturnSelf();
 
     $toolResponse = new ProviderResponse(
         text: '',
@@ -317,19 +332,14 @@ it('correctly stops using max steps', function (): void {
         response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
     );
 
-    $driver->expects('text')
+    $provider->expects('text')
         ->twice()
         ->andReturns(
             $toolResponse,
             $finalResponse,
         );
 
-    $manager = Mockery::mock(PrismManager::class);
-    $manager->expects('resolve')
-        ->once()
-        ->andReturns($driver);
-
-    $this->swap('prism-manager', $manager);
+    resolve('prism-manager')->extend('test', fn () => $provider);
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
@@ -337,7 +347,7 @@ it('correctly stops using max steps', function (): void {
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
     $response = (new TextGenerator)
-        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withMaxSteps(3) // more steps than necessary asserting that stops based on finish reason
         ->withTools([$tool])();
