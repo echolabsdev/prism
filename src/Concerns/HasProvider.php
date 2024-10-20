@@ -4,18 +4,24 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Concerns;
 
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Enums\Provider as ProviderEnum;
+use EchoLabs\Prism\Enums\Provider;
 
 trait HasProvider
 {
-    protected Provider $provider;
+    protected string $provider;
 
-    public function using(string|ProviderEnum $provider, string $model): self
+    protected string $model;
+
+    public function using(string|Provider $provider, string $model): self
     {
-        $this->provider = app('prism-manager')->resolve($provider);
-        $this->provider->usingModel($model);
+        $this->provider = is_string($provider) ? $provider : $provider->value;
+        $this->model = $model;
 
         return $this;
+    }
+
+    public function provider(): string
+    {
+        return $this->provider;
     }
 }

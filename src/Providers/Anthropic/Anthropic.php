@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic;
 
-use EchoLabs\Prism\Concerns\HasClientOptions;
-use EchoLabs\Prism\Concerns\HasModel;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
@@ -17,8 +15,6 @@ use Throwable;
 
 class Anthropic implements Provider
 {
-    use HasClientOptions, HasModel;
-
     public function __construct(
         public readonly string $apiKey,
         public readonly string $apiVersion,
@@ -28,17 +24,19 @@ class Anthropic implements Provider
     public function text(TextRequest $request): ProviderResponse
     {
         try {
-            $response = $this->client()->messages(
-                model: $this->model,
-                systemPrompt: $request->systemPrompt,
-                messages: (new MessageMap($request->messages))(),
-                maxTokens: $request->maxTokens,
-                temperature: $request->temperature,
-                topP: $request->topP,
-                tools: Tool::map($request->tools),
-            );
+            $response = $this
+                ->client($request->clientOptions)
+                ->messages(
+                    model: $request->model,
+                    systemPrompt: $request->systemPrompt,
+                    messages: (new MessageMap($request->messages))(),
+                    maxTokens: $request->maxTokens,
+                    temperature: $request->temperature,
+                    topP: $request->topP,
+                    tools: Tool::map($request->tools),
+                );
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($this->model, $e);
+            throw PrismException::providerRequestError($request->model, $e);
         }
 
         $data = $response->json();
@@ -85,12 +83,15 @@ class Anthropic implements Provider
         );
     }
 
-    protected function client(): Client
+    /**
+     * @param  array<string, mixed>  $options
+     */
+    protected function client(array $options = []): Client
     {
         return new Client(
             apiKey: $this->apiKey,
             apiVersion: $this->apiVersion,
-            options: $this->clientOptions,
+            options: $options,
         );
     }
 
