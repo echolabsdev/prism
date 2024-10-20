@@ -24,15 +24,6 @@ class Anthropic implements Provider
         public readonly string $apiVersion,
     ) {}
 
-    protected function client(): Client
-    {
-        return new Client(
-            apiKey: $this->apiKey,
-            apiVersion: $this->apiVersion,
-            options: $this->clientOptions,
-        );
-    }
-
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
@@ -91,6 +82,15 @@ class Anthropic implements Provider
                 'id' => data_get($data, 'id'),
                 'model' => data_get($data, 'model'),
             ]
+        );
+    }
+
+    protected function client(): Client
+    {
+        return new Client(
+            apiKey: $this->apiKey,
+            apiVersion: $this->apiVersion,
+            options: $this->clientOptions,
         );
     }
 

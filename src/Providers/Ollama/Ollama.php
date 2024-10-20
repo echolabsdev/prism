@@ -24,15 +24,6 @@ class Ollama implements Provider
         public readonly ?string $apiKey,
     ) {}
 
-    protected function client(): Client
-    {
-        return new Client(
-            url: $this->url,
-            apiKey: $this->apiKey,
-            options: $this->clientOptions,
-        );
-    }
-
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
@@ -82,6 +73,15 @@ class Ollama implements Provider
                 'id' => data_get($data, 'id'),
                 'model' => data_get($data, 'model'),
             ]
+        );
+    }
+
+    protected function client(): Client
+    {
+        return new Client(
+            url: $this->url,
+            apiKey: $this->apiKey,
+            options: $this->clientOptions,
         );
     }
 

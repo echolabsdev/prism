@@ -46,6 +46,22 @@ class PrismManager
         throw new InvalidArgumentException("Provider [{$name}] is not supported.");
     }
 
+    /**
+     * @throws RuntimeException
+     */
+    public function extend(string $provider, Closure $callback): self
+    {
+        if (($callback = $callback->bindTo($this, $this)) instanceof \Closure) {
+            $this->customCreators[$provider] = $callback;
+
+            return $this;
+        }
+
+        throw new RuntimeException(
+            sprintf('Couldn\'t bind %s', $provider)
+        );
+    }
+
     protected function resolveName(ProviderEnum|string $name): string
     {
         if ($name instanceof ProviderEnum) {
@@ -106,22 +122,6 @@ class PrismManager
     protected function callCustomCreator(string $provider, array $config): Provider
     {
         return $this->customCreators[$provider]($this->app, $config);
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    public function extend(string $provider, Closure $callback): self
-    {
-        if (($callback = $callback->bindTo($this, $this)) instanceof \Closure) {
-            $this->customCreators[$provider] = $callback;
-
-            return $this;
-        }
-
-        throw new RuntimeException(
-            sprintf('Couldn\'t bind %s', $provider)
-        );
     }
 
     /**

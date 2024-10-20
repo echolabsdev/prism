@@ -27,16 +27,6 @@ class OpenAI implements Provider
         public readonly ?string $organization,
     ) {}
 
-    protected function client(): Client
-    {
-        return new Client(
-            apiKey: $this->apiKey,
-            url: $this->url,
-            organization: $this->organization,
-            options: $this->clientOptions,
-        );
-    }
-
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
@@ -86,6 +76,16 @@ class OpenAI implements Provider
                 'id' => data_get($data, 'id'),
                 'model' => data_get($data, 'model'),
             ]
+        );
+    }
+
+    protected function client(): Client
+    {
+        return new Client(
+            apiKey: $this->apiKey,
+            url: $this->url,
+            organization: $this->organization,
+            options: $this->clientOptions,
         );
     }
 

@@ -36,7 +36,8 @@
     "rector/rector": "^1.1",
     "projektgopher/whisky": "^0.7.0",
     "orchestra/testbench": "^9.4",
-    "mockery/mockery": "^1.6"
+    "mockery/mockery": "^1.6",
+    "symplify/rule-doc-generator-contracts": "^11.2"
   },
   "autoload-dev": {
     "psr-4": {
