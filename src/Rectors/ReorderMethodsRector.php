@@ -9,7 +9,7 @@ use Rector\Rector\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
-final class ReorderMethodsRector extends AbstractRector
+class ReorderMethodsRector extends AbstractRector
 {
     #[\Override]
     public function getNodeTypes(): array
@@ -96,14 +96,14 @@ CODE_SAMPLE
         );
     }
 
-    private function reorderMethods(array $methods): array
+    protected function reorderMethods(array $methods): array
     {
         usort($methods, fn (ClassMethod $a, ClassMethod $b): int => $this->getMethodWeight($a) <=> $this->getMethodWeight($b));
 
         return $methods;
     }
 
-    private function getMethodWeight(ClassMethod $method): int
+    protected function getMethodWeight(ClassMethod $method): int
     {
         if ($this->isMagicMethod($method)) {
             return 0;
@@ -120,7 +120,7 @@ CODE_SAMPLE
         return 3; // private
     }
 
-    private function isMagicMethod(ClassMethod $method): bool
+    protected function isMagicMethod(ClassMethod $method): bool
     {
         return str_starts_with($method->name->toString(), '__');
     }
