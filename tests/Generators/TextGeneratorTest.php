@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Generators;
 
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Generators\TextGenerator;
+use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
@@ -19,30 +21,43 @@ use Tests\TestDoubles\TestProvider;
 it('correctly resolves a provider', function (): void {
     $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    (new TextGenerator)->using('test', 'claude-3-5-sonnet-20240620');
+    $response = (new TextGenerator)
+        ->using('test', 'claude-3-5-sonnet-20240620')
+        ->generate();
 
-    expect($provider->model)->toBe('claude-3-5-sonnet-20240620');
+    expect($response->text)->toBe("I'm nyx!");
 });
 
 it('allows for client options', function (): void {
     $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withClientOptions(['timeout' => '100'])
         ->generate();
 
-    expect($provider->clientOptions)->toBe(['timeout' => '100']);
+    expect($provider->request->clientOptions)->toBe(['timeout' => '100']);
+});
+
+it('allows for provider string or enum', function (): void {
+    $provider = new TestProvider;
+
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+
+    expect((new TextGenerator)->using('test', 'claude-3-5-sonnet-20240620')->provider())
+        ->toBe('test');
+    expect((new TextGenerator)->using(Provider::Anthropic, 'claude-3-5-sonnet-20240620')->provider())
+        ->toBe(Provider::Anthropic->value);
 });
 
 it('correctly builds requests', function (): void {
     $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
@@ -67,7 +82,7 @@ it('correctly builds requests', function (): void {
 it('correctly builds requests with messages', function (): void {
     $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
@@ -86,7 +101,7 @@ it('correctly builds requests with messages', function (): void {
 it('correctly generates a request with tools', function (): void {
     $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
@@ -105,7 +120,7 @@ it('correctly generates a request with tools', function (): void {
 it('generates a response from the provider', function (): void {
     $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     $response = (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
@@ -170,7 +185,7 @@ it('generates a response from the driver with tools and max steps', function ():
         response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
     ));
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')
@@ -232,7 +247,7 @@ it('correctly stops using max steps', function (): void {
         ),
     ]);
 
-    resolve('prism-manager')->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
     $tool = Tool::as('weather')
         ->for('useful when you need to search for current weather conditions')

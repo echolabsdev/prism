@@ -10,6 +10,7 @@ use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\Responses\TextResponse;
@@ -166,9 +167,8 @@ class TextGenerator
 
     protected function sendProviderRequest(): ProviderResponse
     {
-        $response = $this
-            ->provider
-            ->withClientOptions($this->clientOptions)
+        $response = resolve(PrismManager::class)
+            ->resolve($this->provider)
             ->text($this->textRequest());
 
         $this->state->addResponseMessage(
@@ -184,12 +184,14 @@ class TextGenerator
     protected function textRequest(): TextRequest
     {
         return new TextRequest(
+            model: $this->model,
             systemPrompt: $this->systemPrompt,
             messages: $this->state->messages()->toArray(),
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
             topP: $this->topP,
             tools: $this->tools,
+            clientOptions: $this->clientOptions,
         );
     }
 

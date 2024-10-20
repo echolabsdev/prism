@@ -9,12 +9,5 @@ use EchoLabs\Prism\Requests\TextRequest;
 
 interface Provider
 {
-    public function usingModel(string $model): Provider;
-
     public function text(TextRequest $request): ProviderResponse;
-
-    /**
-     * @param  array<string, mixed>  $options
-     */
-    public function withClientOptions(array $options): Provider;
 }

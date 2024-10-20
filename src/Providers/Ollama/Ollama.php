@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Ollama;
 
-use EchoLabs\Prism\Concerns\HasClientOptions;
-use EchoLabs\Prism\Concerns\HasModel;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
@@ -17,8 +15,6 @@ use Throwable;
 
 class Ollama implements Provider
 {
-    use HasClientOptions, HasModel;
-
     public function __construct(
         public readonly string $url,
         public readonly ?string $apiKey,
@@ -28,19 +24,21 @@ class Ollama implements Provider
     public function text(TextRequest $request): ProviderResponse
     {
         try {
-            $response = $this->client()->messages(
-                model: $this->model,
-                messages: (new MessageMap(
-                    $request->messages,
-                    $request->systemPrompt ?? '',
-                ))(),
-                maxTokens: $request->maxTokens,
-                temperature: $request->temperature,
-                topP: $request->topP,
-                tools: Tool::map($request->tools),
-            );
+            $response = $this
+                ->client($request->clientOptions)
+                ->messages(
+                    model: $request->model,
+                    messages: (new MessageMap(
+                        $request->messages,
+                        $request->systemPrompt ?? '',
+                    ))(),
+                    maxTokens: $request->maxTokens,
+                    temperature: $request->temperature,
+                    topP: $request->topP,
+                    tools: Tool::map($request->tools),
+                );
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($this->model, $e);
+            throw PrismException::providerRequestError($request->model, $e);
         }
 
         $data = $response->json();
@@ -55,15 +53,9 @@ class Ollama implements Provider
             ));
         }
 
-        $toolCalls = array_map(fn (array $toolCall): ToolCall => new ToolCall(
-            id: data_get($toolCall, 'id'),
-            name: data_get($toolCall, 'function.name'),
-            arguments: data_get($toolCall, 'function.arguments'),
-        ), data_get($data, 'choices.0.message.tool_calls', []));
-
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: $toolCalls,
+            toolCalls: $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', [])),
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
@@ -76,12 +68,28 @@ class Ollama implements Provider
         );
     }
 
-    protected function client(): Client
+    /**
+     * @param  array<int, array<string, mixed>>  $toolCalls
+     * @return array<int, ToolCall>
+     */
+    protected function mapToolCalls(array $toolCalls): array
+    {
+        return array_map(fn (array $toolCall): ToolCall => new ToolCall(
+            id: data_get($toolCall, 'id'),
+            name: data_get($toolCall, 'function.name'),
+            arguments: data_get($toolCall, 'function.arguments'),
+        ), $toolCalls);
+    }
+
+    /**
+     * @param  array<string, mixed>  $options
+     */
+    protected function client(array $options = []): Client
     {
         return new Client(
             url: $this->url,
             apiKey: $this->apiKey,
-            options: $this->clientOptions,
+            options: $options,
         );
     }
 
