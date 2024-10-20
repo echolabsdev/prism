@@ -96,6 +96,10 @@ CODE_SAMPLE
         );
     }
 
+    /**
+     * @param  array<int, ClassMethod>  $methods
+     * @return array<int, ClassMethod>
+     */
     protected function reorderMethods(array $methods): array
     {
         usort($methods, fn (ClassMethod $a, ClassMethod $b): int => $this->getMethodWeight($a) <=> $this->getMethodWeight($b));
