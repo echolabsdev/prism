@@ -15,10 +15,4 @@ class ToolResultMessage implements Message
     public function __construct(
         public readonly array $toolResults
     ) {}
-
-    #[\Override]
-    public function content(): string
-    {
-        return '';
-    }
 }

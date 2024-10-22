@@ -9,12 +9,6 @@ use EchoLabs\Prism\Contracts\Message;
 class SystemMessage implements Message
 {
     public function __construct(
-        protected readonly string $content,
+        public readonly string $content,
     ) {}
-
-    #[\Override]
-    public function content(): string
-    {
-        return $this->content;
-    }
 }

@@ -6,11 +6,15 @@ namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Parts\ImagePart;
+use EchoLabs\Prism\ValueObjects\Messages\Parts\TextPart;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class MessageMap
 {
@@ -60,7 +64,7 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'system',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 
@@ -79,7 +83,21 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'user',
-            'content' => $message->content(),
+            'content' => is_array($message->content)
+            ? array_map(fn ($part): array => match ($part::class) {
+                TextPart::class => ['type' => 'text', $part->text],
+                ImagePart::class => [
+                    'type' => 'image_url',
+                    'image_url' => Str::isUrl($part->image)
+                        ? $part->image
+                        : vsprintf('data:%s;base64,%s', [
+                            $part->mimeType,
+                            $part->image,
+                        ]),
+                ],
+                default => throw new InvalidArgumentException($part::class.' is not supported')
+            }, $message->content)
+            : $message->content,
         ];
     }
 
@@ -96,7 +114,7 @@ class MessageMap
 
         $this->mappedMessages[] = array_filter([
             'role' => 'assistant',
-            'content' => $message->content(),
+            'content' => $message->text(),
             'tool_calls' => $toolCalls,
         ]);
     }
