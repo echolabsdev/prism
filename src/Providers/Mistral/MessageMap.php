@@ -60,7 +60,7 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'system',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 
@@ -79,7 +79,7 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'user',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 
@@ -92,11 +92,11 @@ class MessageMap
                 'name' => $toolCall->name,
                 'arguments' => json_encode($toolCall->arguments()),
             ],
-        ], $message->toolCalls());
+        ], $message->toolCalls);
 
         $this->mappedMessages[] = array_filter([
             'role' => 'assistant',
-            'content' => $message->content(),
+            'content' => $message->content,
             'tool_calls' => $toolCalls,
         ]);
     }

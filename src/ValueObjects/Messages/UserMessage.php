@@ -6,14 +6,21 @@ namespace EchoLabs\Prism\ValueObjects\Messages;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\Parts\ImagePart;
-use EchoLabs\Prism\ValueObjects\Messages\Parts\TextPart;
 
 class UserMessage implements Message
 {
     /**
-     * @param  string|array<int, TextPart|ImagePart>  $content
+     * @param  ImagePart[]  $parts
      */
     public function __construct(
-        public readonly string|array $content,
+        public readonly string $content,
+        public readonly array $parts = []
     ) {}
+
+    public function imageParts(): array
+    {
+        return collect($this->parts)
+            ->where(fn ($part): bool => $part instanceof ImagePart)
+            ->toArray();
+    }
 }

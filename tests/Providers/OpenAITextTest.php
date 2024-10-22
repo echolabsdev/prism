@@ -6,6 +6,8 @@ namespace Tests\Providers;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Messages\Parts\ImagePart;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
@@ -144,4 +146,23 @@ it('does not send the api key header', function (): void {
         ->withPrompt('Who are you?')();
 
     Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
+});
+
+it('handles images', function (): void {
+    $response = Prism::text()
+        ->using('openai', 'gpt-4o')
+        ->withMessages([
+            new UserMessage(
+                'What is this image',
+                parts: [
+                    new ImagePart(
+                        base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                        'image/png'
+                    ),
+                ],
+            ),
+        ])
+        ->generate();
+
+    dd($response->text);
 });

@@ -64,7 +64,7 @@ class MessageMap
     {
         return [
             'role' => 'user',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 
@@ -73,13 +73,13 @@ class MessageMap
      */
     protected function mapAssistantMessage(AssistantMessage $message): array
     {
-        if ($message->hasToolCall()) {
+        if ($message->toolCalls) {
             $content = [];
 
-            if ($message->content() !== '' && $message->content() !== '0') {
+            if ($message->content !== '' && $message->content !== '0') {
                 $content[] = [
                     'type' => 'text',
-                    'text' => $message->content(),
+                    'text' => $message->content,
                 ];
             }
 
@@ -88,7 +88,7 @@ class MessageMap
                 'id' => $toolCall->id,
                 'name' => $toolCall->name,
                 'input' => $toolCall->arguments(),
-            ], $message->toolCalls());
+            ], $message->toolCalls);
 
             return [
                 'role' => 'assistant',
@@ -98,7 +98,7 @@ class MessageMap
 
         return [
             'role' => 'assistant',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 }

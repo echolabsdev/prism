@@ -72,7 +72,7 @@ it('correctly builds requests', function (): void {
         'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!'
     );
     expect($provider->request->messages)->toHaveCount(1);
-    expect($provider->request->messages[0]->content())->toBe('Who are you?');
+    expect($provider->request->messages[0]->content)->toBe('Who are you?');
     expect($provider->request->topP)->toBe(0.8);
     expect($provider->request->maxTokens)->toBe(500);
     expect($provider->request->temperature)->toBe(1);
@@ -95,7 +95,7 @@ it('correctly builds requests with messages', function (): void {
         'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!'
     );
     expect($provider->request->messages)->toHaveCount(1);
-    expect($provider->request->messages[0]->content())->toBe('Who are you?');
+    expect($provider->request->messages[0]->content)->toBe('Who are you?');
 });
 
 it('correctly generates a request with tools', function (): void {
@@ -139,8 +139,8 @@ it('generates a response from the provider', function (): void {
 
     // Assert response messages
     expect($response->responseMessages)->toHaveCount(1);
-    expect($response->responseMessages->sole()->content())->toBe("I'm nyx!");
-    expect($response->responseMessages->sole()->toolCalls())->toBeEmpty();
+    expect($response->responseMessages->sole()->content)->toBe("I'm nyx!");
+    expect($response->responseMessages->sole()->toolCalls)->toBeEmpty();
 
     // Assert steps
     $textResult = $response->steps->sole();
@@ -160,10 +160,10 @@ it('generates a response from the provider', function (): void {
     expect($textResult->messages)->toBeArray();
     expect($textResult->messages)->toHaveCount(2);
     expect($textResult->messages[0])->toBeInstanceOf(UserMessage::class);
-    expect($textResult->messages[0]->content())->toBe('Whats the weather today for Detroit');
+    expect($textResult->messages[0]->content)->toBe('Whats the weather today for Detroit');
     expect($textResult->messages[1])->toBeInstanceOf(AssistantMessage::class);
-    expect($textResult->messages[1]->content())->toBe("I'm nyx!");
-    expect($textResult->messages[1]->toolCalls())->toBeEmpty();
+    expect($textResult->messages[1]->content)->toBe("I'm nyx!");
+    expect($textResult->messages[1]->toolCalls)->toBeEmpty();
 });
 
 it('generates a response from the driver with tools and max steps', function (): void {
