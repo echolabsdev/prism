@@ -12,8 +12,6 @@ use EchoLabs\Prism\ValueObjects\Usage;
 
 class TestProvider implements Provider
 {
-    public string $model;
-
     public TextRequest $request;
 
     /** @var array<string, mixed> */
@@ -23,14 +21,6 @@ class TestProvider implements Provider
     public array $responses = [];
 
     public $callCount = 0;
-
-    #[\Override]
-    public function usingModel(string $model): Provider
-    {
-        $this->model = $model;
-
-        return $this;
-    }
 
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
@@ -46,17 +36,6 @@ class TestProvider implements Provider
             finishReason: FinishReason::Stop,
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         );
-    }
-
-    /**
-     * @param  array<string, mixed>  $options
-     */
-    #[\Override]
-    public function withClientOptions(array $options): Provider
-    {
-        $this->clientOptions = $options;
-
-        return $this;
     }
 
     public function withResponse(ProviderResponse $response): Provider

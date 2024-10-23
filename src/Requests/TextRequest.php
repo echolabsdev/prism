@@ -12,13 +12,16 @@ class TextRequest
     /**
      * @param  array<int, Message>  $messages
      * @param  array<int, Tool>  $tools
+     * @param  array<string, mixed>  $clientOptions
      */
     public function __construct(
+        public readonly string $model,
         public readonly ?string $systemPrompt,
         public readonly array $messages,
         public readonly ?int $maxTokens,
         public readonly int|float|null $temperature,
         public readonly int|float|null $topP,
-        public readonly array $tools = [],
+        public readonly array $tools,
+        public readonly array $clientOptions,
     ) {}
 }
