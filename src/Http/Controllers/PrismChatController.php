@@ -114,7 +114,7 @@ class PrismChatController
     {
         return $response->responseMessages
             ->filter(fn (Message $message): bool => $message instanceof AssistantMessage)
-            ->implode(fn (Message $message): string => $message->content(), "\n");
+            ->implode(fn (AssistantMessage $message): string => $message->content, "\n");
     }
 
     /**

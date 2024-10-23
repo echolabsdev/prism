@@ -20,9 +20,15 @@ class Image
             throw new InvalidArgumentException("{$path} is not a file");
         }
 
+        $content = file_get_contents($path);
+
+        if ($content === '' || $content === '0' || $content === false) {
+            throw new InvalidArgumentException("{$path} is empty");
+        }
+
         return new self(
-            base64_encode(file_get_contents($path)),
-            File::mimeType($path),
+            base64_encode($content),
+            File::mimeType($path) ?: null,
         );
     }
 

@@ -11,7 +11,7 @@ use EchoLabs\Prism\ValueObjects\Messages\Support\Text;
 class UserMessage implements Message
 {
     /**
-     * @param  array<int, Image>  $additionalContent
+     * @param  array<int, Text|Image>  $additionalContent
      */
     public function __construct(
         protected readonly string $content,
@@ -23,11 +23,17 @@ class UserMessage implements Message
     public function text(): string
     {
         return collect($this->additionalContent)
-            ->where(fn ($content): bool => $content instanceof Text)
-            ->map(fn (Text $content): string => $content->text)
-            ->implode("\n");
+            ->map(function ($content) {
+                if ($content instanceof Text) {
+                    return $content->text;
+                }
+            })
+            ->implode('');
     }
 
+    /**
+     * @return Image[]
+     */
     public function images(): array
     {
         return collect($this->additionalContent)
