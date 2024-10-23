@@ -143,7 +143,7 @@ class PrismChatController
         $message = collect($message['content']);
         $text = $message->where('type', 'text')->sole()['text'];
 
-        $parts = $message->map(fn(array $content): ?\EchoLabs\Prism\ValueObjects\Messages\Support\Image => match ($content['type']) {
+        $parts = $message->map(fn (array $content): ?\EchoLabs\Prism\ValueObjects\Messages\Support\Image => match ($content['type']) {
             'image_url' => new Image(
                 Str::replaceMatches(
                     '/^data:image\/[a-zA-Z]+;base64,/',
