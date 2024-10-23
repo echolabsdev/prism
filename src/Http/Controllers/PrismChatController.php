@@ -8,10 +8,8 @@ use EchoLabs\Prism\Facades\PrismServer;
 use EchoLabs\Prism\Generators\TextGenerator;
 use EchoLabs\Prism\Responses\TextResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Support\ItemNotFoundException;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -116,7 +114,7 @@ class PrismChatController
     {
         return $response->responseMessages
             ->filter(fn (Message $message): bool => $message instanceof AssistantMessage)
-            ->implode(fn (AssistantMessage $message): string => $message->content, "\n");
+            ->implode(fn (Message $message): string => $message->content(), "\n");
     }
 
     /**
@@ -127,34 +125,11 @@ class PrismChatController
     {
         return collect($messages)
             ->map(fn ($message): UserMessage|AssistantMessage => match ($message['role']) {
-                'user' => $this->mapUserMessage($message),
+                'user' => new UserMessage($message['content']),
                 'assistant' => new AssistantMessage($message['content']),
                 default => throw new PrismServerException("Couldn't map messages to Prism messages")
             })
             ->toArray();
-    }
-
-    protected function mapUserMessage(string|array $message): UserMessage
-    {
-        if (is_string($message['content'])) {
-            return new UserMessage($message['content']);
-        }
-
-        $message = collect($message['content']);
-        $text = $message->where('type', 'text')->sole()['text'];
-
-        $parts = $message->map(fn (array $content): ?\EchoLabs\Prism\ValueObjects\Messages\Support\Image => match ($content['type']) {
-            'image_url' => new Image(
-                Str::replaceMatches(
-                    '/^data:image\/[a-zA-Z]+;base64,/',
-                    '',
-                    $content['image_url']['url']
-                )
-            ),
-            default => null
-        })->filter();
-
-        return new UserMessage($text, additionalContent: $parts->toArray());
     }
 
     protected function resolvePrism(string $model): TextGenerator
