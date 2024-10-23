@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\Parts\ImagePart;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -79,19 +79,19 @@ class MessageMap
 
     protected function mapUserMessage(UserMessage $message): void
     {
-        $imageParts = array_map(fn(ImagePart $part): array => [
+        $imageParts = array_map(fn (Image $part): array => [
             'type' => 'image_url',
             'image_url' => [
                 'url' => Str::isUrl($part->image)
                     ? $part->image
                     : sprintf('data:%s;base64,%s', $part->mimeType ?? 'image/jpeg', $part->image),
             ],
-        ], $message->imageParts());
+        ], $message->images());
 
         $this->mappedMessages[] = [
             'role' => 'user',
             'content' => [
-                ['type' => 'text', 'text' => $message->content],
+                ['type' => 'text', 'text' => $message->text()],
                 ...$imageParts,
             ],
         ];

@@ -64,7 +64,7 @@ class MessageMap
     {
         return [
             'role' => 'user',
-            'content' => $message->content,
+            'content' => $message->text(),
         ];
     }
 

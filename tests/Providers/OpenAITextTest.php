@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Providers;
 
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Messages\Parts\ImagePart;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -148,21 +149,34 @@ it('does not send the api key header', function (): void {
     Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
 });
 
-it('handles images', function (): void {
+it('can send images', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/image-detection');
+
     $response = Prism::text()
-        ->using('openai', 'gpt-4o')
+        ->using(Provider::OpenAI, 'gpt-4o')
         ->withMessages([
             new UserMessage(
                 'What is this image',
-                parts: [
-                    new ImagePart(
-                        base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
-                        'image/png'
-                    ),
+                additionalContent: [
+                    Image::fromPath('tests/Fixtures/test-image.png'),
                 ],
             ),
         ])
         ->generate();
 
-    dd($response->text);
+    Http::assertSent(function (Request $request): true {
+        $message = $request->data()['messages'][0]['content'];
+
+        expect($message[0])->toBe([
+            'type' => 'text',
+            'text' => 'What is this image',
+        ]);
+
+        expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
+        expect($message[1]['image_url']['url'])->toContain(
+            base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
+        );
+
+        return true;
+    });
 });

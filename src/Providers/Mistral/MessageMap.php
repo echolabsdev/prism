@@ -79,7 +79,7 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'user',
-            'content' => $message->content,
+            'content' => $message->text(),
         ];
     }
 
