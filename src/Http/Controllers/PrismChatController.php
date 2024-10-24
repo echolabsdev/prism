@@ -2,7 +2,6 @@
 
 namespace EchoLabs\Prism\Http\Controllers;
 
-use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Exceptions\PrismServerException;
 use EchoLabs\Prism\Facades\PrismServer;
 use EchoLabs\Prism\Generators\TextGenerator;
@@ -113,8 +112,8 @@ class PrismChatController
     protected function textFromResponse(TextResponse $response): string
     {
         return $response->responseMessages
-            ->filter(fn (Message $message): bool => $message instanceof AssistantMessage)
-            ->implode(fn (AssistantMessage $message): string => $message->content, "\n");
+            ->whereInstanceOf(AssistantMessage::class)
+            ->implode(fn(AssistantMessage $message): string => $message->content);
     }
 
     /**
