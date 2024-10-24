@@ -60,7 +60,7 @@ class MessageMap
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     protected function mapUserMessage(UserMessage $message): array
     {
