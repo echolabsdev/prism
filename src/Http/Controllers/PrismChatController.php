@@ -113,7 +113,7 @@ class PrismChatController
     {
         return $response->responseMessages
             ->whereInstanceOf(AssistantMessage::class)
-            ->implode(fn(AssistantMessage $message): string => $message->content);
+            ->implode(fn (AssistantMessage $message): string => $message->content);
     }
 
     /**
