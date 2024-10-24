@@ -43,12 +43,11 @@ class Mistral implements Provider
 
         $data = $response->json();
 
-        if (data_get($data, 'error') || ! $data) {
+        if (data_get($data, 'message') || ! $data) {
             throw PrismException::providerResponseError(vsprintf(
-                'Mistral Error:  [%s] %s',
+                'Mistral Error:  %s',
                 [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
+                    data_get($data, 'message', 'unknown'),
                 ]
             ));
         }

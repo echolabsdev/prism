@@ -10,15 +10,9 @@ use EchoLabs\Prism\ValueObjects\ToolResult;
 class ToolResultMessage implements Message
 {
     /**
-     * @param  array<int, ToolResult>  $toolResults
+     * @param  ToolResult[]  $toolResults
      */
     public function __construct(
         public readonly array $toolResults
     ) {}
-
-    #[\Override]
-    public function content(): string
-    {
-        return '';
-    }
 }

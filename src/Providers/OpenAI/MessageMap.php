@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -60,7 +61,7 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'system',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 
@@ -77,9 +78,21 @@ class MessageMap
 
     protected function mapUserMessage(UserMessage $message): void
     {
+        $imageParts = array_map(fn (Image $image): array => [
+            'type' => 'image_url',
+            'image_url' => [
+                'url' => $image->isUrl()
+                    ? $image->image
+                    : sprintf('data:%s;base64,%s', $image->mimeType, $image->image),
+            ],
+        ], $message->images());
+
         $this->mappedMessages[] = [
             'role' => 'user',
-            'content' => $message->content(),
+            'content' => [
+                ['type' => 'text', 'text' => $message->text()],
+                ...$imageParts,
+            ],
         ];
     }
 
@@ -92,11 +105,11 @@ class MessageMap
                 'name' => $toolCall->name,
                 'arguments' => json_encode($toolCall->arguments()),
             ],
-        ], $message->toolCalls());
+        ], $message->toolCalls);
 
         $this->mappedMessages[] = array_filter([
             'role' => 'assistant',
-            'content' => $message->content(),
+            'content' => $message->content,
             'tool_calls' => $toolCalls,
         ]);
     }
