@@ -39,6 +39,14 @@ class PrismException extends Exception
         );
     }
 
+    public static function invalidParameterInTool(string $toolName, Throwable $previous): self
+    {
+        return new self(
+            sprintf('Invalid parameters for tool : %s', $toolName),
+            previous: $previous
+        );
+    }
+
     public static function providerResponseError(string $message): self
     {
         return new self($message);
