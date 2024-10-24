@@ -21,10 +21,10 @@ it('can create an image from a url', function (): void {
 });
 
 it('can create an image from base64', function (): void {
-    $image = Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')));
+    $image = Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png');
 
     expect($image->image)->toBe(base64_encode(file_get_contents('tests/Fixtures/test-image.png')));
-    expect($image->mimeType)->toBe('image/jpeg');
+    expect($image->mimeType)->toBe('image/png');
 });
 
 it('can create an image from base64 with mimetype', function (): void {

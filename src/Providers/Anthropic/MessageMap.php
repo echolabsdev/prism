@@ -6,12 +6,14 @@ namespace EchoLabs\Prism\Providers\Anthropic;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
+use InvalidArgumentException;
 
 class MessageMap
 {
@@ -62,9 +64,28 @@ class MessageMap
      */
     protected function mapUserMessage(UserMessage $message): array
     {
+        $imageParts = array_map(function (Image $image): array {
+            if ($image->isUrl()) {
+                throw new InvalidArgumentException('URL image type is not supported by Anthropic');
+            }
+
+            return [
+                'type' => 'image',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => $image->mimeType,
+                    'data' => $image->image,
+                ],
+            ];
+        }, $message->images());
+
         return [
             'role' => 'user',
-            'content' => $message->text(),
+            'content' => [
+                ['type' => 'text', 'text' => $message->text()],
+                ...$imageParts,
+            ],
+
         ];
     }
 

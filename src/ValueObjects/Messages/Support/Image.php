@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\ValueObjects\Messages\Support;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class Image
@@ -37,11 +38,16 @@ class Image
         return new self($url);
     }
 
-    public static function fromBase64(string $image, string $mimeType = 'image/jpeg'): self
+    public static function fromBase64(string $image, string $mimeType): self
     {
         return new self(
             $image,
             $mimeType
         );
+    }
+
+    public function isUrl(): bool
+    {
+        return Str::isUrl($this->image);
     }
 }
