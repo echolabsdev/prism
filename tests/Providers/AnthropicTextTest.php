@@ -188,5 +188,4 @@ describe('Image support', function (): void {
             ])
             ->generate();
     });
-
 });

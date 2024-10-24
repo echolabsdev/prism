@@ -6,11 +6,13 @@ namespace EchoLabs\Prism\Providers\Ollama;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
+use InvalidArgumentException;
 
 class MessageMap
 {
@@ -77,9 +79,25 @@ class MessageMap
 
     protected function mapUserMessage(UserMessage $message): void
     {
+        $imageParts = array_map(function (Image $image): array {
+            if ($image->isUrl()) {
+                throw new InvalidArgumentException('URL image type is not supported by Ollama');
+            }
+
+            return [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => sprintf('data:%s;base64,%s', $image->mimeType, $image->image),
+                ],
+            ];
+        }, $message->images());
+
         $this->mappedMessages[] = [
             'role' => 'user',
-            'content' => $message->text(),
+            'content' => [
+                ['type' => 'text', 'text' => $message->text()],
+                ...$imageParts,
+            ],
         ];
     }
 
