@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism;
 
+use ArgumentCountError;
 use Closure;
 use EchoLabs\Prism\Contracts\Schema;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\EnumSchema;
 use EchoLabs\Prism\Schema\NumberSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use InvalidArgumentException;
+use Throwable;
+use TypeError;
 
 class Tool
 {
     protected string $name = '';
 
-    protected string $description = '';
+    protected string $description;
 
     /** @var array<string, array<string, mixed>> */
     protected array $parameters = [];
@@ -155,9 +160,17 @@ class Tool
         return $this->description;
     }
 
-    /** @param string|int|float $args */
-    public function handle(...$args): ?string
+    /**
+     * @param  string|int|float  $args
+     *
+     * @throws PrismException|Throwable
+     */
+    public function handle(...$args): string
     {
-        return call_user_func($this->fn, ...$args);
+        try {
+            return call_user_func($this->fn, ...$args);
+        } catch (ArgumentCountError|InvalidArgumentException|TypeError $e) {
+            throw PrismException::invalidParameterInTool($this->name, $e);
+        }
     }
 }
