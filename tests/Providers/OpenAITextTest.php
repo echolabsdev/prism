@@ -17,7 +17,7 @@ beforeEach(function (): void {
     config()->set('prism.providers.openai.api_key', env('OPENAI_API_KEY'));
 });
 
-describe('text generation', function (): void {
+describe('Text generation', function (): void {
     it('can generate text with a prompt', function (): void {
         FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
 
