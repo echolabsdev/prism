@@ -6,11 +6,13 @@ namespace EchoLabs\Prism\Providers\Mistral;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
+use Illuminate\Support\Str;
 
 class MessageMap
 {
@@ -60,7 +62,7 @@ class MessageMap
     {
         $this->mappedMessages[] = [
             'role' => 'system',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 
@@ -77,9 +79,21 @@ class MessageMap
 
     protected function mapUserMessage(UserMessage $message): void
     {
+        $imageParts = array_map(fn (Image $part): array => [
+            'type' => 'image_url',
+            'image_url' => [
+                'url' => Str::isUrl($part->image)
+                    ? $part->image
+                    : sprintf('data:%s;base64,%s', $part->mimeType ?? 'image/jpeg', $part->image),
+            ],
+        ], $message->images());
+
         $this->mappedMessages[] = [
             'role' => 'user',
-            'content' => $message->content(),
+            'content' => [
+                ['type' => 'text', 'text' => $message->text()],
+                ...$imageParts,
+            ],
         ];
     }
 
@@ -92,11 +106,11 @@ class MessageMap
                 'name' => $toolCall->name,
                 'arguments' => json_encode($toolCall->arguments()),
             ],
-        ], $message->toolCalls());
+        ], $message->toolCalls);
 
         $this->mappedMessages[] = array_filter([
             'role' => 'assistant',
-            'content' => $message->content(),
+            'content' => $message->content,
             'tool_calls' => $toolCalls,
         ]);
     }

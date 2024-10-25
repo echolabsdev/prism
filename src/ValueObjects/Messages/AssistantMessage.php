@@ -10,29 +10,10 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 class AssistantMessage implements Message
 {
     /**
-     * @param  array<int, ToolCall>  $toolCalls
+     * @param  ToolCall[]  $toolCalls
      */
     public function __construct(
-        protected readonly string $content = '',
-        protected array $toolCalls = []
+        public readonly string $content,
+        public readonly array $toolCalls = []
     ) {}
-
-    #[\Override]
-    public function content(): string
-    {
-        return $this->content;
-    }
-
-    public function hasToolCall(): bool
-    {
-        return $this->toolCalls !== [];
-    }
-
-    /**
-     * @return array<int, ToolCall> $toolCalls
-     */
-    public function toolCalls(): array
-    {
-        return $this->toolCalls;
-    }
 }

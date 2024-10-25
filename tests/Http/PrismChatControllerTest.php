@@ -25,7 +25,7 @@ it('handles chat requests successfully', function (): void {
 
     $generator->expects('withMessages')
         ->withArgs(fn ($messages): bool => $messages[0] instanceof UserMessage
-            && $messages[0]->content() === 'Who are you?')
+            && $messages[0]->text() === 'Who are you?')
         ->andReturnSelf();
 
     $state = new TextState(
@@ -101,7 +101,7 @@ it('handles streaming requests', function (): void {
 
     $generator->expects('withMessages')
         ->withArgs(fn ($messages): bool => $messages[0] instanceof UserMessage
-            && $messages[0]->content() === 'Who are you?')
+            && $messages[0]->text() === 'Who are you?')
         ->andReturnSelf();
 
     $state = new TextState(

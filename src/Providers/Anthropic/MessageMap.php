@@ -6,12 +6,14 @@ namespace EchoLabs\Prism\Providers\Anthropic;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
+use InvalidArgumentException;
 
 class MessageMap
 {
@@ -58,13 +60,32 @@ class MessageMap
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     protected function mapUserMessage(UserMessage $message): array
     {
+        $imageParts = array_map(function (Image $image): array {
+            if ($image->isUrl()) {
+                throw new InvalidArgumentException('URL image type is not supported by Anthropic');
+            }
+
+            return [
+                'type' => 'image',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => $image->mimeType,
+                    'data' => $image->image,
+                ],
+            ];
+        }, $message->images());
+
         return [
             'role' => 'user',
-            'content' => $message->content(),
+            'content' => [
+                ['type' => 'text', 'text' => $message->text()],
+                ...$imageParts,
+            ],
+
         ];
     }
 
@@ -73,13 +94,13 @@ class MessageMap
      */
     protected function mapAssistantMessage(AssistantMessage $message): array
     {
-        if ($message->hasToolCall()) {
+        if ($message->toolCalls) {
             $content = [];
 
-            if ($message->content() !== '' && $message->content() !== '0') {
+            if ($message->content !== '' && $message->content !== '0') {
                 $content[] = [
                     'type' => 'text',
-                    'text' => $message->content(),
+                    'text' => $message->content,
                 ];
             }
 
@@ -88,7 +109,7 @@ class MessageMap
                 'id' => $toolCall->id,
                 'name' => $toolCall->name,
                 'input' => $toolCall->arguments(),
-            ], $message->toolCalls());
+            ], $message->toolCalls);
 
             return [
                 'role' => 'assistant',
@@ -98,7 +119,7 @@ class MessageMap
 
         return [
             'role' => 'assistant',
-            'content' => $message->content(),
+            'content' => $message->content,
         ];
     }
 }
