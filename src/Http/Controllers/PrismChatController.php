@@ -43,7 +43,7 @@ class PrismChatController
     protected function stream(TextGenerator $generator): Response
     {
         return response()->stream(function () use ($generator): void {
-            $response = $generator();
+            $response = $generator->generate();
 
             $chunk = [
                 'id' => $response->response['id'],
@@ -81,7 +81,7 @@ class PrismChatController
 
     protected function chat(TextGenerator $generator): Response
     {
-        $response = $generator();
+        $response = $generator->generate();
 
         $data = [
             'id' => $response->response['id'],

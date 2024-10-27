@@ -23,7 +23,8 @@ describe('Text generation', function (): void {
 
         $response = Prism::text()
             ->using('mistral', 'mistral-small-2402')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(7);
         expect($response->usage->completionTokens)->toBe(12);
@@ -40,7 +41,8 @@ describe('Text generation', function (): void {
         $response = Prism::text()
             ->using('mistral', 'mistral-small-2402')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(32);
         expect($response->usage->completionTokens)->toBe(51);
@@ -69,7 +71,8 @@ describe('Text generation', function (): void {
             ->using('mistral', 'mistral-large-latest')
             ->withTools($tools)
             ->withMaxSteps(3)
-            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')();
+            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')
+            ->generate();
 
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
