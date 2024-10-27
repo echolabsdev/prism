@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Providers;
+namespace Tests\Providers\Groq;
 
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
@@ -23,7 +23,8 @@ describe('Text generation for Groq', function (): void {
 
         $response = Prism::text()
             ->using('groq', 'llama3-8b-8192')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(13);
         expect($response->usage->completionTokens)->toBe(208);
@@ -40,7 +41,8 @@ describe('Text generation for Groq', function (): void {
         $response = Prism::text()
             ->using('groq', 'llama3-8b-8192')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(37);
         expect($response->usage->completionTokens)->toBe(273);
@@ -69,7 +71,8 @@ describe('Text generation for Groq', function (): void {
             ->using('groq', 'llama3-groq-70b-8192-tool-use-preview')
             ->withTools($tools)
             ->withMaxSteps(3)
-            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')();
+            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')
+            ->generate();
 
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
