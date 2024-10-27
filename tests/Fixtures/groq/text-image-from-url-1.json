@@ -1,8 +1,8 @@
 {
-  "id": "chatcmpl-7018701a-f11b-4540-9a72-260c515ffa64",
+  "id": "a402e4c1bc454202b66a9e56492650f3",
   "object": "chat.completion",
   "created": 1729801270,
-  "model": "llama-3.2-90b-vision-preview",
+  "model": "pixtral-12b-2409",
   "choices": [
     {
       "index": 0,
@@ -15,8 +15,8 @@
     }
   ],
   "usage": {
-    "prompt_tokens": 15,
-    "total_tokens": 105,
-    "completion_tokens": 90
+    "prompt_tokens": 2557,
+    "total_tokens": 2646,
+    "completion_tokens": 89
   }
 }

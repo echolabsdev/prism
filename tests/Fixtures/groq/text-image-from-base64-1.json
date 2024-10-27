@@ -1,0 +1,22 @@
+{
+  "id": "chatcmpl-bf23d920-c4e3-4263-808a-255839630b18",
+  "object": "chat.completion",
+  "created": 1729801186,
+  "model": "llama-3.2-90b-vision-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The image depicts a simple black and white line drawing of a diamond. The diamond is drawn with straight lines, forming a symmetrical shape with pointed edges. The lines are thick and bold, creating a striking contrast against  the plain white background. The diamond is centered in the image, with no other objects or features present. The over  all effect is one of simplicity and elegance, highlighting the beauty of the diamond's geometric shape",
+        "tool_calls": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 15,
+    "total_tokens": 100,
+    "completion_tokens": 85
+  }
+}

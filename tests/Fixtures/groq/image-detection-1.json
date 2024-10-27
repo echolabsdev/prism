@@ -1,0 +1,22 @@
+{
+  "id": "chatcmpl-ac48d309-f02e-4a76-82fa-be63cec886ba",
+  "object": "chat.completion",
+  "created": 1729801129,
+  "model": "llama-3.2-90b-vision-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The image depicts a simple line drawing of a diamond. The diamond is drawn with thick black lines and is positioned with its point facing downwards. It has a symmetrical shape, with two triangular sides on either side of a central line. The diamond is set against a plain white background.",
+        "tool_calls": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 2557,
+    "total_tokens": 2642,
+    "completion_tokens": 85
+  }
+}
