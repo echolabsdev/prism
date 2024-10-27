@@ -41,7 +41,8 @@ describe('Text generation', function (): void {
         $response = Prism::text()
             ->using('openai', 'gpt-4')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(34);
         expect($response->usage->completionTokens)->toBe(84);
@@ -70,7 +71,8 @@ describe('Text generation', function (): void {
             ->using('openai', 'gpt-4o')
             ->withTools($tools)
             ->withMaxSteps(3)
-            ->withPrompt('What time is the tigers game today and should I wear a coat?')();
+            ->withPrompt('What time is the tigers game today and should I wear a coat?')
+            ->generate();
 
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
@@ -109,7 +111,8 @@ describe('Text generation', function (): void {
 
         Prism::text()
             ->using('openai', 'gpt-4')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         Http::assertSent(fn (Request $request): bool => $request->header('OpenAI-Organization')[0] === 'echolabs');
     });
@@ -121,7 +124,8 @@ describe('Text generation', function (): void {
 
         Prism::text()
             ->using('openai', 'gpt-4')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         Http::assertSent(fn (Request $request): bool => empty($request->header('OpenAI-Organization')));
     });
@@ -133,7 +137,8 @@ describe('Text generation', function (): void {
 
         Prism::text()
             ->using('openai', 'gpt-4')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         Http::assertSent(fn (Request $request): bool => $request->header('Authorization')[0] === 'Bearer sk-1234');
     });
@@ -145,7 +150,8 @@ describe('Text generation', function (): void {
 
         Prism::text()
             ->using('openai', 'gpt-4')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
     });
