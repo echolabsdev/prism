@@ -89,7 +89,8 @@ it('correctly builds requests with messages', function (): void {
         ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withMessages([
             new UserMessage('Who are you?'),
-        ])();
+        ])
+        ->generate();
 
     expect($provider->request->systemPrompt)->toBe(
         'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!'
@@ -111,7 +112,8 @@ it('correctly generates a request with tools', function (): void {
     (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
-        ->withTools([$tool])();
+        ->withTools([$tool])
+        ->generate();
 
     expect($provider->request->tools)->toHaveCount(1);
     expect($provider->request->tools[0]->name())->toBe('weather');
@@ -124,7 +126,8 @@ it('generates a response from the provider', function (): void {
 
     $response = (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
-        ->withPrompt('Whats the weather today for Detroit')();
+        ->withPrompt('Whats the weather today for Detroit')
+        ->generate();
 
     // Assert response
     expect($response->text)->toBe("I'm nyx!");
@@ -195,7 +198,8 @@ it('generates a response from the driver with tools and max steps', function ():
     $response = (new TextGenerator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
-        ->withTools([$tool])();
+        ->withTools([$tool])
+        ->generate();
 
     // Assert response
     expect($response->text)->toBeEmpty();
@@ -258,7 +262,8 @@ it('correctly stops using max steps', function (): void {
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withMaxSteps(3) // more steps than necessary asserting that stops based on finish reason
-        ->withTools([$tool])();
+        ->withTools([$tool])
+        ->generate();
 
     // Assert Response
     expect($response->text)->toBe('The weather is 75 and sunny!');

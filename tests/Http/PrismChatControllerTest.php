@@ -50,7 +50,7 @@ it('handles chat requests successfully', function (): void {
 
     $textResponse = new TextResponse($state);
 
-    $generator->expects('__invoke')
+    $generator->expects('generate')
         ->andReturns($textResponse);
 
     PrismServer::register(
@@ -126,7 +126,7 @@ it('handles streaming requests', function (): void {
 
     $textResponse = new TextResponse($state);
 
-    $generator->expects('__invoke')
+    $generator->expects('generate')
         ->andReturns($textResponse);
 
     PrismServer::register(

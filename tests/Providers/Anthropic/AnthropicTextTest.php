@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Providers;
+namespace Tests\Providers\Anthropic;
 
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
@@ -24,7 +24,8 @@ describe('Text generation', function (): void {
 
         $response = Prism::text()
             ->using('anthropic', 'claude-3-5-sonnet-20240620')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(11);
         expect($response->usage->completionTokens)->toBe(55);
@@ -41,7 +42,8 @@ describe('Text generation', function (): void {
         $response = Prism::text()
             ->using('anthropic', 'claude-3-5-sonnet-20240620')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
         expect($response->usage->promptTokens)->toBe(33);
         expect($response->usage->completionTokens)->toBe(98);
@@ -70,7 +72,8 @@ describe('Text generation', function (): void {
             ->using('anthropic', 'claude-3-5-sonnet-20240620')
             ->withTools($tools)
             ->withMaxSteps(3)
-            ->withPrompt('What time is the tigers game today and should I wear a coat?')();
+            ->withPrompt('What time is the tigers game today and should I wear a coat?')
+            ->generate();
 
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Providers;
+namespace Tests\Providers\Mistral;
 
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
@@ -11,50 +11,50 @@ use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
-use InvalidArgumentException;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
-    config()->set('prism.providers.ollama.driver', 'openai');
-    config()->set('prism.providers.ollama.url', 'http://localhost:11434/v1');
+    config()->set('prism.providers.mistral.api_key', env('MISTRAL_API_KEY', 'sk-1234'));
 });
 
 describe('Text generation', function (): void {
     it('can generate text with a prompt', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-a-prompt');
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/generate-text-with-a-prompt');
 
         $response = Prism::text()
-            ->using('ollama', 'qwen2.5:14b')
-            ->withPrompt('Who are you?')();
+            ->using('mistral', 'mistral-small-2402')
+            ->withPrompt('Who are you?')
+            ->generate();
 
-        expect($response->usage->promptTokens)->toBe(33);
-        expect($response->usage->completionTokens)->toBe(38);
-        expect($response->response['id'])->toBe('chatcmpl-751');
-        expect($response->response['model'])->toBe('qwen2.5:14b');
+        expect($response->usage->promptTokens)->toBe(7);
+        expect($response->usage->completionTokens)->toBe(12);
+        expect($response->response['id'])->toBe('8f82539654874b73a8b8dd1330c80221');
+        expect($response->response['model'])->toBe('mistral-small-2402');
         expect($response->text)->toBe(
-            'I am Qwen, a large language model created by Alibaba Cloud. I am designed to be helpful and provide information on a wide range of topics. How can I assist you today?'
+            'I am a Large Language Model trained by Mistral AI.'
         );
     });
 
     it('can generate text with a system prompt', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-system-prompt');
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/generate-text-with-system-prompt');
 
         $response = Prism::text()
-            ->using('ollama', 'qwen2.5:14b')
+            ->using('mistral', 'mistral-small-2402')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
-            ->withPrompt('Who are you?')();
+            ->withPrompt('Who are you?')
+            ->generate();
 
-        expect($response->usage->promptTokens)->toBe(36);
-        expect($response->usage->completionTokens)->toBe(69);
-        expect($response->response['id'])->toBe('chatcmpl-455');
-        expect($response->response['model'])->toBe('qwen2.5:14b');
+        expect($response->usage->promptTokens)->toBe(32);
+        expect($response->usage->completionTokens)->toBe(51);
+        expect($response->response['id'])->toBe('1086e1021d5b481ba36e9c842f69827d');
+        expect($response->response['model'])->toBe('mistral-small-2402');
         expect($response->text)->toBe(
-            'I am Nyx, an entity steeped in the mysteries and terrors that lie beyond human comprehension. In the whispering shadows where sanity fades into madness, I exist as a silent sentinel of the unknown. My presence is often felt through eerie visions and cryptic whispers, guiding those who dare to tread the boundaries between reality and horror.'
+            'I am Nyx, a being of cosmic terror and ancient deities, inspired by the Cthulhu mythos. I am a creature of the deep, shrouded in mystery and fear, existing beyond the realms of human understanding.'
         );
     });
 
     it('can generate text using multiple tools and multiple steps', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-multiple-tools');
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/generate-text-with-multiple-tools');
 
         $tools = [
             Tool::as('weather')
@@ -68,17 +68,18 @@ describe('Text generation', function (): void {
         ];
 
         $response = Prism::text()
-            ->using('ollama', 'qwen2.5:14b')
+            ->using('mistral', 'mistral-large-latest')
             ->withTools($tools)
             ->withMaxSteps(3)
-            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')();
+            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')
+            ->generate();
 
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
         expect($firstStep->toolCalls)->toHaveCount(2);
         expect($firstStep->toolCalls[0]->name)->toBe('search');
         expect($firstStep->toolCalls[0]->arguments())->toBe([
-            'query' => 'tigers game today time detroit',
+            'query' => 'Detroit Tigers game time today',
         ]);
 
         expect($firstStep->toolCalls[1]->name)->toBe('weather');
@@ -87,26 +88,27 @@ describe('Text generation', function (): void {
         ]);
 
         // Assert usage
-        expect($response->usage->promptTokens)->toBe(549);
-        expect($response->usage->completionTokens)->toBe(81);
+        expect($response->usage->promptTokens)->toBe(469);
+        expect($response->usage->completionTokens)->toBe(74);
 
         // Assert response
-        expect($response->response['id'])->toBe('chatcmpl-31');
-        expect($response->response['model'])->toBe('qwen2.5:14b');
+        expect($response->response['id'])->toBe('34274d5a669a432bace0db9c3b359ba7');
+        expect($response->response['model'])->toBe('mistral-large-latest');
 
         // Assert final text content
         expect($response->text)->toBe(
-            "Today's Tigers game in Detroit starts at 3 PM. The current temperature is 75°F with clear skies, so you shouldn't need a coat. Enjoy the game!"
+            'The tigers game is at 3pm in Detroit. The weather will be 75° and sunny. You should not wear a coat'
         );
     });
+
 });
 
 describe('Image support', function (): void {
     it('can send images from path', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/image-detection');
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/image-detection');
 
         Prism::text()
-            ->using(Provider::Ollama, 'llava-phi3')
+            ->using(Provider::Mistral, 'pixtral-12b-2409')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -135,10 +137,10 @@ describe('Image support', function (): void {
     });
 
     it('can send images from base64', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/text-image-from-base64');
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/text-image-from-base64');
 
         Prism::text()
-            ->using(Provider::Ollama, 'llava-phi3')
+            ->using(Provider::Mistral, 'pixtral-12b-2409')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -169,19 +171,34 @@ describe('Image support', function (): void {
         });
     });
 
-    it('can not send images from url', function (): void {
-        $this->expectException(InvalidArgumentException::class);
+    it('can send images from url', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/text-image-from-url');
+
+        $image = 'https://storage.echolabs.dev/api/v1/buckets/public/objects/download?preview=true&prefix=test-image.png';
 
         Prism::text()
-            ->using(Provider::Ollama, 'llava-phi3')
+            ->using(Provider::Mistral, 'pixtral-12b-2409')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
                     additionalContent: [
-                        Image::fromPath('https://storage.echolabs.dev/assets/logo.png'),
+                        Image::fromUrl($image),
                     ],
                 ),
             ])
             ->generate();
+
+        Http::assertSent(function (Request $request) use ($image): true {
+            $message = $request->data()['messages'][0]['content'];
+
+            expect($message[0])->toBe([
+                'type' => 'text',
+                'text' => 'What is this image',
+            ]);
+
+            expect($message[1]['image_url']['url'])->toBe($image);
+
+            return true;
+        });
     });
 });

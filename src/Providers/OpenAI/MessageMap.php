@@ -46,7 +46,7 @@ class MessageMap
         return $this->mappedMessages;
     }
 
-    public function mapMessage(Message $message): void
+    protected function mapMessage(Message $message): void
     {
         match ($message::class) {
             UserMessage::class => $this->mapUserMessage($message),
