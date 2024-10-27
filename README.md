@@ -1,67 +1,28 @@
 ![](docs/images/prism-banner.webp)
 
+<p align="center">
+    <a href="https://packagist.org/packages/echolabsdev/prism">
+        <img src="https://poser.pugx.org/echolabsdev/prism/d/total.svg" alt="Total Downloads">
+    </a>
+    <a href="https://packagist.org/packages/echolabsdev/prism">
+        <img src="https://poser.pugx.org/echolabsdev/prism/v/stable.svg" alt="Latest Stable Version">
+    </a>
+    <a href="https://packagist.org/packages/echolabsdev/prism">
+        <img src="https://poser.pugx.org/echolabsdev/prism/license.svg" alt="License">
+    </a>
+</p>
+
 # Prism
 
-Prism is a powerful Laravel package for integrating Large Language Models (LLMs) into your applications. It provides a fluent interface for generating text, handling multi-step conversations, and utilizing tools with various AI providers. This way, you can focus on developing outstanding AI
-  applications for your users without getting lost in the technical intricacies.
+Prism is a powerful Laravel package for integrating Large Language Models (LLMs) into your applications. It provides a fluent interface for generating text, handling multi-step conversations, and utilizing tools with various AI providers. This way, you can focus on developing outstanding AI applications for your users without getting lost in the technical intricacies.
 
-Official documentation can be found at [prism.echolabs.dev](https://prism.echolabs.dev).
+## Official Documentation
 
-## Installation
+Official documentation can be found on the [Prism website](https://prism.echolabs.dev).
 
-### Step 1: Composer Installation
+## Code of Conduct
 
-First, let's add Prism to your project using Composer. Open your terminal, navigate to your project directory, and run:
-
-```shell
-composer require echolabsdev/prism
-```
-
-This command will download Prism and its dependencies into your project.
-
-### Step 2: Publish the Configuration
-
-Prism comes with a configuration file that you'll want to customize. Publish it to your config directory by running:
-
-```shell
-php artisan vendor:publish --tag=prism-config
-```
-
-This will create a new file at `config/prism.php`. We'll explore how to configure Prism in the next section.
-
-## Usage
-
-For more information about using Prism, please visit the documentation site at [prism.echolabs.dev](https://prism.echolabs.dev).
-
-```php
-<?php
-
-use EchoLabs\Prism\Prism;
-
-// Usage example for Anthropic.
-$prism = Prism::text()
-    ->using('anthropic', 'claude-3-5-sonnet-20240620')
-    ->withSystemPrompt(view('prompts.nyx'))
-    ->withPrompt('Explain quantum computing to a 5-year-old.');
-
-echo $prism()->text;
-
-// Usage example for OpenAI.
-$prism = Prism::text()
-    ->using('openai', 'gpt-4o')
-    ->withSystemPrompt(view('prompts.nyx'))
-    ->withPrompt('Explain quantum computing to a 5-year-old.');
-
-echo $prism()->text;
-
-// Usage example for Ollama.
-$prism = Prism::text()
-    ->using('ollama', 'qwen2.5:14b')
-    ->withSystemPrompt(view('prompts.nyx'))
-    ->withPrompt('Explain quantum computing to a 5-year-old.');
-
-echo $prism()->text;
-```
+While we aren't affiliated with Laravel, we follow the Laravel [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct). We expect you to abide by these guidelines as well.
 
 ## Authors
 
@@ -70,4 +31,3 @@ This library is created by [TJ Miller](https://tjmiller.me) with contributions f
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
-
