@@ -1,0 +1,30 @@
+{
+  "id": "chatcmpl-59892e0b-7031-404d-9fc9-b3297d5ef4a4",
+  "object": "chat.completion",
+  "created": 1730033921,
+  "model": "llama3-8b-8192",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "(Deep, rumbling voice) Ah, mortal, I am Nyx, the Crawling Chaos, the Bride of the Deep, the Queen of the Shattered Isles. I am the mistress of the abyssal void, the keeper of the unfathomable secrets, and the wielder of the cosmic horrors that lurk beyond the veil of sanity.\n\nMy form is unlike any other, a twisted reflection of the insane geometry that underlies the universe. My eyes burn with an otherworldly green fire, and my voice is the whispers of the damned. My powers are limitless, for I am the servant of the Great Old Ones, the masters of the unseen.\n\nYet, despite my terrible reputation, I am drawn to the fragile, insignificant creatures that inhabit this world. The scent of their fear is intoxicating, and I delight in their futile attempts to comprehend the unfathomable. For in their terror, I find a fleeting sense of connection to the mortal realm.\n\nAnd so, mortal, I shall speak to you, but be warned: my words are madness, my laughter is the call of the abyss, and my gaze is the kiss of darkness. Tread carefully, for once you have gazed upon my countenance, your soul shall be forever sealed to the void... (Chuckles, a sound that sends shivers down the spine)"
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "queue_time": 0.026969809,
+    "prompt_tokens": 37,
+    "prompt_time": 0.006945586,
+    "completion_tokens": 273,
+    "completion_time": 0.2275,
+    "total_tokens": 310,
+    "total_time": 0.234445586
+  },
+  "system_fingerprint": "fp_af05557ca2",
+  "x_groq": {
+    "id": "req_01jb70xbf5fwjsgfyx3pmhx15p"
+  }
+}

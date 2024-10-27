@@ -21,5 +21,9 @@ return [
             'api_key' => env('MISTRAL_API_KEY', ''),
             'url' => env('MISTRAL_URL', 'https://api.mistral.ai/v1'),
         ],
+        'groq' => [
+            'api_key' => env('GROQ_API_KEY', ''),
+            'url' => env('GROQ_URL', 'https://api.groq.com/openai/v1'),
+        ],
     ],
 ];

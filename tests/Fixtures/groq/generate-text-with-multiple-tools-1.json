@@ -1,0 +1,47 @@
+{
+  "id": "chatcmpl-2f85156f-4864-4621-a977-6767e74251b5",
+  "object": "chat.completion",
+  "created": 1730035768,
+  "model": "llama3-groq-70b-8192-tool-use-preview",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "id": "call_4b20",
+            "type": "function",
+            "function": {
+              "name": "search",
+              "arguments": "{\"query\": \"tigers game today in Detroit\"}"
+            }
+          },
+          {
+            "id": "call_hvk7",
+            "type": "function",
+            "function": {
+              "name": "weather",
+              "arguments": "{\"city\": \"Detroit\"}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "queue_time": 0.012132366000000002,
+    "prompt_tokens": 296,
+    "prompt_time": 0.02126043,
+    "completion_tokens": 55,
+    "completion_time": 0.173039707,
+    "total_tokens": 351,
+    "total_time": 0.194300137
+  },
+  "system_fingerprint": "fp_ee4b521143",
+  "x_groq": {
+    "id": "req_01jb72npr0fj0t9p423mrdt52h"
+  }
+}

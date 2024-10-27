@@ -10,4 +10,5 @@ enum Provider: string
     case Ollama = 'ollama';
     case OpenAI = 'openai';
     case Mistral = 'mistral';
+    case Groq = 'groq';
 }

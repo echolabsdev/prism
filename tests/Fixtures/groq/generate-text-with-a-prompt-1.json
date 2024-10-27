@@ -1,0 +1,30 @@
+{
+  "id": "chatcmpl-ea37c181-ed35-4bd4-af20-c1fcf203e0d8",
+  "object": "chat.completion",
+  "created": 1730033815,
+  "model": "llama3-8b-8192",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "I am LLaMA, an AI assistant developed by Meta AI."
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "queue_time": 0.016606609,
+    "prompt_tokens": 13,
+    "prompt_time": 0.002070851,
+    "completion_tokens": 208,
+    "completion_time": 0.173333333,
+    "total_tokens": 221,
+    "total_time": 0.175404184
+  },
+  "system_fingerprint": "fp_af05557ca2",
+  "x_groq": {
+    "id": "req_01jb70t402ff28vnfp2dbp5eyx"
+  }
+}
