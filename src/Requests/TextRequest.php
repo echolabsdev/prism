@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Requests;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 
 class TextRequest
@@ -23,5 +24,6 @@ class TextRequest
         public readonly int|float|null $topP,
         public readonly array $tools,
         public readonly array $clientOptions,
+        public readonly string|ToolChoice|null $toolChoice,
     ) {}
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Providers\OpenAI;
 
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Enums\ToolChoice;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -151,9 +153,44 @@ describe('Text generation', function (): void {
         Prism::text()
             ->using('openai', 'gpt-4')
             ->withPrompt('Who are you?')
+
+            ->generate();
+        Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
+    });
+
+    it('handles specific tool choice', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-required-tool-call');
+
+        $tools = [
+            Tool::as('weather')
+                ->for('useful when you need to search for current weather conditions')
+                ->withStringParameter('city', 'The city that you want the weather for')
+                ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+            Tool::as('search')
+                ->for('useful for searching curret events or data')
+                ->withStringParameter('query', 'The detailed search query')
+                ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+        ];
+
+        $response = Prism::text()
+            ->using('openai', 'gpt-4o')
+            ->withPrompt('Do something')
+            ->withTools($tools)
+            ->withToolChoice('weather')
             ->generate();
 
-        Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
+        expect($response->toolCalls[0]->name)->toBe('weather');
+    });
+
+    it('throws an exception for ToolChoice::Any', function (): void {
+        $this->expectException(PrismException::class);
+        $this->expectExceptionMessage('Invalid tool choice');
+
+        Prism::text()
+            ->using('openai', 'gpt-4')
+            ->withPrompt('Who are you?')
+            ->withToolChoice(ToolChoice::Any)
+            ->generate();
     });
 });
 

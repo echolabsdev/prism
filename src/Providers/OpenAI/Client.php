@@ -40,6 +40,7 @@ class Client
         int|float|null $temperature,
         int|float|null $topP,
         ?array $tools,
+        string|array|null $toolChoice,
     ): Response {
         return $this->client->post(
             'chat/completions',
@@ -51,6 +52,7 @@ class Client
                 'temperature' => $temperature,
                 'top_p' => $topP,
                 'tools' => $tools,
+                'tool_choice' => $toolChoice,
             ]))
         );
     }
