@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Concerns;
 
+use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Tool;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Contracts\View\View;
 
