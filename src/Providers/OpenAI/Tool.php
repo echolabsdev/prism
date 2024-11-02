@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\OpenAI;
 
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\ProviderTool;
 use EchoLabs\Prism\Tool as PrismTool;
 
@@ -12,7 +13,7 @@ class Tool extends ProviderTool
     #[\Override]
     public static function toArray(PrismTool $tool): array
     {
-        return [
+        return array_filter([
             'type' => 'function',
             'function' => [
                 'name' => $tool->name(),
@@ -23,6 +24,7 @@ class Tool extends ProviderTool
                     'required' => $tool->requiredParameters(),
                 ],
             ],
-        ];
+            'strict' => data_get($tool->providerMeta(Provider::OpenAI), 'strict', null),
+        ]);
     }
 }

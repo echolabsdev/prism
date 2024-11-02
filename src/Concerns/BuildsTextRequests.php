@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Concerns;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Requests\TextRequest;
@@ -36,6 +37,23 @@ trait BuildsTextRequests
     protected int|float|null $topP = null;
 
     protected string|ToolChoice|null $toolChoice = null;
+
+    protected string $provider;
+
+    protected string $model;
+
+    public function using(string|Provider $provider, string $model): self
+    {
+        $this->provider = is_string($provider) ? $provider : $provider->value;
+        $this->model = $model;
+
+        return $this;
+    }
+
+    public function provider(): string
+    {
+        return $this->provider;
+    }
 
     public function withPrompt(string|View $prompt): self
     {

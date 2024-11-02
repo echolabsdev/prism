@@ -7,6 +7,7 @@ namespace EchoLabs\Prism;
 use ArgumentCountError;
 use Closure;
 use EchoLabs\Prism\Contracts\Schema;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\BooleanSchema;
@@ -33,6 +34,9 @@ class Tool
     /** @var Closure():string|callable():string */
     protected $fn;
 
+    /** @var array<string, array<string, mixed>> */
+    protected $providerMeta = [];
+
     public function as(string $name): self
     {
         $this->name = $name;
@@ -47,7 +51,6 @@ class Tool
         return $this;
     }
 
-    /** @param Closure():string|callable():string $fn */
     public function using(Closure|callable $fn): self
     {
         $this->fn = $fn;
@@ -134,6 +137,24 @@ class Tool
         $this->withParameter(new EnumSchema($name, $description, $options), $required);
 
         return $this;
+    }
+
+    /**
+     * @param  array<string, mixed>  $meta
+     */
+    public function withProviderMeta(Provider $provider, array $meta): self
+    {
+        $this->providerMeta[$provider->value] = $meta;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, mixed>> $meta
+     */
+    public function providerMeta(Provider $provider): array
+    {
+        return data_get($this->providerMeta, $provider->value, []);
     }
 
     /** @return array<int, string> */
