@@ -6,7 +6,6 @@ namespace EchoLabs\Prism\Generators;
 
 use EchoLabs\Prism\Concerns\BuildsTextRequests;
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
-use EchoLabs\Prism\Concerns\HasProvider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -20,7 +19,7 @@ use EchoLabs\Prism\ValueObjects\ToolResult;
 
 class TextGenerator
 {
-    use BuildsTextRequests, HandlesToolCalls, HasProvider;
+    use BuildsTextRequests, HandlesToolCalls;
 
     protected TextState $state;
 
