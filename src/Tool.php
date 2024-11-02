@@ -34,7 +34,7 @@ class Tool
     /** @var Closure():string|callable():string */
     protected $fn;
 
-    /** @var array<Provider, array<string, mixed>> */
+    /** @var array<string, array<string, mixed>> */
     protected $providerMeta = [];
 
     public function as(string $name): self
