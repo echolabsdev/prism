@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Concerns;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\Tool;
@@ -33,6 +34,8 @@ trait BuildsTextRequests
     protected int|float|null $temperature = null;
 
     protected int|float|null $topP = null;
+
+    protected string|ToolChoice|null $toolChoice = null;
 
     public function withPrompt(string|View $prompt): self
     {
@@ -116,6 +119,15 @@ trait BuildsTextRequests
         return $this;
     }
 
+    public function withToolChoice(string|ToolChoice|Tool $toolChoice): self
+    {
+        $this->toolChoice = $toolChoice instanceof Tool
+            ? $toolChoice->name()
+            : $toolChoice;
+
+        return $this;
+    }
+
     protected function textRequest(): TextRequest
     {
         return new TextRequest(
@@ -127,6 +139,7 @@ trait BuildsTextRequests
             topP: $this->topP,
             tools: $this->tools,
             clientOptions: $this->clientOptions,
+            toolChoice: $this->toolChoice,
         );
     }
 }

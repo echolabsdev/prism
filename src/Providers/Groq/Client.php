@@ -30,6 +30,7 @@ class Client
     /**
      * @param  array<int, mixed>  $messages
      * @param  array<int, mixed>|null  $tools
+     * @param  array<string, mixed>|string|null  $toolChoice
      */
     public function messages(
         string $model,
@@ -38,6 +39,7 @@ class Client
         int|float|null $temperature,
         int|float|null $topP,
         ?array $tools,
+        string|array|null $toolChoice,
     ): Response {
         return $this->client->post(
             'chat/completions',
@@ -49,6 +51,7 @@ class Client
                 'temperature' => $temperature,
                 'top_p' => $topP,
                 'tools' => $tools,
+                'tool_choice' => $toolChoice,
             ]))
         );
     }

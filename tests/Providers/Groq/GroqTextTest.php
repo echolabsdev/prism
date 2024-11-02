@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Providers\Groq;
 
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Enums\ToolChoice;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -99,6 +101,41 @@ describe('Text generation for Groq', function (): void {
         expect($response->text)->toBe(
             "The Tigers game is at 3pm in Detroit. Given the weather is 75° and sunny, it's likely to be warm, so you might not need a coat. However, it's always a good idea to check the weather closer to the game time as it can change."
         );
+    });
+
+    it('handles specific tool choice', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'groq/generate-text-with-required-tool-call');
+
+        $tools = [
+            Tool::as('weather')
+                ->for('useful when you need to search for current weather conditions')
+                ->withStringParameter('city', 'The city that you want the weather for')
+                ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+            Tool::as('search')
+                ->for('useful for searching curret events or data')
+                ->withStringParameter('query', 'The detailed search query')
+                ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+        ];
+
+        $response = Prism::text()
+            ->using(Provider::Groq, 'llama3-groq-70b-8192-tool-use-preview')
+            ->withPrompt('Do something')
+            ->withTools($tools)
+            ->withToolChoice('weather')
+            ->generate();
+
+        expect($response->toolCalls[0]->name)->toBe('weather');
+    });
+
+    it('throws an exception for ToolChoice::Any', function (): void {
+        $this->expectException(PrismException::class);
+        $this->expectExceptionMessage('Invalid tool choice');
+
+        Prism::text()
+            ->using('openai', 'gpt-4')
+            ->withPrompt('Who are you?')
+            ->withToolChoice(ToolChoice::Any)
+            ->generate();
     });
 });
 

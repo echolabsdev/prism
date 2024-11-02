@@ -137,6 +137,30 @@ describe('Text generation', function (): void {
             return true;
         });
     });
+
+    it('handles specific tool choice', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-required-tool-call');
+
+        $tools = [
+            Tool::as('weather')
+                ->for('useful when you need to search for current weather conditions')
+                ->withStringParameter('city', 'The city that you want the weather for')
+                ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+            Tool::as('search')
+                ->for('useful for searching curret events or data')
+                ->withStringParameter('query', 'The detailed search query')
+                ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+        ];
+
+        $response = Prism::text()
+            ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+            ->withPrompt('Do something')
+            ->withTools($tools)
+            ->withToolChoice('weather')
+            ->generate();
+
+        expect($response->toolCalls[0]->name)->toBe('weather');
+    });
 });
 
 describe('Image support', function (): void {

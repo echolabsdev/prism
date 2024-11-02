@@ -6,11 +6,13 @@ namespace EchoLabs\Prism\Providers\OpenAI;
 
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
+use InvalidArgumentException;
 use Throwable;
 
 class OpenAI implements Provider
@@ -37,6 +39,7 @@ class OpenAI implements Provider
                     temperature: $request->temperature,
                     topP: $request->topP,
                     tools: Tool::map($request->tools),
+                    toolChoice: $this->mapToolChoice($request->toolChoice),
                 );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
@@ -80,6 +83,27 @@ class OpenAI implements Provider
             name: data_get($toolCall, 'function.name'),
             arguments: data_get($toolCall, 'function.arguments'),
         ), $toolCalls);
+    }
+
+    /**
+     * @return array<string, mixed>|string|null
+     */
+    protected function mapToolChoice(string|ToolChoice|null $toolChoice): string|array|null
+    {
+        if (is_string($toolChoice)) {
+            return [
+                'type' => 'function',
+                'function' => [
+                    'name' => $toolChoice,
+                ],
+            ];
+        }
+
+        return match ($toolChoice) {
+            ToolChoice::Auto => 'auto',
+            null => $toolChoice,
+            default => throw new InvalidArgumentException('Invalid tool choice')
+        };
     }
 
     /**
