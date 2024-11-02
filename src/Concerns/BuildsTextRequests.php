@@ -119,9 +119,11 @@ trait BuildsTextRequests
         return $this;
     }
 
-    public function withToolChoice(string|ToolChoice $toolChoice): self
+    public function withToolChoice(string|ToolChoice|Tool $toolChoice): self
     {
-        $this->toolChoice = $toolChoice;
+        $this->toolChoice = $toolChoice instanceof Tool
+            ? $toolChoice->name()
+            : $toolChoice;
 
         return $this;
     }

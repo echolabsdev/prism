@@ -32,6 +32,7 @@ class Client
     /**
      * @param  array<int, mixed>  $messages
      * @param  array<int, mixed>|null  $tools
+     * @param  array<string, mixed>|string|null  $toolChoice
      */
     public function messages(
         string $model,

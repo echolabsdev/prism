@@ -86,8 +86,15 @@ class Anthropic implements Provider
         );
     }
 
+    /**
+     * @return array<string, mixed>|string|null
+     */
     protected function mapToolChoice(string|ToolChoice|null $toolChoice): string|array|null
     {
+        if (is_null($toolChoice)) {
+            return null;
+        }
+
         if (is_string($toolChoice)) {
             return [
                 'type' => 'tool',
@@ -95,11 +102,13 @@ class Anthropic implements Provider
             ];
         }
 
+        if (! in_array($toolChoice, [ToolChoice::Auto, ToolChoice::Any])) {
+            throw new InvalidArgumentException('Invalid tool choice');
+        }
+
         return match ($toolChoice) {
             ToolChoice::Auto => 'auto',
             ToolChoice::Any => 'any',
-            null => $toolChoice,
-            default => throw new InvalidArgumentException('Invalid tool choice')
         };
     }
 

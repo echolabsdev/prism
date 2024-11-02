@@ -83,6 +83,9 @@ class Groq implements Provider
         ), $toolCalls);
     }
 
+    /**
+     * @return array<string, mixed>|string|null
+     */
     protected function mapToolChoice(string|ToolChoice|null $toolChoice): string|array|null
     {
         if (is_string($toolChoice)) {
