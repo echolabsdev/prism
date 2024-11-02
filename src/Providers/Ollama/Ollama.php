@@ -11,6 +11,7 @@ use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
+use InvalidArgumentException;
 use Throwable;
 
 class Ollama implements Provider
@@ -24,6 +25,8 @@ class Ollama implements Provider
     public function text(TextRequest $request): ProviderResponse
     {
         try {
+            $this->validateTextRequest($request);
+
             $response = $this
                 ->client($request->clientOptions)
                 ->messages(
@@ -66,6 +69,13 @@ class Ollama implements Provider
                 'model' => data_get($data, 'model'),
             ]
         );
+    }
+
+    protected function validateTextRequest(TextRequest $textRequest): void
+    {
+        if ($textRequest->toolChoice) {
+            throw new InvalidArgumentException('Invalid tool choice');
+        }
     }
 
     /**
