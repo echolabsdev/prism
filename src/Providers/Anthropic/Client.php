@@ -40,6 +40,7 @@ class Client
         int|float|null $topP,
         ?string $systemPrompt,
         ?array $tools,
+        string|array|null $toolChoice,
     ): Response {
         return $this->client->post(
             'messages',
@@ -52,6 +53,7 @@ class Client
                 'temperature' => $temperature,
                 'top_p' => $topP,
                 'tools' => $tools,
+                'tool_choice' => $toolChoice,
             ]))
         );
     }

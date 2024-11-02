@@ -6,11 +6,13 @@ namespace EchoLabs\Prism\Providers\Anthropic;
 
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Requests\TextRequest;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
+use InvalidArgumentException;
 use Throwable;
 
 class Anthropic implements Provider
@@ -34,6 +36,7 @@ class Anthropic implements Provider
                     temperature: $request->temperature,
                     topP: $request->topP,
                     tools: Tool::map($request->tools),
+                    toolChoice: $this->mapToolChoice($request->toolChoice),
                 );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
@@ -81,6 +84,23 @@ class Anthropic implements Provider
                 'model' => data_get($data, 'model'),
             ]
         );
+    }
+
+    protected function mapToolChoice(string|ToolChoice|null $toolChoice): string|array|null
+    {
+        if (is_string($toolChoice)) {
+            return [
+                'type' => 'tool',
+                'name' => $toolChoice,
+            ];
+        }
+
+        return match ($toolChoice) {
+            ToolChoice::Auto => 'auto',
+            ToolChoice::Any => 'any',
+            null => $toolChoice,
+            default => throw new InvalidArgumentException('Invalid tool choice')
+        };
     }
 
     /**
