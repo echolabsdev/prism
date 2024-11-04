@@ -39,9 +39,20 @@ class MessageMap
             UserMessage::class => $this->mapUserMessage($message),
             AssistantMessage::class => $this->mapAssistantMessage($message),
             ToolResultMessage::class => $this->mapToolResultMessage($message),
-            SystemMessage::class => throw new Exception('Anthropic does not support '.SystemMessage::class),
+            SystemMessage::class => $this->mapSystemMessage($message),
             default => throw new Exception('Could not map message type '.$message::class),
         };
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function mapSystemMessage(SystemMessage $systemMessage): array
+    {
+        return [
+            'role' => 'user',
+            'content' => $systemMessage->content,
+        ];
     }
 
     /**
