@@ -62,7 +62,7 @@ class PrismFaker implements Provider
     }
 
     /**
-     * @param  Closure(array<int, TextRequest>)  $fn
+     * @param  Closure(array<int, TextRequest>):void  $fn
      */
     public function assertRequest(string $method, Closure $fn): void
     {
@@ -90,6 +90,7 @@ class PrismFaker implements Provider
         $actualCount = count($this->recorded['text'] ?? []);
         PHPUnit::assertEquals($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
     }
+
     protected function nextResponse(string $method): ?ProviderResponse
     {
         if (! isset($this->responses[$method])) {
