@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\App;
 class Prism
 {
     /**
-     * @param  array<string, array<int, ProviderResponse>>  $responses
+     * @param  array<int, ProviderResponse>  $responses
      */
     public static function fake(array $responses = []): PrismFaker
     {

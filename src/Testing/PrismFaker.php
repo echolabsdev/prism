@@ -15,44 +15,22 @@ use PHPUnit\Framework\Assert as PHPUnit;
 
 class PrismFaker implements Provider
 {
-    /** @var array<string, array<int, ProviderResponse>> */
-    protected array $responses = [];
+    protected int $responseSequence = 0;
 
-    /** @var array<string, int> */
-    protected array $responseSequence = [];
-
-    /** @var array<string, array<int, TextRequest>> */
+    /** @var array<int, TextRequest> */
     protected array $recorded = [];
 
     /**
-     * @param  array<string, array<int, ProviderResponse>>  $responses
-     */
-    public function __construct(array $responses = [])
-    {
-        foreach ($responses as $method => $methodResponses) {
-            $this->queueResponses($method, $methodResponses);
-        }
-    }
-
-    /**
-     * Queue responses for a specific method
-     *
      * @param  array<int, ProviderResponse>  $responses
      */
-    public function queueResponses(string $method, array $responses): self
-    {
-        $this->responses[$method] = $responses;
-        $this->responseSequence[$method] = 0;
-
-        return $this;
-    }
+    public function __construct(protected array $responses = []) {}
 
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
-        $this->recorded['text'][] = $request;
+        $this->recorded[] = $request;
 
-        return $this->nextResponse('text') ?? new ProviderResponse(
+        return $this->nextResponse() ?? new ProviderResponse(
             text: '',
             toolCalls: [],
             usage: new Usage(0, 0),
@@ -64,9 +42,9 @@ class PrismFaker implements Provider
     /**
      * @param  Closure(array<int, TextRequest>):void  $fn
      */
-    public function assertRequest(string $method, Closure $fn): void
+    public function assertRequest(Closure $fn): void
     {
-        $fn($this->recorded[$method]);
+        $fn($this->recorded);
     }
 
     public function assertPrompt(string $prompt): void
@@ -87,24 +65,25 @@ class PrismFaker implements Provider
      */
     public function assertCallCount(int $expectedCount): void
     {
-        $actualCount = count($this->recorded['text'] ?? []);
+        $actualCount = count($this->recorded ?? []);
+
         PHPUnit::assertEquals($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
     }
 
-    protected function nextResponse(string $method): ?ProviderResponse
+    protected function nextResponse(): ?ProviderResponse
     {
-        if (! isset($this->responses[$method])) {
+        if (! isset($this->responses)) {
             return null;
         }
 
-        $responses = $this->responses[$method];
-        $sequence = $this->responseSequence[$method];
+        $responses = $this->responses;
+        $sequence = $this->responseSequence;
 
         if (! isset($responses[$sequence])) {
             throw new Exception('Could not find a response for the request');
         }
 
-        $this->responseSequence[$method]++;
+        $this->responseSequence++;
 
         return $responses[$sequence];
     }
