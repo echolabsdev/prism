@@ -151,6 +151,7 @@ trait BuildsTextRequests
         return new TextRequest(
             model: $this->model,
             systemPrompt: $this->systemPrompt,
+            prompt: $this->prompt,
             messages: $this->state->messages()->toArray(),
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,

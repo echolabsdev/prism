@@ -18,6 +18,7 @@ class TextRequest
     public function __construct(
         public readonly string $model,
         public readonly ?string $systemPrompt,
+        public readonly string $prompt,
         public readonly array $messages,
         public readonly ?int $maxTokens,
         public readonly int|float|null $temperature,
