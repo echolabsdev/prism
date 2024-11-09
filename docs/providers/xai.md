@@ -1,4 +1,4 @@
-# XAI
+# xAI
 ## Configuration
 
 ```php
