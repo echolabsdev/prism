@@ -126,6 +126,10 @@ export default defineConfig({
                 text: "OpenAI",
                 link: "/providers/openai",
               },
+              {
+                text: "XAI",
+                link: "/providers/xai",
+              },
             ],
           },
           {
