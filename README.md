@@ -1,4 +1,4 @@
-![](docs/images/prism-banner.webp)
+![](assets/prism-banner.webp)
 
 <p align="center">
     <a href="https://packagist.org/packages/echolabsdev/prism">
