@@ -2,6 +2,9 @@
 
 The Prism docs are built using [Vitepress](https://vitepress.dev) and deployed via [Netlify](https://www.netlify.com).
 
+> [!IMPORTANT]
+> Make sure you review the [documentation style guide](./documentation-style-guide.md)!
+
 ## Development
 
 ```shell
