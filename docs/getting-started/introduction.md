@@ -60,10 +60,10 @@ Prism draws significant inspiration from the [Vercel AI SDK](https://sdk.vercel.
 
 We currently offer first-party support for these leading AI providers:
 
-- [Anthropic](https://anthropic.com) - Access Claude models for sophisticated reasoning and tool use
-- [Groq](https://groq.com) - Leverage high-performance inference for rapid response times
-- [Mistral](https://mistral.ai) - Use cutting-edge open models with commercial licensing
-- [Ollama](https://ollama.com) - Run open-source models locally for complete control
-- [OpenAI](https://openai.com) - Integrate with GPT-4 and other powerful models
+- [Anthropic](https://anthropic.com)
+- [Groq](https://groq.com)
+- [Mistral](https://mistral.ai)
+- [Ollama](https://ollama.com)
+- [OpenAI](https://openai.com)
 
 Each provider brings its own strengths to the table, and Prism makes it easy to use them all through a consistent, elegajnt interface.
