@@ -56,7 +56,7 @@ export default defineConfig({
       },
     ],
   ],
-  srcExclude: ["documentation-style-guide.md"],
+  srcExclude: ["**/README.md", "documentation-style-guide.md"],
   description:
     "Prism is a powerful Laravel package for integrating Large Language Models (LLMs) into your applications.",
   themeConfig: {
