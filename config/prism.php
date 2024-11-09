@@ -25,5 +25,9 @@ return [
             'api_key' => env('GROQ_API_KEY', ''),
             'url' => env('GROQ_URL', 'https://api.groq.com/openai/v1'),
         ],
+        'xai' => [
+            'api_key' => env('XAI_API_KEY', ''),
+            'url' => env('XAI_URL', 'https://api.x.ai/v1'),
+        ],
     ],
 ];

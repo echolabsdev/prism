@@ -1,0 +1,33 @@
+{
+  "id": "8a841ca7-b024-4c9d-acfa-65e0c2c73f39",
+  "object": "chat.completion",
+  "created": 1731131328,
+  "model": "grok-beta",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "0",
+            "function": {
+              "name": "weather",
+              "arguments": "{\"city\":\"here\"}"
+            },
+            "type": "function"
+          }
+        ],
+        "refusal": null
+      },
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 219,
+    "completion_tokens": 1,
+    "total_tokens": 220
+  },
+  "system_fingerprint": "fp_98261732b5"
+}
