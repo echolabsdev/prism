@@ -13,7 +13,7 @@ use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnit;
 
-class PrismFaker implements Provider
+class PrismFake implements Provider
 {
     protected int $responseSequence = 0;
 

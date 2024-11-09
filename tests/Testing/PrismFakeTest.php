@@ -14,11 +14,11 @@ use Exception;
 it('fake responses using the prism fake', function (): void {
     $fake = Prism::fake([
         new ProviderResponse(
-            'The meaning of life is 42',
-            [],
-            new Usage(42, 42),
-            FinishReason::Stop,
-            ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+            text: 'The meaning of life is 42',
+            toolCalls: [],
+            usage: new Usage(42, 42),
+            finishReason: FinishReason::Stop,
+            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
         ),
     ]);
 
@@ -41,11 +41,11 @@ it("throws an exception when it can't runs out of responses", function (): void 
 
     Prism::fake([
         new ProviderResponse(
-            'The meaning of life is 42',
-            [],
-            new Usage(42, 42),
-            FinishReason::Stop,
-            ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+            text: 'The meaning of life is 42',
+            toolCalls: [],
+            usage: new Usage(42, 42),
+            finishReason: FinishReason::Stop,
+            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
         ),
     ]);
 

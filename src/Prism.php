@@ -8,32 +8,30 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Generators\TextGenerator;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Testing\PrismFaker;
-use Illuminate\Support\Facades\App;
+use EchoLabs\Prism\Testing\PrismFake;
 
 class Prism
 {
     /**
      * @param  array<int, ProviderResponse>  $responses
      */
-    public static function fake(array $responses = []): PrismFaker
+    public static function fake(array $responses = []): PrismFake
     {
-        $faker = new PrismFaker($responses);
+        $fake = new PrismFake($responses);
 
-        // Replace the PrismManager instance with our faker
-        App::instance(PrismManager::class, new class($faker) extends PrismManager
+        app()->instance(PrismManager::class, new class($fake) extends PrismManager
         {
             public function __construct(
-                private readonly PrismFaker $faker
+                private readonly PrismFake $fake
             ) {}
 
             public function resolve(ProviderEnum|string $name): Provider
             {
-                return $this->faker;
+                return $this->fake;
             }
         });
 
-        return $faker;
+        return $fake;
     }
 
     public static function text(): TextGenerator
