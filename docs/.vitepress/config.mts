@@ -102,6 +102,10 @@ export default defineConfig({
                 text: "Prism Server",
                 link: "/core-concepts/prism-server",
               },
+              {
+                text: "Testing",
+                link: "/core-concepts/testing",
+              },
             ],
           },
           {
