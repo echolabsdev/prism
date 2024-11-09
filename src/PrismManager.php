@@ -152,7 +152,7 @@ class PrismManager
     /**
      * @param  array<string, string>  $config
      */
-    protected function createXAIProvider(array $config): XAI
+    protected function createXaiProvider(array $config): XAI
     {
         return new XAI(
             url: $config['url'],
