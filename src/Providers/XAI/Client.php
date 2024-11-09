@@ -18,7 +18,7 @@ class Client
     public function __construct(
         public readonly string $url,
         public readonly string $apiKey,
-        public readonly array $options = ['debug' => true],
+        public readonly array $options = [],
     ) {
         $this->client = Http::withHeaders(array_filter([
             'Authorization' => sprintf('Bearer %s', $this->apiKey),
