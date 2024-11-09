@@ -94,6 +94,10 @@ export default defineConfig({
                 link: "/core-concepts/text-generation",
               },
               {
+                text: "Testing",
+                link: "/core-concepts/testing",
+              },
+              {
                 text: "Tool & Function Calling",
                 link: "/core-concepts/tools-function-calling",
               },
