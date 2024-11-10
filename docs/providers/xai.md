@@ -11,12 +11,4 @@
 ## Limitations
 ### Image Support
 
-XAI does not support image inputs.
-
-```php
-// This is invalid
-$message = new UserMessage(
-    "What's in this image?",
-    [Image::fromPath('/path/to/image.jpg')]
-);
-```
+xAI does not support image inputs.
