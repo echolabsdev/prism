@@ -1,0 +1,23 @@
+{
+  "id": "0aa220cd-9634-4ba5-9593-5366bb313663",
+  "object": "chat.completion",
+  "created": 1730035716,
+  "model": "grok-beta",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The Tigers game in Detroit today is at 3pm, and considering the weather will be 45° and cold, you should definitely wear a coat."
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 316,
+    "completion_tokens": 33,
+    "total_tokens": 349
+  },
+  "system_fingerprint": "fp_ee4b521143"
+}

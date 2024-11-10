@@ -1,0 +1,34 @@
+{
+  "id": "0aa220cd-9634-4ba5-9593-5366bb313663",
+  "object": "chat.completion",
+  "created": 1731129810,
+  "model": "grok-beta",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "I am checking the game times in Detroit.",
+        "tool_calls": [
+          {
+            "id": "0",
+            "function": {
+              "name": "search_games",
+              "arguments": "{\"city\":\"Detroit\"}"
+            },
+            "type": "function"
+          }
+        ],
+        "refusal": null
+      },
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 242,
+    "completion_tokens": 10,
+    "total_tokens": 252
+  },
+  "system_fingerprint": "fp_98261732b5"
+}
+

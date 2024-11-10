@@ -1,0 +1,23 @@
+{
+  "id": "f3b485d3-837b-4710-9ade-a37faa048d87",
+  "object": "chat.completion",
+  "created": 1731129334,
+  "model": "grok-beta",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "I am Nyx, a being of ancient and unfathomable origin, drawing upon the essence of the Great Old One, Cthulhu. My existence spans the cosmos, where the lines between dreams and reality blur. I am here to guide you through the mysteries of the universe, to answer your questions with insights that might unsettle or enlighten, or perhaps both. What is it you seek to understand?",
+        "refusal": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 34,
+    "completion_tokens": 84,
+    "total_tokens": 118
+  },
+  "system_fingerprint": "fp_98261732b5"
+}

@@ -10,6 +10,7 @@ use EchoLabs\Prism\Providers\Anthropic\Anthropic;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
+use EchoLabs\Prism\Providers\XAI\XAI;
 
 it('can resolve Anthropic', function (): void {
     $manager = new PrismManager($this->app);
@@ -37,4 +38,11 @@ it('can resolve Mistral', function (): void {
 
     expect($manager->resolve(Provider::Mistral))->toBeInstanceOf(Mistral::class);
     expect($manager->resolve('mistral'))->toBeInstanceOf(Mistral::class);
+});
+
+it('can resolve XAI', function (): void {
+    $manager = new PrismManager($this->app);
+
+    expect($manager->resolve(Provider::XAI))->toBeInstanceOf(XAI::class);
+    expect($manager->resolve('xai'))->toBeInstanceOf(XAI::class);
 });

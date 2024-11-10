@@ -12,6 +12,7 @@ use EchoLabs\Prism\Providers\Groq\Groq;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
+use EchoLabs\Prism\Providers\XAI\XAI;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
 use RuntimeException;
@@ -143,6 +144,17 @@ class PrismManager
     protected function createGroqProvider(array $config): Groq
     {
         return new Groq(
+            url: $config['url'],
+            apiKey: $config['api_key'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createXaiProvider(array $config): XAI
+    {
+        return new XAI(
             url: $config['url'],
             apiKey: $config['api_key'],
         );
