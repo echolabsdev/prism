@@ -4,12 +4,10 @@ namespace Tests\Http;
 
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Generators\TextGenerator;
-use EchoLabs\Prism\Responses\TextResponse;
-use EchoLabs\Prism\States\TextState;
+use EchoLabs\Prism\Text\Generator;
+use EchoLabs\Prism\Text\Response;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\TextStep;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -21,34 +19,25 @@ beforeEach(function (): void {
 });
 
 it('handles chat requests successfully', function (): void {
-    $generator = Mockery::mock(TextGenerator::class);
+    $generator = Mockery::mock(Generator::class);
 
     $generator->expects('withMessages')
         ->withArgs(fn ($messages): bool => $messages[0] instanceof UserMessage
             && $messages[0]->text() === 'Who are you?')
         ->andReturnSelf();
 
-    $state = new TextState(
-        steps: collect([
-            new TextStep(
-                text: "I'm Nyx!",
-                finishReason: FinishReason::Stop,
-                toolCalls: [],
-                toolResults: [],
-                usage: new Usage(10, 10),
-                response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
-                messages: [
-                    new UserMessage('Who are you?'),
-                    new AssistantMessage("I'm Nyx!"),
-                ]
-            ),
-        ]),
+    $textResponse = new Response(
+        steps: collect(),
+        text: "I'm Nyx!",
+        finishReason: FinishReason::Stop,
+        toolCalls: [],
+        toolResults: [],
+        usage: new Usage(10, 10),
+        response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
         responseMessages: collect([
-            new AssistantMessage("I'm nyx!"),
-        ]),
+            new AssistantMessage("I'm Nyx!"),
+        ])
     );
-
-    $textResponse = new TextResponse($state);
 
     $generator->expects('generate')
         ->andReturns($textResponse);
@@ -87,7 +76,7 @@ it('handles chat requests successfully', function (): void {
             [
                 'index' => 0,
                 'message' => [
-                    'content' => "I'm nyx!",
+                    'content' => "I'm Nyx!",
                     'role' => 'assistant',
                 ],
                 'finish_reason' => 'stop',
@@ -97,34 +86,25 @@ it('handles chat requests successfully', function (): void {
 });
 
 it('handles streaming requests', function (): void {
-    $generator = Mockery::mock(TextGenerator::class);
+    $generator = Mockery::mock(Generator::class);
 
     $generator->expects('withMessages')
         ->withArgs(fn ($messages): bool => $messages[0] instanceof UserMessage
             && $messages[0]->text() === 'Who are you?')
         ->andReturnSelf();
 
-    $state = new TextState(
-        steps: collect([
-            new TextStep(
-                text: "I'm Nyx!",
-                finishReason: FinishReason::Stop,
-                toolCalls: [],
-                toolResults: [],
-                usage: new Usage(10, 10),
-                response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
-                messages: [
-                    new UserMessage('Who are you?'),
-                    new AssistantMessage("I'm Nyx!"),
-                ]
-            ),
-        ]),
+    $textResponse = new Response(
+        steps: collect(),
+        text: "I'm Nyx!",
+        finishReason: FinishReason::Stop,
+        toolCalls: [],
+        toolResults: [],
+        usage: new Usage(10, 10),
+        response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
         responseMessages: collect([
-            new AssistantMessage("I'm nyx!"),
-        ]),
+            new AssistantMessage("I'm Nyx!"),
+        ])
     );
-
-    $textResponse = new TextResponse($state);
 
     $generator->expects('generate')
         ->andReturns($textResponse);
@@ -160,7 +140,7 @@ it('handles streaming requests', function (): void {
             [
                 'delta' => [
                     'role' => 'assistant',
-                    'content' => "I'm nyx!",
+                    'content' => "I'm Nyx!",
                 ],
             ],
         ],

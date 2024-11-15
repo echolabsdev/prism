@@ -9,7 +9,7 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use InvalidArgumentException;
@@ -23,7 +23,7 @@ class Groq implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(Request $request): ProviderResponse
     {
         try {
             $response = $this

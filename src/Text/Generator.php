@@ -2,33 +2,30 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Generators;
+namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Concerns\BuildsTextRequests;
 use EchoLabs\Prism\Concerns\HandlesToolCalls;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Responses\TextResponse;
-use EchoLabs\Prism\States\TextState;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\TextStep;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 
-class TextGenerator
+class Generator
 {
     use BuildsTextRequests, HandlesToolCalls;
 
-    protected TextState $state;
+    protected ResponseBuilder $responseBuilder;
 
     public function __construct()
     {
-        $this->state = new TextState;
+        $this->responseBuilder = new ResponseBuilder;
     }
 
-    public function generate(): TextResponse
+    public function generate(): Response
     {
         $response = $this->sendProviderRequest();
 
@@ -36,31 +33,21 @@ class TextGenerator
             $toolResults = $this->handleToolCalls($response);
         }
 
-        $this->state->addStep(
-            $this->resultFromResponse($response, $toolResults ?? [])
-        );
+        $this->responseBuilder->addStep(new Step(
+            text: $response->text,
+            finishReason: $response->finishReason,
+            toolCalls: $response->toolCalls,
+            toolResults: $toolResults ?? [],
+            usage: $response->usage,
+            response: $response->response,
+            messages: $this->messages,
+        ));
 
         if ($this->shouldContinue($response)) {
             return $this->generate();
         }
 
-        return new TextResponse($this->state);
-    }
-
-    /**
-     * @param  array<int, ToolResult>  $toolResults
-     */
-    protected function resultFromResponse(ProviderResponse $response, array $toolResults): TextStep
-    {
-        return new TextStep(
-            text: $response->text,
-            finishReason: $response->finishReason,
-            toolCalls: $response->toolCalls,
-            toolResults: $toolResults,
-            usage: $response->usage,
-            response: $response->response,
-            messages: $this->state->messages()->toArray(),
-        );
+        return $this->responseBuilder->toResponse();
     }
 
     protected function sendProviderRequest(): ProviderResponse
@@ -69,12 +56,13 @@ class TextGenerator
             ->resolve($this->provider)
             ->text($this->textRequest());
 
-        $this->state->addResponseMessage(
-            new AssistantMessage(
-                $response->text,
-                $response->toolCalls
-            )
+        $responseMessage = new AssistantMessage(
+            $response->text,
+            $response->toolCalls
         );
+
+        $this->responseBuilder->addResponseMessage($responseMessage);
+        $this->messages[] = $responseMessage;
 
         return $response;
     }
@@ -95,14 +83,17 @@ class TextGenerator
             );
         }, $response->toolCalls);
 
-        $this->state->addResponseMessage(new ToolResultMessage($toolResults));
+        $resultMessage = new ToolResultMessage($toolResults);
+
+        $this->messages[] = $resultMessage;
+        $this->responseBuilder->addResponseMessage($resultMessage);
 
         return $toolResults;
     }
 
     protected function shouldContinue(ProviderResponse $response): bool
     {
-        return $this->state->steps()->count() < $this->maxSteps
+        return $this->responseBuilder->steps->count() < $this->maxSteps
             && $response->finishReason !== FinishReason::Stop;
     }
 }

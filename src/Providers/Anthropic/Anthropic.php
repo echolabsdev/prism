@@ -7,7 +7,7 @@ namespace EchoLabs\Prism\Providers\Anthropic;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -19,7 +19,7 @@ class Anthropic implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(Request $request): ProviderResponse
     {
         $handler = new Text($this->client($request->clientOptions));
 

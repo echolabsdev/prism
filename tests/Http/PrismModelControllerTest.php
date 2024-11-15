@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Http;
 
 use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Generators\TextGenerator;
+use EchoLabs\Prism\Text\Generator;
 use Illuminate\Testing\TestResponse;
 
 it('it returns prisms', function (): void {
-    PrismServer::register('nyx', fn (): \EchoLabs\Prism\Generators\TextGenerator => new TextGenerator);
-    PrismServer::register('omni', fn (): \EchoLabs\Prism\Generators\TextGenerator => new TextGenerator);
+    PrismServer::register('nyx', fn (): \EchoLabs\Prism\Text\Generator => new Generator);
+    PrismServer::register('omni', fn (): \EchoLabs\Prism\Text\Generator => new Generator);
 
     /** @var TestResponse */
     $response = $this->getJson('/prism/openai/v1/models');

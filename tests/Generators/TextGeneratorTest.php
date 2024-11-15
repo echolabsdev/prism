@@ -8,9 +8,9 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Generators\TextGenerator;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\Text\Generator;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -23,7 +23,7 @@ it('correctly resolves a provider', function (): void {
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    $response = (new TextGenerator)
+    $response = (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->generate();
 
@@ -35,7 +35,7 @@ it('allows for client options', function (): void {
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    (new TextGenerator)
+    (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withClientOptions(['timeout' => '100'])
         ->generate();
@@ -48,9 +48,9 @@ it('allows for provider string or enum', function (): void {
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    expect((new TextGenerator)->using('test', 'claude-3-5-sonnet-20240620')->provider())
+    expect((new Generator)->using('test', 'claude-3-5-sonnet-20240620')->provider())
         ->toBe('test');
-    expect((new TextGenerator)->using(Provider::Anthropic, 'claude-3-5-sonnet-20240620')->provider())
+    expect((new Generator)->using(Provider::Anthropic, 'claude-3-5-sonnet-20240620')->provider())
         ->toBe(Provider::Anthropic->value);
 });
 
@@ -59,7 +59,7 @@ it('correctly builds requests', function (): void {
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    (new TextGenerator)
+    (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withMaxTokens(500)
         ->usingTopP(0.8)
@@ -84,7 +84,7 @@ it('correctly builds requests with messages', function (): void {
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    (new TextGenerator)
+    (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withMessages([
@@ -109,7 +109,7 @@ it('correctly generates a request with tools', function (): void {
         ->withStringParameter('city', 'the city that you want the weather for')
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
-    (new TextGenerator)
+    (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withTools([$tool])
@@ -124,7 +124,7 @@ it('generates a response from the provider', function (): void {
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
 
-    $response = (new TextGenerator)
+    $response = (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->generate();
@@ -195,7 +195,7 @@ it('generates a response from the driver with tools and max steps', function ():
         ->withStringParameter('city', 'the city that you want the weather for')
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
-    $response = (new TextGenerator)
+    $response = (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withTools([$tool])
@@ -258,7 +258,7 @@ it('correctly stops using max steps', function (): void {
         ->withStringParameter('city', 'the city that you want the weather for')
         ->using(fn (string $city): string => 'the weather will be 75° and sunny');
 
-    $response = (new TextGenerator)
+    $response = (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withPrompt('Whats the weather today for Detroit')
         ->withMaxSteps(3) // more steps than necessary asserting that stops based on finish reason
@@ -285,7 +285,7 @@ it('correctly stops using max steps', function (): void {
 it('throws and exception if you send prompt and messages', function (): void {
     $this->expectException(PrismException::class);
 
-    (new TextGenerator)
+    (new Generator)
         ->withPrompt('Who are you?')
         ->withMessages([
             new UserMessage('Who are you?'),

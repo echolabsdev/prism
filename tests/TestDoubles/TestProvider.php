@@ -7,12 +7,12 @@ namespace Tests\TestDoubles;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 class TestProvider implements Provider
 {
-    public TextRequest $request;
+    public Request $request;
 
     /** @var array<string, mixed> */
     public array $clientOptions;
@@ -23,7 +23,7 @@ class TestProvider implements Provider
     public $callCount = 0;
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(Request $request): ProviderResponse
     {
         $this->callCount++;
 

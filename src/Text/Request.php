@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Requests;
+namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 
-class TextRequest
+class Request
 {
     /**
      * @param  array<int, Message>  $messages

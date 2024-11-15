@@ -9,7 +9,7 @@ use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -20,7 +20,7 @@ class Text
 {
     public function __construct(protected PendingRequest $client) {}
 
-    public function handle(TextRequest $request): ProviderResponse
+    public function handle(Request $request): ProviderResponse
     {
         try {
             $response = $this->sendRequest($request);
@@ -55,7 +55,7 @@ class Text
         );
     }
 
-    public function sendRequest(TextRequest $request): Response
+    public function sendRequest(Request $request): Response
     {
         return $this->client->post(
             'messages',

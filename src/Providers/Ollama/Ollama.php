@@ -8,7 +8,7 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use InvalidArgumentException;
@@ -22,7 +22,7 @@ class Ollama implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(Request $request): ProviderResponse
     {
         try {
             $this->validateTextRequest($request);
@@ -71,7 +71,7 @@ class Ollama implements Provider
         );
     }
 
-    protected function validateTextRequest(TextRequest $textRequest): void
+    protected function validateTextRequest(Request $textRequest): void
     {
         if ($textRequest->toolChoice) {
             throw new InvalidArgumentException('Invalid tool choice');

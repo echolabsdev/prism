@@ -2,18 +2,21 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects;
+namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
+use EchoLabs\Prism\ValueObjects\Usage;
 
-class TextStep
+class Step
 {
     /**
-     * @param  array<int, ToolCall>  $toolCalls
-     * @param  array<int, ToolResult>  $toolResults
+     * @param  ToolCall[]  $toolCalls
+     * @param  ToolResult[]  $toolResults
      * @param  array{id: string, model: string}  $response
-     * @param  array<int, Message>  $messages
+     * @param  Message[]  $messages
      */
     public function __construct(
         public readonly string $text,
@@ -22,6 +25,6 @@ class TextStep
         public readonly array $toolResults,
         public readonly Usage $usage,
         public readonly array $response,
-        public readonly array $messages = [],
+        public readonly array $messages,
     ) {}
 }

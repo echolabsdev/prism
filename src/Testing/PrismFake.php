@@ -8,7 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -17,7 +17,7 @@ class PrismFake implements Provider
 {
     protected int $responseSequence = 0;
 
-    /** @var array<int, TextRequest> */
+    /** @var array<int, Request> */
     protected array $recorded = [];
 
     /**
@@ -26,7 +26,7 @@ class PrismFake implements Provider
     public function __construct(protected array $responses = []) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(Request $request): ProviderResponse
     {
         $this->recorded[] = $request;
 
@@ -40,7 +40,7 @@ class PrismFake implements Provider
     }
 
     /**
-     * @param  Closure(array<int, TextRequest>):void  $fn
+     * @param  Closure(array<int, Request>):void  $fn
      */
     public function assertRequest(Closure $fn): void
     {
