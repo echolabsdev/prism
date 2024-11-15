@@ -54,6 +54,7 @@ class Text
             ]
         );
     }
+
     public function sendRequest(TextRequest $request): Response
     {
         return $this->client->post(
