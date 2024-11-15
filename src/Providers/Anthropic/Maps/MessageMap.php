@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Anthropic;
+namespace EchoLabs\Prism\Providers\Anthropic\Maps;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -19,27 +19,23 @@ class MessageMap
 {
     /**
      * @param  array<int, Message>  $messages
-     */
-    public function __construct(public readonly array $messages) {}
-
-    /**
      * @return array<int, mixed>
      */
-    public function __invoke(): array
+    public static function map(array $messages): array
     {
-        return array_map(fn (Message $message): array => $this->mapMessage($message), $this->messages);
+        return array_map(fn (Message $message): array => self::mapMessage($message), $messages);
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function mapMessage(Message $message): array
+    protected static function mapMessage(Message $message): array
     {
         return match ($message::class) {
-            UserMessage::class => $this->mapUserMessage($message),
-            AssistantMessage::class => $this->mapAssistantMessage($message),
-            ToolResultMessage::class => $this->mapToolResultMessage($message),
-            SystemMessage::class => $this->mapSystemMessage($message),
+            UserMessage::class => self::mapUserMessage($message),
+            AssistantMessage::class => self::mapAssistantMessage($message),
+            ToolResultMessage::class => self::mapToolResultMessage($message),
+            SystemMessage::class => self::mapSystemMessage($message),
             default => throw new Exception('Could not map message type '.$message::class),
         };
     }
@@ -47,7 +43,7 @@ class MessageMap
     /**
      * @return array<string, mixed>
      */
-    protected function mapSystemMessage(SystemMessage $systemMessage): array
+    protected static function mapSystemMessage(SystemMessage $systemMessage): array
     {
         return [
             'role' => 'user',
@@ -58,7 +54,7 @@ class MessageMap
     /**
      * @return array<string, mixed>
      */
-    protected function mapToolResultMessage(ToolResultMessage $message): array
+    protected static function mapToolResultMessage(ToolResultMessage $message): array
     {
         return [
             'role' => 'user',
@@ -73,7 +69,7 @@ class MessageMap
     /**
      * @return array<string, mixed>
      */
-    protected function mapUserMessage(UserMessage $message): array
+    protected static function mapUserMessage(UserMessage $message): array
     {
         $imageParts = array_map(function (Image $image): array {
             if ($image->isUrl()) {
@@ -103,7 +99,7 @@ class MessageMap
     /**
      * @return array<string, mixed>
      */
-    protected function mapAssistantMessage(AssistantMessage $message): array
+    protected static function mapAssistantMessage(AssistantMessage $message): array
     {
         if ($message->toolCalls) {
             $content = [];

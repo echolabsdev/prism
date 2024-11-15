@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
-use EchoLabs\Prism\Providers\Anthropic\Tool as AnthropicTool;
+use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
 use EchoLabs\Prism\Tool;
 
 it('maps tools', function (): void {
@@ -14,7 +14,7 @@ it('maps tools', function (): void {
         ->withStringParameter('query', 'the detailed search query')
         ->using(fn (): string => '[Search results]');
 
-    expect(AnthropicTool::toArray($tool))->toBe([
+    expect(ToolMap::map($tool))->toBe([
         'name' => 'search',
         'description' => 'Searching the web',
         'input_schema' => [
