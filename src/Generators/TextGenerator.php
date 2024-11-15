@@ -13,7 +13,7 @@ use EchoLabs\Prism\Responses\TextResponse;
 use EchoLabs\Prism\States\TextState;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\TextResult;
+use EchoLabs\Prism\ValueObjects\TextStep;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 
@@ -50,9 +50,9 @@ class TextGenerator
     /**
      * @param  array<int, ToolResult>  $toolResults
      */
-    protected function resultFromResponse(ProviderResponse $response, array $toolResults): TextResult
+    protected function resultFromResponse(ProviderResponse $response, array $toolResults): TextStep
     {
-        return new TextResult(
+        return new TextStep(
             text: $response->text,
             finishReason: $response->finishReason,
             toolCalls: $response->toolCalls,

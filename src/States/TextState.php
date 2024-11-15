@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\States;
 
 use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\ValueObjects\TextResult;
+use EchoLabs\Prism\ValueObjects\TextStep;
 use Illuminate\Support\Collection;
 
 class TextState
 {
     /**
      * @param  Collection<int, Message>  $messages
-     * @param  Collection<int, TextResult>  $steps
+     * @param  Collection<int, TextStep>  $steps
      * @param  Collection<int, Message>  $responseMessages
      */
     public function __construct(
@@ -46,7 +46,7 @@ class TextState
         return $this->messages;
     }
 
-    public function addStep(TextResult $step): self
+    public function addStep(TextStep $step): self
     {
         $this->steps->push($step);
 
@@ -54,7 +54,7 @@ class TextState
     }
 
     /**
-     * @return Collection<int, TextResult>
+     * @return Collection<int, TextStep>
      */
     public function steps(): Collection
     {

@@ -9,7 +9,7 @@ use EchoLabs\Prism\Responses\TextResponse;
 use EchoLabs\Prism\States\TextState;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\TextResult;
+use EchoLabs\Prism\ValueObjects\TextStep;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -30,7 +30,7 @@ it('handles chat requests successfully', function (): void {
 
     $state = new TextState(
         steps: collect([
-            new TextResult(
+            new TextStep(
                 text: "I'm Nyx!",
                 finishReason: FinishReason::Stop,
                 toolCalls: [],
@@ -106,7 +106,7 @@ it('handles streaming requests', function (): void {
 
     $state = new TextState(
         steps: collect([
-            new TextResult(
+            new TextStep(
                 text: "I'm Nyx!",
                 finishReason: FinishReason::Stop,
                 toolCalls: [],

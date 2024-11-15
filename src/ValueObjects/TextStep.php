@@ -7,7 +7,7 @@ namespace EchoLabs\Prism\ValueObjects;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
 
-class TextResult
+class TextStep
 {
     /**
      * @param  array<int, ToolCall>  $toolCalls

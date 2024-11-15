@@ -7,7 +7,7 @@ namespace EchoLabs\Prism\Responses;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\States\TextState;
-use EchoLabs\Prism\ValueObjects\TextResult;
+use EchoLabs\Prism\ValueObjects\TextStep;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 
 class TextResponse
 {
-    /** @var Collection<int, TextResult> */
+    /** @var Collection<int, TextStep> */
     public readonly Collection $steps;
 
     /** @var Collection<int, Message> */
@@ -43,7 +43,7 @@ class TextResponse
         $this->responseMessages = $state->responseMessages();
         $this->usage = $this->calculateTotalUsage();
 
-        /** @var TextResult */
+        /** @var TextStep */
         $finalStep = $this->steps->last();
 
         $this->text = $finalStep->text;
@@ -58,10 +58,10 @@ class TextResponse
         return new Usage(
             $this
                 ->steps
-                ->sum(fn (TextResult $result): int => $result->usage->promptTokens),
+                ->sum(fn (TextStep $result): int => $result->usage->promptTokens),
             $this
                 ->steps
-                ->sum(fn (TextResult $result): int => $result->usage->completionTokens)
+                ->sum(fn (TextStep $result): int => $result->usage->completionTokens)
         );
     }
 }
