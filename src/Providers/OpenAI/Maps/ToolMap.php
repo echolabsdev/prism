@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\OpenAI\Maps;
 
 use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Tool as PrismTool;
+use EchoLabs\Prism\Tool;
 
 class ToolMap
 {
     /**
-     * @param  PrismTool[]  $tools
+     * @param  Tool[]  $tools
      * @return array<string, mixed>
      */
     public static function Map(array $tools): array
     {
-        return array_map(fn (PrismTool $tool): array => array_filter([
+        return array_map(fn (Tool $tool): array => array_filter([
             'type' => 'function',
             'function' => [
                 'name' => $tool->name(),

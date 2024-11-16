@@ -9,7 +9,7 @@ use EchoLabs\Prism\Tool;
 class ToolMap
 {
     /**
-     * @param  PrismTool[]  $tools
+     * @param  Tool[]  $tools
      * @return array<string, mixed>
      */
     public static function Map(array $tools): array
