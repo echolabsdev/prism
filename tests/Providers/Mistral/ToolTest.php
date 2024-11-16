@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Providers\OpenAI;
+namespace Tests\Providers\Mistral;
 
-use EchoLabs\Prism\Providers\Mistral\Tool as MistralTool;
+use EchoLabs\Prism\Providers\Mistral\Maps\ToolMap;
 use EchoLabs\Prism\Tool;
 
 it('maps tools', function (): void {
@@ -14,7 +14,7 @@ it('maps tools', function (): void {
         ->withStringParameter('query', 'the detailed search query')
         ->using(fn (): string => '[Search results]');
 
-    expect(MistralTool::toArray($tool))->toBe([
+    expect(ToolMap::map([$tool]))->toBe([[
         'type' => 'function',
         'function' => [
             'name' => $tool->name(),
@@ -25,5 +25,5 @@ it('maps tools', function (): void {
                 'required' => $tool->requiredParameters(),
             ],
         ],
-    ]);
+    ]]);
 });

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Mistral;
+namespace EchoLabs\Prism\Providers\Mistral\Maps;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -12,7 +12,6 @@ use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
-use Illuminate\Support\Str;
 
 class MessageMap
 {
@@ -47,7 +46,7 @@ class MessageMap
         return $this->mappedMessages;
     }
 
-    public function mapMessage(Message $message): void
+    protected function mapMessage(Message $message): void
     {
         match ($message::class) {
             UserMessage::class => $this->mapUserMessage($message),
@@ -79,12 +78,12 @@ class MessageMap
 
     protected function mapUserMessage(UserMessage $message): void
     {
-        $imageParts = array_map(fn (Image $part): array => [
+        $imageParts = array_map(fn (Image $image): array => [
             'type' => 'image_url',
             'image_url' => [
-                'url' => Str::isUrl($part->image)
-                    ? $part->image
-                    : sprintf('data:%s;base64,%s', $part->mimeType ?? 'image/jpeg', $part->image),
+                'url' => $image->isUrl()
+                    ? $image->image
+                    : sprintf('data:%s;base64,%s', $image->mimeType, $image->image),
             ],
         ], $message->images());
 
