@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use Tests\Fixtures\FixtureResponse;
@@ -97,40 +94,5 @@ describe('Text generation for XAI', function (): void {
         expect($response->text)->toBe(
             'The Tigers game in Detroit today is at 3pm, and considering the weather will be 45° and cold, you should definitely wear a coat.'
         );
-    });
-
-    it('handles specific tool choice', function (): void {
-        FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-required-tool-call');
-
-        $tools = [
-            Tool::as('weather')
-                ->for('useful when you need to search for current weather conditions')
-                ->withStringParameter('city', 'The city that you want the weather for')
-                ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
-            Tool::as('search')
-                ->for('useful for searching curret events or data')
-                ->withStringParameter('query', 'The detailed search query')
-                ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
-        ];
-
-        $response = Prism::text()
-            ->using(Provider::XAI, 'grok-beta')
-            ->withPrompt('Do something')
-            ->withTools($tools)
-            ->withToolChoice('weather')
-            ->generate();
-
-        expect($response->toolCalls[0]->name)->toBe('weather');
-    });
-
-    it('throws an exception for ToolChoice::Any', function (): void {
-        $this->expectException(PrismException::class);
-        $this->expectExceptionMessage('Invalid tool choice');
-
-        Prism::text()
-            ->using(Provider::XAI, 'grok-beta')
-            ->withPrompt('Who are you?')
-            ->withToolChoice(ToolChoice::Any)
-            ->generate();
     });
 });

@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\XAI;
+namespace EchoLabs\Prism\Providers\XAI\Maps;
 
-use EchoLabs\Prism\Providers\ProviderTool;
-use EchoLabs\Prism\Tool as PrismTool;
+use EchoLabs\Prism\Tool;
 
-class Tool extends ProviderTool
+class ToolMap
 {
-    #[\Override]
-    public static function toArray(PrismTool $tool): array
+    /**
+     * @param  Tool[]  $tools
+     * @return array<string, mixed>
+     */
+    public static function Map(array $tools): array
     {
-        return [
+        return array_map(fn (Tool $tool): array => array_filter([
             'type' => 'function',
             'function' => [
                 'name' => $tool->name(),
@@ -23,6 +25,6 @@ class Tool extends ProviderTool
                     'required' => $tool->requiredParameters(),
                 ],
             ],
-        ];
+        ]), $tools);
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\XAI;
+namespace EchoLabs\Prism\Providers\XAI\Maps;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -45,7 +45,7 @@ class MessageMap
         return $this->mappedMessages;
     }
 
-    public function mapMessage(Message $message): void
+    protected function mapMessage(Message $message): void
     {
         match ($message::class) {
             UserMessage::class => $this->mapUserMessage($message),
@@ -80,7 +80,8 @@ class MessageMap
         $this->mappedMessages[] = [
             'role' => 'user',
             'content' => [
-                ['type' => 'text', 'text' => $message->text()],
+                'type' => 'text',
+                'text' => $message->text(),
             ],
         ];
     }
