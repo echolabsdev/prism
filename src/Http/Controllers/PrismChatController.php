@@ -4,8 +4,8 @@ namespace EchoLabs\Prism\Http\Controllers;
 
 use EchoLabs\Prism\Exceptions\PrismServerException;
 use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Generators\TextGenerator;
-use EchoLabs\Prism\Responses\TextResponse;
+use EchoLabs\Prism\Text\Generator;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Support\ItemNotFoundException;
@@ -40,7 +40,7 @@ class PrismChatController
         }
     }
 
-    protected function stream(TextGenerator $generator): Response
+    protected function stream(Generator $generator): Response
     {
         return response()->stream(function () use ($generator): void {
             $response = $generator->generate();
@@ -79,7 +79,7 @@ class PrismChatController
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-    protected function chat(TextGenerator $generator): Response
+    protected function chat(Generator $generator): Response
     {
         $response = $generator->generate();
 
@@ -131,7 +131,7 @@ class PrismChatController
             ->toArray();
     }
 
-    protected function resolvePrism(string $model): TextGenerator
+    protected function resolvePrism(string $model): Generator
     {
         try {
             $prism = PrismServer::prisms()

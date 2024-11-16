@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Providers\OpenAI;
+namespace Tests\Providers\Groq;
 
-use EchoLabs\Prism\Providers\OpenAI\MessageMap;
+use EchoLabs\Prism\Providers\Groq\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
@@ -28,7 +28,7 @@ it('maps user messages', function (): void {
     ]]);
 });
 
-it('maps user messages with images', function (): void {
+it('maps user messages with images from path', function (): void {
     $messageMap = new MessageMap(
         messages: [
             new UserMessage('Who are you?', [
@@ -45,7 +45,45 @@ it('maps user messages with images', function (): void {
     expect(data_get($mappedMessage, '0.content.1.image_url.url'))
         ->toStartWith('data:image/png;base64,');
     expect(data_get($mappedMessage, '0.content.1.image_url.url'))
-        ->toContain(Image::fromPath('tests/Fixtures/test-image.png')->image);
+        ->toContain(base64_encode(file_get_contents('tests/Fixtures/test-image.png')));
+});
+
+it('maps user messages with images from base64', function (): void {
+    $messageMap = new MessageMap(
+        messages: [
+            new UserMessage('Who are you?', [
+                Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png'),
+            ]),
+        ],
+        systemPrompt: ''
+    );
+
+    $mappedMessage = $messageMap();
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('image_url');
+    expect(data_get($mappedMessage, '0.content.1.image_url.url'))
+        ->toStartWith('data:image/png;base64,');
+    expect(data_get($mappedMessage, '0.content.1.image_url.url'))
+        ->toContain(base64_encode(file_get_contents('tests/Fixtures/test-image.png')));
+});
+
+it('maps user messages with images from url', function (): void {
+    $messageMap = new MessageMap(
+        messages: [
+            new UserMessage('Who are you?', [
+                Image::fromUrl('https://storage.echolabs.dev/assets/logo.png'),
+            ]),
+        ],
+        systemPrompt: ''
+    );
+
+    $mappedMessage = $messageMap();
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('image_url');
+    expect(data_get($mappedMessage, '0.content.1.image_url.url'))
+        ->toBe('https://storage.echolabs.dev/assets/logo.png');
 });
 
 it('maps assistant message', function (): void {

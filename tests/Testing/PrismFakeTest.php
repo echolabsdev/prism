@@ -7,7 +7,7 @@ namespace Tests\Testing;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 
@@ -31,7 +31,7 @@ it('fake responses using the prism fake', function (): void {
     $fake->assertPrompt('What is the meaning of life?');
     $fake->assertRequest(function (array $requests): void {
         expect($requests)->toHaveCount(1);
-        expect($requests[0])->toBeInstanceOf(TextRequest::class);
+        expect($requests[0])->toBeInstanceOf(Request::class);
     });
 });
 

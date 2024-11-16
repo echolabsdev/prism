@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Providers\OpenAI;
+namespace Tests\Providers\Mistral;
 
-use EchoLabs\Prism\Providers\OpenAI\MessageMap;
+use EchoLabs\Prism\Providers\Mistral\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;

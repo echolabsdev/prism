@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\OpenAI;
 
-use EchoLabs\Prism\Providers\OpenAI\Tool as OpenAITool;
+use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
 use EchoLabs\Prism\Tool;
 
 it('maps tools', function (): void {
@@ -14,7 +14,7 @@ it('maps tools', function (): void {
         ->withStringParameter('query', 'the detailed search query')
         ->using(fn (): string => '[Search results]');
 
-    expect(OpenAITool::toArray($tool))->toBe([
+    expect(ToolMap::map([$tool]))->toBe([[
         'type' => 'function',
         'function' => [
             'name' => $tool->name(),
@@ -25,5 +25,5 @@ it('maps tools', function (): void {
                 'required' => $tool->requiredParameters(),
             ],
         ],
-    ]);
+    ]]);
 });

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
-use EchoLabs\Prism\Providers\Anthropic\MessageMap;
+use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -15,13 +15,9 @@ use EchoLabs\Prism\ValueObjects\ToolResult;
 use InvalidArgumentException;
 
 it('maps user messages', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new UserMessage('Who are you?'),
-        ],
-    );
-
-    expect($messageMap())->toBe([[
+    expect(MessageMap::map([
+        new UserMessage('Who are you?'),
+    ]))->toBe([[
         'role' => 'user',
         'content' => [
             ['type' => 'text', 'text' => 'Who are you?'],
@@ -30,15 +26,11 @@ it('maps user messages', function (): void {
 });
 
 it('maps user messages with images from path', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new UserMessage('Who are you?', [
-                Image::fromPath('tests/Fixtures/test-image.png'),
-            ]),
-        ],
-    );
-
-    $mappedMessage = $messageMap();
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Who are you?', [
+            Image::fromPath('tests/Fixtures/test-image.png'),
+        ]),
+    ]);
 
     expect(data_get($mappedMessage, '0.content.1.type'))
         ->toBe('image');
@@ -51,15 +43,11 @@ it('maps user messages with images from path', function (): void {
 });
 
 it('maps user messages with images from base64', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new UserMessage('Who are you?', [
-                Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png'),
-            ]),
-        ],
-    );
-
-    $mappedMessage = $messageMap();
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Who are you?', [
+            Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png'),
+        ]),
+    ]);
 
     expect(data_get($mappedMessage, '0.content.1.type'))
         ->toBe('image');
@@ -73,47 +61,34 @@ it('maps user messages with images from base64', function (): void {
 
 it('does not maps user messages with images from url', function (): void {
     $this->expectException(InvalidArgumentException::class);
-
-    $messageMap = new MessageMap(
-        messages: [
-            new UserMessage('Who are you?', [
-                Image::fromUrl('https://storage.echolabs.dev/assets/logo.png'),
-            ]),
-        ],
-    );
-
-    $messageMap();
+    MessageMap::map([
+        new UserMessage('Who are you?', [
+            Image::fromUrl('https://storage.echolabs.dev/assets/logo.png'),
+        ]),
+    ]);
 });
 
 it('maps assistant message', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new AssistantMessage('I am Nyx'),
-        ],
-    );
-
-    expect($messageMap())->toContain([
+    expect(MessageMap::map([
+        new AssistantMessage('I am Nyx'),
+    ]))->toContain([
         'role' => 'assistant',
         'content' => 'I am Nyx',
     ]);
 });
 
 it('maps assistant message with tool calls', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new AssistantMessage('I am Nyx', [
-                new ToolCall(
-                    'tool_1234',
-                    'search',
-                    [
-                        'query' => 'Laravel collection methods',
-                    ]
-                ),
-            ]),
-        ],
-    );
-
-    expect($messageMap())->toBe([
+    expect(MessageMap::map([
+        new AssistantMessage('I am Nyx', [
+            new ToolCall(
+                'tool_1234',
+                'search',
+                [
+                    'query' => 'Laravel collection methods',
+                ]
+            ),
+        ]),
+    ]))->toBe([
         [
             'role' => 'assistant',
             'content' => [
@@ -135,22 +110,18 @@ it('maps assistant message with tool calls', function (): void {
 });
 
 it('maps tool result messages', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new ToolResultMessage([
-                new ToolResult(
-                    'tool_1234',
-                    'search',
-                    [
-                        'query' => 'Laravel collection methods',
-                    ],
-                    '[search results]'
-                ),
-            ]),
-        ],
-    );
-
-    expect($messageMap())->toBe([
+    expect(MessageMap::map([
+        new ToolResultMessage([
+            new ToolResult(
+                'tool_1234',
+                'search',
+                [
+                    'query' => 'Laravel collection methods',
+                ],
+                '[search results]'
+            ),
+        ]),
+    ]))->toBe([
         [
             'role' => 'user',
             'content' => [
@@ -165,13 +136,9 @@ it('maps tool result messages', function (): void {
 });
 
 it('maps system messages', function (): void {
-    $messageMap = new MessageMap(
-        messages: [
-            new SystemMessage('Who are you?'),
-        ],
-    );
-
-    expect($messageMap())->toBe([[
+    expect(MessageMap::map([
+        new SystemMessage('Who are you?'),
+    ]))->toBe([[
         'role' => 'user',
         'content' => 'Who are you?',
     ]]);

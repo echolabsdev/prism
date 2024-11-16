@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
-use EchoLabs\Prism\Providers\OpenAI\MessageMap;
+use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -22,7 +22,7 @@ it('maps user messages', function (): void {
     expect($messageMap())->toBe([[
         'role' => 'user',
         'content' => [
-            ['type' => 'text', 'text' => 'Who are you?'],
+            'type' => 'text', 'text' => 'Who are you?',
         ],
     ]]);
 });

@@ -19,6 +19,10 @@ Prism::text() // [!code focus]
 ```
 
 ## Limitations
+### Image URL
+
+Ollama does not support images using `Image::fromUrl()`.
+
 ### Tool Choice
 
 Ollama does not currently support tool choice / required tools.

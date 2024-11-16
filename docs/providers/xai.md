@@ -9,6 +9,10 @@
 ```
 
 ## Limitations
+### Tool Choice
+
+xAI does not support `->withToolChoice`.
+
 ### Image Support
 
 xAI does not support image inputs.

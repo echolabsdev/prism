@@ -8,7 +8,7 @@ use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Requests\TextRequest;
+use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\Tool;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Contracts\View\View;
@@ -63,7 +63,7 @@ trait BuildsTextRequests
 
         $this->prompt = is_string($prompt) ? $prompt : $prompt->render();
 
-        $this->state->addMessage(new UserMessage($this->prompt));
+        $this->messages[] = new UserMessage($this->prompt);
 
         return $this;
     }
@@ -94,7 +94,7 @@ trait BuildsTextRequests
             throw PrismException::promptOrMessages();
         }
 
-        $this->state->setMessages($messages);
+        $this->messages = $messages;
 
         return $this;
     }
@@ -146,13 +146,13 @@ trait BuildsTextRequests
         return $this;
     }
 
-    protected function textRequest(): TextRequest
+    protected function textRequest(): Request
     {
-        return new TextRequest(
+        return new Request(
             model: $this->model,
             systemPrompt: $this->systemPrompt,
             prompt: $this->prompt,
-            messages: $this->state->messages()->toArray(),
+            messages: $this->messages,
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
             topP: $this->topP,
