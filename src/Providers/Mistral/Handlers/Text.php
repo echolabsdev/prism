@@ -31,12 +31,12 @@ class Text
 
         $data = $response->json();
 
-        if (data_get($data, 'error') || ! $data) {
+        if (data_get($data, 'object') === 'error' || ! $data) {
             throw PrismException::providerResponseError(vsprintf(
                 'Mistral Error:  [%s] %s',
                 [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
+                    data_get($data, 'type', 'unknown'),
+                    data_get($data, 'message', 'unknown'),
                 ]
             ));
         }
