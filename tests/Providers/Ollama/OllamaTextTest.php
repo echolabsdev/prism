@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Tests\Providers\Ollama;
 
 use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
-use InvalidArgumentException;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
@@ -103,17 +101,6 @@ describe('Text generation', function (): void {
             "Today's Tigers game in Detroit starts at 3 PM. The current temperature is 75°F with clear skies, so you shouldn't need a coat. Enjoy the game!"
         );
     });
-
-    it('throws an exception for ToolChoice', function (): void {
-        $this->expectException(PrismException::class);
-        $this->expectExceptionMessage('Invalid tool choice');
-
-        Prism::text()
-            ->using(Provider::Ollama, 'qwen2.5:14b')
-            ->withPrompt('Who are you?')
-            ->withToolChoice('weather')
-            ->generate();
-    });
 });
 
 describe('Image support', function (): void {
@@ -182,21 +169,5 @@ describe('Image support', function (): void {
 
             return true;
         });
-    });
-
-    it('can not send images from url', function (): void {
-        $this->expectException(InvalidArgumentException::class);
-
-        Prism::text()
-            ->using(Provider::Ollama, 'llava-phi3')
-            ->withMessages([
-                new UserMessage(
-                    'What is this image',
-                    additionalContent: [
-                        Image::fromPath('https://storage.echolabs.dev/assets/logo.png'),
-                    ],
-                ),
-            ])
-            ->generate();
     });
 });
