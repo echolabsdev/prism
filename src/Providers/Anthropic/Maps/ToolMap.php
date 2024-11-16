@@ -9,11 +9,12 @@ use EchoLabs\Prism\Tool as PrismTool;
 class ToolMap
 {
     /**
-     * @return array{name: string, description: string, input_schema: array{type: string, properties: array<string, mixed>, required: string[]}}
+     * @param  PrismTool[]  $tools
+     * @return array<string, mixed>
      */
-    public static function map(PrismTool $tool): array
+    public static function map(array $tools): array
     {
-        return [
+        return array_map(fn (PrismTool $tool): array => [
             'name' => $tool->name(),
             'description' => $tool->description(),
             'input_schema' => [
@@ -21,6 +22,6 @@ class ToolMap
                 'properties' => $tool->parameters(),
                 'required' => $tool->requiredParameters(),
             ],
-        ];
+        ], $tools);
     }
 }

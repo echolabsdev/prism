@@ -20,7 +20,7 @@ class Tool extends ProviderTool
                 'parameters' => [
                     'type' => 'object',
                     'properties' => collect($tool->parameters())
-                        ->keyBy('name')
+                        ->keyBy(fn (array $field, string $key): string => $key)
                         ->map(fn (array $field): array => [
                             'description' => $field['description'],
                             'type' => $field['type'],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\OpenAI;
 
-use EchoLabs\Prism\Providers\OpenAI\MessageMap;
+use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;

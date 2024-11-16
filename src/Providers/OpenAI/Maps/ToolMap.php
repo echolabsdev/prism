@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\OpenAI;
+namespace EchoLabs\Prism\Providers\OpenAI\Maps;
 
 use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Providers\ProviderTool;
 use EchoLabs\Prism\Tool as PrismTool;
 
-class Tool extends ProviderTool
+class ToolMap
 {
-    #[\Override]
-    public static function toArray(PrismTool $tool): array
+    /**
+     * @param  PrismTool[]  $tools
+     * @return array<string, mixed>
+     */
+    public static function Map(array $tools): array
     {
-        return array_filter([
+        return array_map(fn (PrismTool $tool): array => array_filter([
             'type' => 'function',
             'function' => [
                 'name' => $tool->name(),
@@ -25,6 +27,6 @@ class Tool extends ProviderTool
                 ],
             ],
             'strict' => data_get($tool->providerMeta(Provider::OpenAI), 'strict', null),
-        ]);
+        ]), $tools);
     }
 }

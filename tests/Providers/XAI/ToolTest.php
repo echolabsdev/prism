@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
-use EchoLabs\Prism\Providers\OpenAI\Tool as OpenAITool;
+use EchoLabs\Prism\Providers\XAI\Tool as XAITool;
 use EchoLabs\Prism\Tool;
 
 it('maps tools', function (): void {
@@ -14,7 +14,7 @@ it('maps tools', function (): void {
         ->withStringParameter('query', 'the detailed search query')
         ->using(fn (): string => '[Search results]');
 
-    expect(OpenAITool::toArray($tool))->toBe([
+    expect(XAITool::toArray($tool))->toBe([
         'type' => 'function',
         'function' => [
             'name' => $tool->name(),

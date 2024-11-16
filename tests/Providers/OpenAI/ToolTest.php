@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Providers\OpenAI;
 
 use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Providers\OpenAI\Tool as OpenAITool;
+use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
 use EchoLabs\Prism\Tool;
 
 it('maps tools', function (): void {
@@ -15,7 +15,7 @@ it('maps tools', function (): void {
         ->withStringParameter('query', 'the detailed search query')
         ->using(fn (): string => '[Search results]');
 
-    expect(OpenAITool::toArray($tool))->toBe([
+    expect(ToolMap::map([$tool]))->toBe([[
         'type' => 'function',
         'function' => [
             'name' => $tool->name(),
@@ -26,7 +26,7 @@ it('maps tools', function (): void {
                 'required' => $tool->requiredParameters(),
             ],
         ],
-    ]);
+    ]]);
 });
 
 it('maps tools with strict mode', function (): void {
@@ -39,7 +39,7 @@ it('maps tools with strict mode', function (): void {
             'strict' => true,
         ]);
 
-    expect(OpenAITool::toArray($tool))->toBe([
+    expect(ToolMap::map([$tool]))->toBe([[
         'type' => 'function',
         'function' => [
             'name' => $tool->name(),
@@ -51,5 +51,5 @@ it('maps tools with strict mode', function (): void {
             ],
         ],
         'strict' => true,
-    ]);
+    ]]);
 });

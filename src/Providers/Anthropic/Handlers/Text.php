@@ -8,6 +8,7 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
+use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -67,7 +68,7 @@ class Text
                 'system' => $request->systemPrompt,
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
-                'tools' => $request->tools,
+                'tools' => ToolMap::map($request->tools),
                 'tool_choice' => ToolChoiceMap::map($request->toolChoice),
             ]))
         );

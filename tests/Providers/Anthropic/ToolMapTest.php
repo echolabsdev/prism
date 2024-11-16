@@ -14,7 +14,7 @@ it('maps tools', function (): void {
         ->withStringParameter('query', 'the detailed search query')
         ->using(fn (): string => '[Search results]');
 
-    expect(ToolMap::map($tool))->toBe([
+    expect(ToolMap::map([$tool]))->toBe([[
         'name' => 'search',
         'description' => 'Searching the web',
         'input_schema' => [
@@ -27,5 +27,5 @@ it('maps tools', function (): void {
             ],
             'required' => ['query'],
         ],
-    ]);
+    ]]);
 });

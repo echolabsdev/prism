@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
-use EchoLabs\Prism\Providers\OpenAI\MessageMap;
+use EchoLabs\Prism\Providers\XAI\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
