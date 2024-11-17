@@ -7,8 +7,9 @@ namespace EchoLabs\Prism;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\Structured\Generator as StructuredGenerator;
 use EchoLabs\Prism\Testing\PrismFake;
-use EchoLabs\Prism\Text\Generator;
+use EchoLabs\Prism\Text\Generator as TextGenerator;
 
 class Prism
 {
@@ -34,8 +35,13 @@ class Prism
         return $fake;
     }
 
-    public static function text(): Generator
+    public static function text(): TextGenerator
     {
-        return new Generator;
+        return new TextGenerator;
+    }
+
+    public static function structured(): StructuredGenerator
+    {
+        return new StructuredGenerator;
     }
 }

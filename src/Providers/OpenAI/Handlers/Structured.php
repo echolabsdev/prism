@@ -1,23 +1,23 @@
 <?php
 
-declare(strict_types=1);
-
 namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 
+use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolCallMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
+use EchoLabs\Prism\Providers\OpenAI\Support\StructuredMode as SupportStructuredMode;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Throwable;
 
-class Text
+class Structured
 {
     public function __construct(protected PendingRequest $client) {}
 
@@ -69,7 +69,35 @@ class Text
                 'top_p' => $request->topP,
                 'tools' => ToolMap::map($request->tools),
                 'tool_choice' => ToolChoiceMap::map($request->toolChoice),
+                'response_format' => $this->mapResponseFormat($request),
             ]))
         );
+    }
+
+    /**
+     * @return array{type: 'json_schema', json_schema: array<string, mixed>}|array{type: 'json_object'}|null
+     */
+    protected function mapResponseFormat(Request $request): ?array
+    {
+        $mode = SupportStructuredMode::forModel($request->model);
+
+        if ($mode === StructuredMode::Structured) {
+            return [
+                'type' => 'json_schema',
+                'json_schema' => [
+                    'name' => $request->schema->name(),
+                    'schema' => $request->schema->toArray(),
+                    'strict' => true,
+                ],
+            ];
+        }
+
+        if ($mode === StructuredMode::Json) {
+            return [
+                'type' => 'json_object',
+            ];
+        }
+
+        return null;
     }
 }
