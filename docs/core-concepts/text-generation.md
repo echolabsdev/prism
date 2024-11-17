@@ -130,7 +130,7 @@ The value is passed through to the provider. The range depends on the provider a
 
 `withClientOptions`
 
-Under the hood we use Laravel's [HTTP client](https://laravel.com/docs/11.x/http-client#main-content). You can use this method to pass any of Guzzles [request options](https://docs.guzzlephp.org/en/stable/request-options.html) e.g. `->withCLientOptions(['timeout' => 30])`.
+Under the hood we use Laravel's [HTTP client](https://laravel.com/docs/11.x/http-client#main-content). You can use this method to pass any of Guzzles [request options](https://docs.guzzlephp.org/en/stable/request-options.html) e.g. `->withClientOptions(['timeout' => 30])`.
 
 ## Response Handling
 
