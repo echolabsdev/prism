@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\ValueObjects\Messages;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Metadata;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Text;
 
 class UserMessage implements Message
@@ -15,7 +16,8 @@ class UserMessage implements Message
      */
     public function __construct(
         protected readonly string $content,
-        protected array $additionalContent = []
+        protected array $additionalContent = [],
+        public readonly Metadata $metadata = new Metadata
     ) {
         $this->additionalContent[] = new Text($content);
     }

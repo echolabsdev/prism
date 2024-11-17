@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic\Maps;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -45,9 +46,15 @@ class MessageMap
      */
     protected static function mapSystemMessage(SystemMessage $systemMessage): array
     {
+        $anthropicExperimentalProviderMetadata = [];
+        if ($systemMessage->metadata && isset($systemMessage->metadata[Provider::Anthropic->value])) {
+            $anthropicExperimentalProviderMetadata = $systemMessage->metadata[Provider::Anthropic->value];
+        }
+
         return [
             'role' => 'user',
             'content' => $systemMessage->content,
+            ...$anthropicExperimentalProviderMetadata,
         ];
     }
 
@@ -86,10 +93,15 @@ class MessageMap
             ];
         }, $message->images());
 
+        $anthropicExperimentalProviderMetadata = [];
+        if ($message->metadata && isset($message->metadata[Provider::Anthropic->value])) {
+            $anthropicExperimentalProviderMetadata = $message->metadata[Provider::Anthropic->value];
+        }
+
         return [
             'role' => 'user',
             'content' => [
-                ['type' => 'text', 'text' => $message->text()],
+                ['type' => 'text', 'text' => $message->text(), ...$anthropicExperimentalProviderMetadata],
                 ...$imageParts,
             ],
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\Anthropic\Anthropic;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
@@ -19,7 +20,7 @@ use Throwable;
 
 class Text
 {
-    public function __construct(protected PendingRequest $client) {}
+    public function __construct(protected PendingRequest $client, protected Anthropic $provider) {}
 
     public function handle(Request $request): ProviderResponse
     {
@@ -47,6 +48,7 @@ class Text
             usage: new Usage(
                 data_get($data, 'usage.input_tokens'),
                 data_get($data, 'usage.output_tokens'),
+                data_get($data, 'usage.cache_read_input_tokens', 0),
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'stop_reason', '')),
             response: [

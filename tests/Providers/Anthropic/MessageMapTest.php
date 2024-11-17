@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Metadata;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -141,5 +143,41 @@ it('maps system messages', function (): void {
     ]))->toBe([[
         'role' => 'user',
         'content' => 'Who are you?',
+    ]]);
+});
+
+it('maps system messages with metadata', function (): void {
+    expect(MessageMap::map([
+        new SystemMessage('Who are you?', new Metadata([
+            Provider::Anthropic->value => [
+                'cache_control' => [
+                    'type' => 'ephemeral',
+                ],
+            ],
+        ])),
+    ]))->toBe([[
+        'role' => 'system',
+        'content' => 'Who are you?',
+        'cache_control' => [
+            'type' => 'ephemeral',
+        ],
+    ]]);
+});
+
+it('maps user messages with metadata', function (): void {
+    expect(MessageMap::map([
+        new UserMessage('Who are you?', metadata: new Metadata([
+            Provider::Anthropic->value => [
+                'cache_control' => [
+                    'type' => 'ephemeral',
+                ],
+            ],
+        ])),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => 'Who are you?',
+        'cache_control' => [
+            'type' => 'ephemeral',
+        ],
     ]]);
 });

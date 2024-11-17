@@ -13,6 +13,7 @@ return [
         'anthropic' => [
             'api_key' => env('ANTHROPIC_API_KEY', ''),
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
+            'cache_control' => env('ANTHROPIC_CACHE_CONTROL', false),
         ],
         'ollama' => [
             'url' => env('OLLAMA_URL', 'http://localhost:11434/v1'),

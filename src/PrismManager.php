@@ -115,6 +115,7 @@ class PrismManager
         return new Anthropic(
             $config['api_key'],
             $config['version'],
+            $config['cache_control'] ?? false,
         );
     }
 
