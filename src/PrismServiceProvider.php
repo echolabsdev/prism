@@ -16,8 +16,8 @@ class PrismServiceProvider extends ServiceProvider
         if (config('prism.prism_server.enabled')) {
             Route::group([
                 'middleware' => config('prism.prism_server.middleware', []),
-            ], function () {
-                $this->loadRoutesFrom(__DIR__ . '/Routes/PrismServer.php');
+            ], function (): void {
+                $this->loadRoutesFrom(__DIR__.'/Routes/PrismServer.php');
             });
         }
     }
