@@ -2,6 +2,7 @@
 
 namespace EchoLabs\Prism;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class PrismServiceProvider extends ServiceProvider
@@ -13,7 +14,11 @@ class PrismServiceProvider extends ServiceProvider
         ], 'prism-config');
 
         if (config('prism.prism_server.enabled')) {
-            $this->loadRoutesFrom(__DIR__.'/Routes/PrismServer.php');
+            Route::group([
+                'middleware' => config('prism.prism_server.middleware', []),
+            ], function () {
+                $this->loadRoutesFrom(__DIR__ . '/Routes/PrismServer.php');
+            });
         }
     }
 
