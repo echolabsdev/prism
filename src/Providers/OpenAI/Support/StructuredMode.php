@@ -34,9 +34,10 @@ class StructuredMode
 
     protected static function supportsJsonMode(string $model): bool
     {
-        if (preg_match('/^gpt-4(?!o)/', $model)) {
+        if (preg_match('/^gpt-4-.*/', $model)) {
             return true;
         }
+
         return $model === 'gpt-3.5-turbo';
     }
 }

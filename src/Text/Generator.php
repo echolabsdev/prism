@@ -10,9 +10,6 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
-use EchoLabs\Prism\ValueObjects\ToolResult;
 
 class Generator
 {
@@ -65,30 +62,6 @@ class Generator
         $this->messages[] = $responseMessage;
 
         return $response;
-    }
-
-    /**
-     * @return array<int, ToolResult>
-     */
-    protected function handleToolCalls(ProviderResponse $response): array
-    {
-        $toolResults = array_map(function (ToolCall $toolCall): ToolResult {
-            $result = $this->handleToolCall($this->tools, $toolCall);
-
-            return new ToolResult(
-                toolCallId: $toolCall->id,
-                toolName: $toolCall->name,
-                args: $toolCall->arguments(),
-                result: $result,
-            );
-        }, $response->toolCalls);
-
-        $resultMessage = new ToolResultMessage($toolResults);
-
-        $this->messages[] = $resultMessage;
-        $this->responseBuilder->addResponseMessage($resultMessage);
-
-        return $toolResults;
     }
 
     protected function shouldContinue(ProviderResponse $response): bool

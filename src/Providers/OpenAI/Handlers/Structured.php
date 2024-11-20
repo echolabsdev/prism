@@ -12,6 +12,7 @@ use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
 use EchoLabs\Prism\Providers\OpenAI\Support\StructuredMode as SupportStructuredMode;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -24,6 +25,12 @@ class Structured
     public function handle(Request $request): ProviderResponse
     {
         try {
+            $mode = SupportStructuredMode::forModel($request->model);
+
+            if ($mode === StructuredMode::Json) {
+                $request = $this->appendMessageForJsonMode($request);
+            }
+
             $response = $this->sendRequest($request);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
@@ -99,5 +106,13 @@ class Structured
         }
 
         return null;
+    }
+
+    protected function appendMessageForJsonMode(Request $request): Request
+    {
+        return $request->addMessage(new SystemMessage(sprintf(
+            "Return JSON in the following schema \n %s",
+            json_encode($request->schema->toArray())
+        )));
     }
 }

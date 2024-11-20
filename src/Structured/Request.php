@@ -8,6 +8,8 @@ use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 class Request
 {
@@ -17,8 +19,8 @@ class Request
      * @param  array<string, mixed>  $clientOptions
      */
     public function __construct(
-        public readonly string $model,
         public readonly ?string $systemPrompt,
+        public readonly string $model,
         public readonly ?string $prompt,
         public readonly array $messages,
         public readonly ?int $maxTokens,
@@ -29,4 +31,23 @@ class Request
         public readonly string|ToolChoice|null $toolChoice,
         public readonly Schema $schema,
     ) {}
+
+    public function addMessage(UserMessage|SystemMessage $message): self
+    {
+        $messages = array_merge($this->messages, [$message]);
+
+        return new self(
+            systemPrompt: $this->systemPrompt,
+            model: $this->model,
+            prompt: $this->prompt,
+            messages: $messages,
+            maxTokens: $this->maxTokens,
+            temperature: $this->temperature,
+            topP: $this->topP,
+            tools: $this->tools,
+            clientOptions: $this->clientOptions,
+            toolChoice: $this->toolChoice,
+            schema: $this->schema,
+        );
+    }
 }
