@@ -99,3 +99,13 @@ With this setup, you can access your Prism models through a user-friendly chat i
 
 By leveraging Prism Server, you can create powerful, custom AI experiences while maintaining compatibility with a wide ecosystem of tools and libraries. Whether you're building a chatbot, a content generation tool, or something entirely new, Prism Server provides the flexibility and standardization you need to succeed.
 
+## Adding Middleware
+
+You can add middleware to the Prism Server routes by setting the `middleware` option in your `config/prism.php` file:
+
+```php
+'prism_server' => [
+    'middleware' => ['web'],
+    // ...
+],
+```
