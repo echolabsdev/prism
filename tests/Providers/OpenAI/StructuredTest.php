@@ -10,8 +10,11 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/structured-with-multiple-tools-structured-mode');
+
     $tools = [
         Tool::as('weather')
             ->for('useful when you need to search for current weather conditions')
@@ -42,10 +45,17 @@ it('returns structured output', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
-    dd($response->object);
+    expect($response->object)->toBeArray();
+    expect($response->object)->toBe([
+        'weather' => 'The weather will be 90° and sunny',
+        'game_time' => 'The Tigers game is at 3 pm in Detroit',
+        'coat_required' => false,
+    ]);
 });
 
 it('returns structured output using json mode', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/structured-with-multiple-tools-json-mode');
+
     $tools = [
         Tool::as('weather')
             ->for('useful when you need to search for current weather conditions')
@@ -76,5 +86,10 @@ it('returns structured output using json mode', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
-    dd($response->object);
+    expect($response->object)->toBeArray();
+    expect($response->object)->toBe([
+        'weather' => 'The weather will be 90° and sunny',
+        'game_time' => 'The tigers game is at 3pm in Detroit',
+        'coat_required' => false,
+    ]);
 });

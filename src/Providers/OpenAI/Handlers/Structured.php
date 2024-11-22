@@ -9,7 +9,7 @@ use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolCallMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
-use EchoLabs\Prism\Providers\OpenAI\Support\StructuredMode as SupportStructuredMode;
+use EchoLabs\Prism\Providers\OpenAI\Support\StructuredModeResolver;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -25,7 +25,7 @@ class Structured
     public function handle(Request $request): ProviderResponse
     {
         try {
-            $mode = SupportStructuredMode::forModel($request->model);
+            $mode = StructuredModeResolver::forModel($request->model);
 
             if ($mode === StructuredMode::Json) {
                 $request = $this->appendMessageForJsonMode($request);
@@ -86,7 +86,7 @@ class Structured
      */
     protected function mapResponseFormat(Request $request): ?array
     {
-        $mode = SupportStructuredMode::forModel($request->model);
+        $mode = StructuredModeResolver::forModel($request->model);
 
         if ($mode === StructuredMode::Structured) {
             return [
@@ -98,20 +98,15 @@ class Structured
                 ],
             ];
         }
-
-        if ($mode === StructuredMode::Json) {
-            return [
-                'type' => 'json_object',
-            ];
-        }
-
-        return null;
+        return [
+            'type' => 'json_object',
+        ];
     }
 
     protected function appendMessageForJsonMode(Request $request): Request
     {
         return $request->addMessage(new SystemMessage(sprintf(
-            "Return JSON in the following schema \n %s",
+            "Respond with JSON that matches the following schema: \n %s",
             json_encode($request->schema->toArray())
         )));
     }

@@ -8,5 +8,4 @@ enum StructuredMode
 {
     case Structured;
     case Json;
-    case Tool;
 }

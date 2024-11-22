@@ -32,16 +32,16 @@ class OpenAI implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        $handler = new Structured($this->client($request->clientOptions));
+        $handler = new Structured($this->client($request->clientOptions, $request->clientRetry));
 
         return $handler->handle($request);
     }
 
     /**
      * @param  array<string, mixed>  $options
-     * @param  array<mixed>  $retry
+     * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $retry
      */
-    protected function client(array $options = [], array $retry = []): PendingRequest
+    protected function client(array $options, array $retry): PendingRequest
     {
         return Http::withHeaders(array_filter([
             'Authorization' => $this->apiKey !== '' && $this->apiKey !== '0' ? sprintf('Bearer %s', $this->apiKey) : null,

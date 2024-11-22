@@ -7,12 +7,13 @@ namespace Tests\TestDoubles;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 class TestProvider implements Provider
 {
-    public Request $request;
+    public StructuredRequest|TextRequest $request;
 
     /** @var array<string, mixed> */
     public array $clientOptions;
@@ -26,7 +27,7 @@ class TestProvider implements Provider
     public $callCount = 0;
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(TextRequest $request): ProviderResponse
     {
         $this->callCount++;
 
@@ -39,6 +40,12 @@ class TestProvider implements Provider
             finishReason: FinishReason::Stop,
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
         );
+    }
+
+    #[\Override]
+    public function structured(StructuredRequest $request): ProviderResponse
+    {
+        throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
     }
 
     public function withResponse(ProviderResponse $response): Provider

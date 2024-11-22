@@ -63,6 +63,7 @@ class Generator
             topP: $this->topP,
             tools: $this->tools,
             clientOptions: $this->clientOptions,
+            clientRetry: $this->clientRetry,
             toolChoice: $this->toolChoice,
             schema: $this->schema,
         );

@@ -8,7 +8,8 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -26,7 +27,7 @@ class PrismFake implements Provider
     public function __construct(protected array $responses = []) {}
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(TextRequest $request): ProviderResponse
     {
         $this->recorded[] = $request;
 
@@ -37,6 +38,12 @@ class PrismFake implements Provider
             finishReason: FinishReason::Stop,
             response: ['id' => 'fake', 'model' => 'fake']
         );
+    }
+
+    #[\Override]
+    public function structured(StructuredRequest $request): ProviderResponse
+    {
+        throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
     }
 
     /**

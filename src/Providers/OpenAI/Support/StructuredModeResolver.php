@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Providers\OpenAI\Support;
 
 use EchoLabs\Prism\Enums\StructuredMode as StructuredModeEnum;
 
-class StructuredMode
+class StructuredModeResolver
 {
     public static function forModel(string $model): StructuredModeEnum
     {
@@ -14,11 +14,7 @@ class StructuredMode
             return StructuredModeEnum::Structured;
         }
 
-        if (self::supportsJsonMode($model)) {
-            return StructuredModeEnum::Json;
-        }
-
-        return StructuredModeEnum::Tool;
+        return StructuredModeEnum::Json;
     }
 
     protected static function supportsStructuredMode(string $model): bool
