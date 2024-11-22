@@ -43,6 +43,31 @@ it('allows for client options', function (): void {
     expect($provider->request->clientOptions)->toBe(['timeout' => '100']);
 });
 
+it('allows for client retry', function (): void {
+    $provider = new TestProvider;
+
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+
+    (new Generator)
+        ->using('test', 'claude-3-5-sonnet-20240620')
+        ->withClientRetry(3, 100)
+        ->generate();
+
+    expect($provider->request->clientRetry)->toBe([3, 100, null, true]);
+});
+
+it('defaults to no client retry', function (): void {
+    $provider = new TestProvider;
+
+    resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
+
+    (new Generator)
+        ->using('test', 'claude-3-5-sonnet-20240620')
+        ->generate();
+
+    expect($provider->request->clientRetry)->toBe([0]);
+});
+
 it('allows for provider string or enum', function (): void {
     $provider = new TestProvider;
 

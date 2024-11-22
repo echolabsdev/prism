@@ -21,21 +21,23 @@ class Anthropic implements Provider
     #[\Override]
     public function text(Request $request): ProviderResponse
     {
-        $handler = new Text($this->client($request->clientOptions));
+        $handler = new Text($this->client($request->clientOptions, $request->clientRetry));
 
         return $handler->handle($request);
     }
 
     /**
      * @param  array<string, mixed>  $options
+     * @param  array<mixed>  $retry
      */
-    protected function client(array $options = []): PendingRequest
+    protected function client(array $options = [], array $retry = []): PendingRequest
     {
         return Http::withHeaders([
             'x-api-key' => $this->apiKey,
             'anthropic-version' => $this->apiVersion,
         ])
             ->withOptions($options)
+            ->retry(...$retry)
             ->baseUrl('https://api.anthropic.com/v1');
     }
 }

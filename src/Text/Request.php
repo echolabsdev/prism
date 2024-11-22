@@ -14,6 +14,7 @@ class Request
      * @param  array<int, Message>  $messages
      * @param  array<int, Tool>  $tools
      * @param  array<string, mixed>  $clientOptions
+     * @param  array<mixed>  $clientRetry
      */
     public function __construct(
         public readonly string $model,
@@ -25,6 +26,7 @@ class Request
         public readonly int|float|null $topP,
         public readonly array $tools,
         public readonly array $clientOptions,
+        public readonly array $clientRetry,
         public readonly string|ToolChoice|null $toolChoice,
     ) {}
 }
