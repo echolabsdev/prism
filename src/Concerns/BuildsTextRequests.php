@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Concerns;
 
+use Closure;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
@@ -12,14 +13,13 @@ use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\Tool;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Contracts\View\View;
-use Closure;
 
 trait BuildsTextRequests
 {
     /** @var array<string, mixed> */
     protected array $clientOptions = [];
 
-    /** @var array<mixed> */
+    /** @var array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool} */
     protected array $clientRetry = [0];
 
     protected ?string $prompt = null;
@@ -144,8 +144,12 @@ trait BuildsTextRequests
     /**
      * @param  array<int>|int  $times
      */
-    public function withClientRetry(array|int $times, Closure|int $sleepMilliseconds = 0, ?callable $when = null, bool $throw = true): self
-    {
+    public function withClientRetry(
+        array|int $times,
+        Closure|int $sleepMilliseconds = 0,
+        ?callable $when = null,
+        bool $throw = true
+    ): self {
         $this->clientRetry = [$times, $sleepMilliseconds, $when, $throw];
 
         return $this;
