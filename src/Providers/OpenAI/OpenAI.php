@@ -22,21 +22,23 @@ class OpenAI implements Provider
     #[\Override]
     public function text(Request $request): ProviderResponse
     {
-        $handler = new Text($this->client($request->clientOptions));
+        $handler = new Text($this->client($request->clientOptions, $request->clientRetry));
 
         return $handler->handle($request);
     }
 
     /**
      * @param  array<string, mixed>  $options
+     * @param  array<mixed>  $retry
      */
-    protected function client(array $options = []): PendingRequest
+    protected function client(array $options = [], array $retry = []): PendingRequest
     {
         return Http::withHeaders(array_filter([
             'Authorization' => $this->apiKey !== '' && $this->apiKey !== '0' ? sprintf('Bearer %s', $this->apiKey) : null,
             'OpenAI-Organization' => $this->organization,
         ]))
             ->withOptions($options)
+            ->retry(...$retry)
             ->baseUrl($this->url);
     }
 }

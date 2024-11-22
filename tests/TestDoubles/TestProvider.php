@@ -17,6 +17,9 @@ class TestProvider implements Provider
     /** @var array<string, mixed> */
     public array $clientOptions;
 
+    /** @var array<mixed> */
+    public array $clientRetry;
+
     /** @var array<int, ProviderResponse> */
     public array $responses = [];
 
