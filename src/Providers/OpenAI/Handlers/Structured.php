@@ -94,10 +94,12 @@ class Structured
                 'json_schema' => [
                     'name' => $request->schema->name(),
                     'schema' => $request->schema->toArray(),
+                    // TODO: Make this configurable. Look at how we did meta and strict mode for tools
                     'strict' => true,
                 ],
             ];
         }
+
         return [
             'type' => 'json_object',
         ];
@@ -107,7 +109,7 @@ class Structured
     {
         return $request->addMessage(new SystemMessage(sprintf(
             "Respond with JSON that matches the following schema: \n %s",
-            json_encode($request->schema->toArray())
+            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
         )));
     }
 }

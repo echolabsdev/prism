@@ -32,7 +32,10 @@ class OpenAI implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        $handler = new Structured($this->client($request->clientOptions, $request->clientRetry));
+        $handler = new Structured($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
 
         return $handler->handle($request);
     }

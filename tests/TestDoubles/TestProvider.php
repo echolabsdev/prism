@@ -45,7 +45,17 @@ class TestProvider implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
+        $this->callCount++;
+
+        $this->request = $request;
+
+        return $this->responses[$this->callCount - 1] ?? new ProviderResponse(
+            text: json_encode([]),
+            toolCalls: [],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::Stop,
+            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+        );
     }
 
     public function withResponse(ProviderResponse $response): Provider

@@ -29,7 +29,7 @@ it('they can have nested properties', function (): void {
             new ArraySchema(
                 name: 'hobbies',
                 description: 'the users hobbies',
-                item: new StringSchema('hobby', 'the users hobby')
+                items: new StringSchema('hobby', 'the users hobby')
             ),
             new ObjectSchema(
                 name: 'address',

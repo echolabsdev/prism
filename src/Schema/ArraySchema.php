@@ -11,7 +11,7 @@ class ArraySchema implements Schema
     public function __construct(
         public readonly string $name,
         public readonly string $description,
-        public readonly Schema $item,
+        public readonly Schema $items,
     ) {}
 
     #[\Override]
@@ -26,7 +26,7 @@ class ArraySchema implements Schema
         return [
             'description' => $this->description,
             'type' => 'array',
-            'items' => $this->item->toArray(),
+            'items' => $this->items->toArray(),
         ];
     }
 }

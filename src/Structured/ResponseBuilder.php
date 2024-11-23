@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
@@ -46,7 +47,9 @@ class ResponseBuilder
             steps: $this->steps,
             responseMessages: $this->responseMessages,
             text: $finalStep->text,
-            object: $this->decodeObject($finalStep->text),
+            object: $finalStep->finishReason === FinishReason::Stop
+                ? $this->decodeObject($finalStep->text)
+                : [],
             finishReason: $finalStep->finishReason,
             toolCalls: $finalStep->toolCalls,
             toolResults: $finalStep->toolResults,

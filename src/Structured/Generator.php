@@ -11,12 +11,13 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use InvalidArgumentException;
 
 class Generator
 {
     use BuildsTextRequests, HandlesToolCalls;
 
-    protected Schema $schema;
+    protected ?Schema $schema = null;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -53,6 +54,10 @@ class Generator
 
     public function structuredRequest(): Request
     {
+        if (is_null($this->schema)) {
+            throw new InvalidArgumentException('A Schema must be set using ->withSchema()');
+        }
+
         return new Request(
             model: $this->model,
             systemPrompt: $this->systemPrompt,
