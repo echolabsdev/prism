@@ -2,6 +2,7 @@
 
 namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
@@ -91,12 +92,11 @@ class Structured
         if ($mode === StructuredMode::Structured) {
             return [
                 'type' => 'json_schema',
-                'json_schema' => [
+                'json_schema' => array_filter([
                     'name' => $request->schema->name(),
                     'schema' => $request->schema->toArray(),
-                    // TODO: Make this configurable. Look at how we did meta and strict mode for tools
-                    'strict' => true,
-                ],
+                    'strict' => $request->providerMeta(Provider::OpenAI, 'schema.strict'),
+                ]),
             ];
         }
 

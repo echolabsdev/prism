@@ -1,0 +1,34 @@
+{
+  "id": "chatcmpl-AWrIBpMe49rnvX40W8iruo7yZQ4fA",
+  "object": "chat.completion",
+  "created": 1732394715,
+  "model": "gpt-4o-2024-08-06",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"weather\":\"Partly cloudy with a high of 57°F (14°C) and low of 46°F (8°C).\",\"game_time\":\"7:10 PM ET\",\"coat_required\":true}",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 94,
+    "completion_tokens": 42,
+    "total_tokens": 136,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "system_fingerprint": "fp_831e067d82"
+}

@@ -10,6 +10,8 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
@@ -92,4 +94,68 @@ it('returns structured output using json mode', function (): void {
         'game_time' => 'The tigers game is at 3pm in Detroit',
         'coat_required' => false,
     ]);
+});
+
+it('schema strict defaults to null', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/strict-schema-defaults');
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('game_time', 'The tigers game time'),
+            new BooleanSchema('coat_required', 'whether a coat is required'),
+        ],
+    );
+
+    $response = Prism::structured()
+        ->using(Provider::OpenAI, 'gpt-4o')
+        ->withSchema($schema)
+        ->withSystemPrompt('The game time is 3pm and the weather is 80° and sunny')
+        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->generate();
+
+    Http::assertSent(function (Request $request): true {
+        $body = json_decode($request->body(), true);
+
+        expect(array_keys(data_get($body, 'response_format.json_schema')))->not->toContain('strict');
+
+        return true;
+    });
+});
+
+it('uses meta to define strict mode', function (): void {
+    FixtureResponse::fakeResponseSequence(
+        'v1/chat/completions',
+        'openai/strict-schema-setting-set'
+    );
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('game_time', 'The tigers game time'),
+            new BooleanSchema('coat_required', 'whether a coat is required'),
+        ],
+        ['weather', 'game_time', 'coat_required']
+    );
+
+    $response = Prism::structured()
+        ->using(Provider::OpenAI, 'gpt-4o')
+        ->withSchema($schema)
+        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->withProviderMeta(Provider::OpenAI, [
+            'schema' => ['strict' => true],
+        ])
+        ->generate();
+
+    Http::assertSent(function (Request $request): true {
+        $body = json_decode($request->body(), true);
+
+        expect(data_get($body, 'response_format.json_schema.strict'))->toBeTrue();
+
+        return true;
+    });
 });

@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Structured;
 use Closure;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Schema;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -19,6 +20,7 @@ class Request
      * @param  array<int, Tool>  $tools
      * @param  array<string, mixed>  $clientOptions
      * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $clientRetry
+     * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
         public readonly ?string $systemPrompt,
@@ -33,6 +35,7 @@ class Request
         public readonly string|ToolChoice|null $toolChoice,
         public readonly array $clientRetry,
         public readonly Schema $schema,
+        public readonly array $providerMeta,
     ) {}
 
     public function addMessage(UserMessage|SystemMessage $message): self
@@ -52,6 +55,14 @@ class Request
             clientRetry: $this->clientRetry,
             toolChoice: $this->toolChoice,
             schema: $this->schema,
+            providerMeta: $this->providerMeta,
         );
+    }
+
+    public function providerMeta(Provider $provider, string $valuePath = ''): mixed
+    {
+        $providerMeta = data_get($this->providerMeta, $provider->value, []);
+
+        return data_get($providerMeta, $valuePath, null);
     }
 }

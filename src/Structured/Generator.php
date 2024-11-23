@@ -71,6 +71,7 @@ class Generator
             clientRetry: $this->clientRetry,
             toolChoice: $this->toolChoice,
             schema: $this->schema,
+            providerMeta: $this->providerMeta,
         );
     }
 
