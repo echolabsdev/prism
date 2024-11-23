@@ -18,7 +18,7 @@ class PrismFake implements Provider
 {
     protected int $responseSequence = 0;
 
-    /** @var array<int, Request> */
+    /** @var array<int, StructuredRequest|TextRequest> */
     protected array $recorded = [];
 
     /**
@@ -47,7 +47,7 @@ class PrismFake implements Provider
     }
 
     /**
-     * @param  Closure(array<int, Request>):void  $fn
+     * @param  Closure(array<int, StructuredRequest|TextRequest>):void  $fn
      */
     public function assertRequest(Closure $fn): void
     {

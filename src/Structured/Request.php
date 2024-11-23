@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Structured;
 
+use Closure;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\ToolChoice;

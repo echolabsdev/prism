@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\OpenAI;
 
+use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Structured;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Text;

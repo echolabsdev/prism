@@ -58,6 +58,9 @@ class ResponseBuilder
         );
     }
 
+    /**
+     * @return array<mixed>
+     */
     protected function decodeObject(string $responseText): ?array
     {
         if (! json_validate($responseText)) {
