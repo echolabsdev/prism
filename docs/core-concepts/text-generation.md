@@ -117,9 +117,10 @@ Temperature setting.
 
 The value is passed through to the provider. The range depends on the provider and model. For most providers, 0 means almost deterministic results, and higher values mean more randomness.
 
-It is recommended to set either temperature or topP, but not both.
+> [!TIP]
+> It is recommended to set either temperature or topP, but not both.
 
-`withTopP`
+`usingTopP`
 
 Nucleus sampling.
 
