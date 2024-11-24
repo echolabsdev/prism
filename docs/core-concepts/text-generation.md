@@ -111,7 +111,7 @@ Fine-tune your generations with various parameters:
 
 Maximum number of tokens to generate.
 
-`withTemperature`
+`usingTemperature`
 
 Temperature setting.
 
