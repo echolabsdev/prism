@@ -14,6 +14,7 @@ use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\Generator;
+use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -59,13 +60,13 @@ it('throws an exception when a schema is not set', function (): void {
 });
 
 it('correctly resolves a provider', function (): void {
-    $response = (new Generator)
+    (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
+        ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
         ->withSchema($this->schema)
         ->generate();
 
-    expect($response->text)->toBe(json_encode([]));
-    expect($response->object)->toBeArray();
+    expect($this->provider->request)->toBeInstanceOf(Request::class);
 });
 
 it('allows for client options', function (): void {
@@ -111,7 +112,7 @@ it('allows for provider string or enum', function (): void {
     expect($provider)->toBe(Provider::Anthropic->value);
 });
 
-it('correctly builds requests', function (): void {
+it('correctly builds requests with prompts', function (): void {
     (new Generator)
         ->using('test', 'claude-3-5-sonnet-20240620')
         ->withMaxTokens(500)
@@ -172,7 +173,10 @@ it('generates a response from the provider', function (): void {
         'weather_forecast',
         'the weather forecast schema',
         [
-            new StringSchema('forecast_summary', 'a summary of the weather forecast conditions'),
+            new StringSchema(
+                'forecast_summary',
+                'a summary of the weather forecast conditions'
+            ),
         ]
     );
 
