@@ -49,6 +49,8 @@ class Structured
             ));
         }
 
+        $this->handleRefusal(data_get($data, 'choices.0.message', []));
+
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
             toolCalls: ToolCallMap::map(data_get($data, 'choices.0.message.tool_calls', [])),
@@ -80,6 +82,15 @@ class Structured
                 'response_format' => $this->mapResponseFormat($request),
             ]))
         );
+    }
+    /**
+     * @param  array<string, string>  $message
+     */
+    protected function handleRefusal(array $message): void
+    {
+        if (! is_null(data_get($message, 'refusal', null))) {
+            throw new PrismException(sprintf('OpenAI Refusal: %s', $message['refusal']));
+        }
     }
 
     /**

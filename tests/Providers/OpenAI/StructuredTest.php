@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Providers\OpenAI;
 
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
@@ -149,6 +150,48 @@ it('uses meta to define strict mode', function (): void {
         ->withProviderMeta(Provider::OpenAI, [
             'schema' => ['strict' => true],
         ])
+        ->generate();
+
+    Http::assertSent(function (Request $request): true {
+        $body = json_decode($request->body(), true);
+
+        expect(data_get($body, 'response_format.json_schema.strict'))->toBeTrue();
+
+        return true;
+    });
+});
+
+it('throws an exception when there is a refusal', function (): void {
+    $this->expectException(PrismException::class);
+    $this->expectExceptionMessage('OpenAI Refusal: Could not process your request');
+
+    Http::fake([
+        'v1/chat/completions' => Http::response([
+            'choices' => [[
+                'message' => [
+                    'refusal' => 'Could not process your request',
+                ],
+            ]],
+        ]),
+    ]);
+
+    Http::preventStrayRequests();
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('game_time', 'The tigers game time'),
+            new BooleanSchema('coat_required', 'whether a coat is required'),
+        ],
+        ['weather', 'game_time', 'coat_required']
+    );
+
+    $response = Prism::structured()
+        ->using(Provider::OpenAI, 'gpt-4o')
+        ->withSchema($schema)
+        ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
     Http::assertSent(function (Request $request): true {
