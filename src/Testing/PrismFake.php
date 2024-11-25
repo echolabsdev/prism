@@ -43,7 +43,15 @@ class PrismFake implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
+        $this->recorded[] = $request;
+
+        return $this->nextResponse() ?? new ProviderResponse(
+            text: '',
+            toolCalls: [],
+            usage: new Usage(0, 0),
+            finishReason: FinishReason::Stop,
+            response: ['id' => 'fake', 'model' => 'fake']
+        );
     }
 
     /**
