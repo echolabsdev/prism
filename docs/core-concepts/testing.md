@@ -71,24 +71,6 @@ public function test_can_handle_tool_calls(): void
 }
 ```
 
-## Assertions
-
-Prism's fake implementation provides several helpful assertion methods:
-
-```php
-// Assert specific prompt was sent
-$fake->assertPrompt('Who are you?');
-
-// Assert number of calls made
-$fake->assertCallCount(2);
-
-// Assert detailed request properties
-$fake->assertRequest(function ($requests) {
-    $this->assertEquals('anthropic', $requests[0]->provider);
-    $this->assertEquals('claude-3-sonnet', $requests[0]->model);
-});
-```
-
 ## Testing Tools
 
 When testing tools, you'll want to verify both the tool calls and their results. Here's a complete example:
@@ -159,4 +141,74 @@ public function test_can_use_weather_tool(): void
         $response->text
     );
 }
+```
+
+## Testing Structured Output
+
+```php
+use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\Schema\ObjectSchema;
+use EchoLabs\Prism\Schema\StringSchema;
+
+public function test_can_generate_structured_response(): void
+{
+    $schema = new ObjectSchema(
+        name: 'user',
+        description: 'A user object, because we love organizing things!',
+        properties: [
+            new StringSchema('name', 'The user\'s name (hopefully not "test test")'),
+            new StringSchema('bio', 'A brief bio (no novels, please)'),
+        ],
+        requiredFields: ['name', 'bio']
+    );
+
+    $fakeResponse = new ProviderResponse(
+        text: json_encode([
+            'name' => 'Alice Tester',
+            'bio' => 'Professional bug hunter and code wrangler'
+        ]),
+        toolCalls: [],
+        usage: new Usage(10, 20), // Look ma, I'm counting tokens!
+        finishReason: FinishReason::Stop,
+        response: ['id' => 'fake-1', 'model' => 'fake-model']
+    );
+
+    $fake = Prism::fake([$fakeResponse]);
+
+    $response = Prism::structured() // Notice the structured() instead of text()
+        ->using('anthropic', 'claude-3-sonnet')
+        ->withPrompt('Generate a user profile')
+        ->withSchema($schema)
+        ->generate();
+
+    // Time for some good old-fashioned assertions
+    // (Trust but verify, as my therapist says)
+    $this->assertIsArray($response->object);
+    $this->assertEquals('Alice Tester', $response->object['name']);
+    $this->assertEquals(
+        'Professional bug hunter and code wrangler',
+        $response->object['bio']
+    );
+}
+```
+
+## Assertions
+
+Prism's fake implementation provides several helpful assertion methods:
+
+```php
+// Assert specific prompt was sent
+$fake->assertPrompt('Who are you?');
+
+// Assert number of calls made
+$fake->assertCallCount(2);
+
+// Assert detailed request properties
+$fake->assertRequest(function ($requests) {
+    $this->assertEquals('anthropic', $requests[0]->provider);
+    $this->assertEquals('claude-3-sonnet', $requests[0]->model);
+});
 ```
