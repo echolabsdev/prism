@@ -7,12 +7,13 @@ namespace Tests\TestDoubles;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 class TestProvider implements Provider
 {
-    public Request $request;
+    public StructuredRequest|TextRequest $request;
 
     /** @var array<string, mixed> */
     public array $clientOptions;
@@ -26,7 +27,7 @@ class TestProvider implements Provider
     public $callCount = 0;
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(TextRequest $request): ProviderResponse
     {
         $this->callCount++;
 
@@ -34,6 +35,22 @@ class TestProvider implements Provider
 
         return $this->responses[$this->callCount - 1] ?? new ProviderResponse(
             text: "I'm nyx!",
+            toolCalls: [],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::Stop,
+            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+        );
+    }
+
+    #[\Override]
+    public function structured(StructuredRequest $request): ProviderResponse
+    {
+        $this->callCount++;
+
+        $this->request = $request;
+
+        return $this->responses[$this->callCount - 1] ?? new ProviderResponse(
+            text: json_encode([]),
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,

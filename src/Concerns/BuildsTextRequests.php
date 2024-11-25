@@ -46,6 +46,9 @@ trait BuildsTextRequests
 
     protected string $model;
 
+    /** @var array<string, array<string, mixed>> */
+    protected $providerMeta = [];
+
     public function using(string|Provider $provider, string $model): self
     {
         $this->provider = is_string($provider) ? $provider : $provider->value;
@@ -164,6 +167,16 @@ trait BuildsTextRequests
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $meta
+     */
+    public function withProviderMeta(Provider $provider, array $meta): self
+    {
+        $this->providerMeta[$provider->value] = $meta;
+
+        return $this;
+    }
+
     protected function textRequest(): Request
     {
         return new Request(
@@ -178,6 +191,7 @@ trait BuildsTextRequests
             clientOptions: $this->clientOptions,
             clientRetry: $this->clientRetry,
             toolChoice: $this->toolChoice,
+            providerMeta: $this->providerMeta,
         );
     }
 }

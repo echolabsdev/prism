@@ -24,6 +24,17 @@ Tool::as('search') // [!code focus]
     ]); // [!code focus]
 ```
 
+### Strict Structured Output Schemas
+
+```php
+$response = Prism::structured()
+    ->withProviderMeta(Provider::OpenAI, [ // [!code focus]
+        'schema' => [ // [!code focus]
+            'strict' => true // [!code focus]
+        ] // [!code focus]
+    ]) // [!code focus]
+```
+
 ## Limitations
 ### Tool Choice
 

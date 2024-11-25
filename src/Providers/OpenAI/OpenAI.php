@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\OpenAI;
 
+use Closure;
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Providers\OpenAI\Handlers\Structured;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Text\Request as TextRequest;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -20,18 +23,32 @@ class OpenAI implements Provider
     ) {}
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(TextRequest $request): ProviderResponse
     {
-        $handler = new Text($this->client($request->clientOptions, $request->clientRetry));
+        $handler = new Text($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
+    }
+
+    #[\Override]
+    public function structured(StructuredRequest $request): ProviderResponse
+    {
+        $handler = new Structured($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
 
         return $handler->handle($request);
     }
 
     /**
      * @param  array<string, mixed>  $options
-     * @param  array<mixed>  $retry
+     * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $retry
      */
-    protected function client(array $options = [], array $retry = []): PendingRequest
+    protected function client(array $options, array $retry): PendingRequest
     {
         return Http::withHeaders(array_filter([
             'Authorization' => $this->apiKey !== '' && $this->apiKey !== '0' ? sprintf('Bearer %s', $this->apiKey) : null,

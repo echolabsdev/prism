@@ -1,29 +1,37 @@
 <?php
 
-declare(strict_types=1);
-
 namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolCallMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
+use EchoLabs\Prism\Providers\OpenAI\Support\StructuredModeResolver;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Throwable;
 
-class Text
+class Structured
 {
     public function __construct(protected PendingRequest $client) {}
 
     public function handle(Request $request): ProviderResponse
     {
         try {
+            $mode = StructuredModeResolver::forModel($request->model);
+
+            if ($mode === StructuredMode::Json) {
+                $request = $this->appendMessageForJsonMode($request);
+            }
+
             $response = $this->sendRequest($request);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
@@ -40,6 +48,8 @@ class Text
                 ]
             ));
         }
+
+        $this->handleRefusal(data_get($data, 'choices.0.message', []));
 
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
@@ -69,7 +79,49 @@ class Text
                 'top_p' => $request->topP,
                 'tools' => ToolMap::map($request->tools),
                 'tool_choice' => ToolChoiceMap::map($request->toolChoice),
+                'response_format' => $this->mapResponseFormat($request),
             ]))
         );
+    }
+
+    /**
+     * @param  array<string, string>  $message
+     */
+    protected function handleRefusal(array $message): void
+    {
+        if (! is_null(data_get($message, 'refusal', null))) {
+            throw new PrismException(sprintf('OpenAI Refusal: %s', $message['refusal']));
+        }
+    }
+
+    /**
+     * @return array{type: 'json_schema', json_schema: array<string, mixed>}|array{type: 'json_object'}|null
+     */
+    protected function mapResponseFormat(Request $request): ?array
+    {
+        $mode = StructuredModeResolver::forModel($request->model);
+
+        if ($mode === StructuredMode::Structured) {
+            return [
+                'type' => 'json_schema',
+                'json_schema' => array_filter([
+                    'name' => $request->schema->name(),
+                    'schema' => $request->schema->toArray(),
+                    'strict' => $request->providerMeta(Provider::OpenAI, 'schema.strict'),
+                ]),
+            ];
+        }
+
+        return [
+            'type' => 'json_object',
+        ];
+    }
+
+    protected function appendMessageForJsonMode(Request $request): Request
+    {
+        return $request->addMessage(new SystemMessage(sprintf(
+            "Respond with JSON that matches the following schema: \n %s",
+            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
+        )));
     }
 }

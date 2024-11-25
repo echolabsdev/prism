@@ -12,8 +12,7 @@ use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 
-public function test_can_generate_text(): void
-{
+it('can generate text', function () {
     // Create a fake provider response
     $fakeResponse = new ProviderResponse(
         text: 'Hello, I am Claude!',
@@ -33,8 +32,8 @@ public function test_can_generate_text(): void
         ->generate();
 
     // Make assertions
-    $this->assertEquals('Hello, I am Claude!', $response->text);
-}
+    expect($response->text)->toBe('Hello, I am Claude!');
+});
 ```
 
 ## Testing Multiple Responses
@@ -42,8 +41,7 @@ public function test_can_generate_text(): void
 When testing conversations or tool usage, you might need to simulate multiple responses:
 
 ```php
-public function test_can_handle_tool_calls(): void
-{
+it('can handle tool calls', function () {
     $responses = [
         new ProviderResponse(
             text: '',
@@ -68,24 +66,6 @@ public function test_can_handle_tool_calls(): void
     ];
 
     $fake = Prism::fake($responses);
-}
-```
-
-## Assertions
-
-Prism's fake implementation provides several helpful assertion methods:
-
-```php
-// Assert specific prompt was sent
-$fake->assertPrompt('Who are you?');
-
-// Assert number of calls made
-$fake->assertCallCount(2);
-
-// Assert detailed request properties
-$fake->assertRequest(function ($requests) {
-    $this->assertEquals('anthropic', $requests[0]->provider);
-    $this->assertEquals('claude-3-sonnet', $requests[0]->model);
 });
 ```
 
@@ -94,8 +74,7 @@ $fake->assertRequest(function ($requests) {
 When testing tools, you'll want to verify both the tool calls and their results. Here's a complete example:
 
 ```php
-public function test_can_use_weather_tool(): void
-{
+it('can use weather tool', function () {
     // Define the expected tool call and response sequence
     $responses = [
         // First response: AI decides to use the weather tool
@@ -142,21 +121,82 @@ public function test_can_use_weather_tool(): void
     $fake->assertCallCount(2);
 
     // Assert tool calls were made correctly
-    $this->assertCount(1, $response->steps[0]->toolCalls);
-    $this->assertEquals('weather', $response->steps[0]->toolCalls[0]->name);
-    $this->assertEquals(['city' => 'Paris'], $response->steps[0]->toolCalls[0]->arguments());
+    expect($response->steps[0]->toolCalls)->toHaveCount(1);
+    expect($response->steps[0]->toolCalls[0]->name)->toBe('weather');
+    expect($response->steps[0]->toolCalls[0]->arguments())->toBe(['city' => 'Paris']);
 
     // Assert tool results were processed
-    $this->assertCount(1, $response->toolResults);
-    $this->assertEquals(
-        'The weather in Paris is sunny with a temperature of 72°F',
-        $response->toolResults[0]->result
-    );
+    expect($response->toolResults)->toHaveCount(1);
+    expect($response->toolResults[0]->result)
+        ->toBe('The weather in Paris is sunny with a temperature of 72°F');
 
     // Assert final response
-    $this->assertEquals(
-        'Based on current conditions, the weather in Paris is sunny with a temperature of 72°F.',
-        $response->text
+    expect($response->text)
+        ->toBe('Based on current conditions, the weather in Paris is sunny with a temperature of 72°F.');
+});
+```
+
+## Testing Structured Output
+
+```php
+use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\Schema\ObjectSchema;
+use EchoLabs\Prism\Schema\StringSchema;
+
+it('can generate structured response', function () {
+    $schema = new ObjectSchema(
+        name: 'user',
+        description: 'A user object, because we love organizing things!',
+        properties: [
+            new StringSchema('name', 'The user\'s name (hopefully not "test test")'),
+            new StringSchema('bio', 'A brief bio (no novels, please)'),
+        ],
+        requiredFields: ['name', 'bio']
     );
-}
+
+    $fakeResponse = new ProviderResponse(
+        text: json_encode([
+            'name' => 'Alice Tester',
+            'bio' => 'Professional bug hunter and code wrangler'
+        ]),
+        toolCalls: [],
+        usage: new Usage(10, 20),
+        finishReason: FinishReason::Stop,
+        response: ['id' => 'fake-1', 'model' => 'fake-model']
+    );
+
+    $fake = Prism::fake([$fakeResponse]);
+
+    $response = Prism::structured()
+        ->using('anthropic', 'claude-3-sonnet')
+        ->withPrompt('Generate a user profile')
+        ->withSchema($schema)
+        ->generate();
+
+    // Assertions
+    expect($response->object)->toBeArray();
+    expect($response->object['name'])->toBe('Alice Tester')
+    expect($response->object['bio'])->toBe('Professional bug hunter and code wrangler');
+});
+```
+
+## Assertions
+
+Prism's fake implementation provides several helpful assertion methods:
+
+```php
+// Assert specific prompt was sent
+$fake->assertPrompt('Who are you?');
+
+// Assert number of calls made
+$fake->assertCallCount(2);
+
+// Assert detailed request properties
+$fake->assertRequest(function ($requests) {
+    expect($requests[0]->provider)->toBe('anthropic');
+    expect($requests[0]->model)->toBe('claude-3-sonnet');
+});
 ```

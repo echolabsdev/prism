@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Text;
 
+use Closure;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
@@ -14,7 +15,8 @@ class Request
      * @param  array<int, Message>  $messages
      * @param  array<int, Tool>  $tools
      * @param  array<string, mixed>  $clientOptions
-     * @param  array<mixed>  $clientRetry
+     * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $clientRetry
+     * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
         public readonly string $model,
@@ -28,5 +30,6 @@ class Request
         public readonly array $clientOptions,
         public readonly array $clientRetry,
         public readonly string|ToolChoice|null $toolChoice,
+        public readonly array $providerMeta,
     ) {}
 }

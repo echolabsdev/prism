@@ -8,7 +8,8 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -17,7 +18,7 @@ class PrismFake implements Provider
 {
     protected int $responseSequence = 0;
 
-    /** @var array<int, Request> */
+    /** @var array<int, StructuredRequest|TextRequest> */
     protected array $recorded = [];
 
     /**
@@ -26,7 +27,21 @@ class PrismFake implements Provider
     public function __construct(protected array $responses = []) {}
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(TextRequest $request): ProviderResponse
+    {
+        $this->recorded[] = $request;
+
+        return $this->nextResponse() ?? new ProviderResponse(
+            text: '',
+            toolCalls: [],
+            usage: new Usage(0, 0),
+            finishReason: FinishReason::Stop,
+            response: ['id' => 'fake', 'model' => 'fake']
+        );
+    }
+
+    #[\Override]
+    public function structured(StructuredRequest $request): ProviderResponse
     {
         $this->recorded[] = $request;
 
@@ -40,7 +55,7 @@ class PrismFake implements Provider
     }
 
     /**
-     * @param  Closure(array<int, Request>):void  $fn
+     * @param  Closure(array<int, StructuredRequest|TextRequest>):void  $fn
      */
     public function assertRequest(Closure $fn): void
     {
