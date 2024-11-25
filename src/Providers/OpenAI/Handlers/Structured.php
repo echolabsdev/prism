@@ -83,6 +83,7 @@ class Structured
             ]))
         );
     }
+
     /**
      * @param  array<string, string>  $message
      */
