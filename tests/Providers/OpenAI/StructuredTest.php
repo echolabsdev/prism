@@ -188,7 +188,7 @@ it('throws an exception when there is a refusal', function (): void {
         ['weather', 'game_time', 'coat_required']
     );
 
-    $response = Prism::structured()
+    Prism::structured()
         ->using(Provider::OpenAI, 'gpt-4o')
         ->withSchema($schema)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
