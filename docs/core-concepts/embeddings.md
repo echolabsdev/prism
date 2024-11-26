@@ -1,6 +1,6 @@
 # Embeddings
 
-Turn your text into powerful numerical representations! Embeddings let you analyze semantic relationships, build recommendation systems, and power semantic search functionality in your applications.
+Transform your text into powerful vector representations! Embeddings let you add semantic search, recommendation systems, and other advanced natural language features to your applications.
 
 ## Quick Start
 
