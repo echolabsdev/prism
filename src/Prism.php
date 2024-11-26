@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism;
 
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Embeddings\Generator as EmbeddingsGenerator;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Generator as StructuredGenerator;
@@ -43,5 +44,10 @@ class Prism
     public static function structured(): StructuredGenerator
     {
         return new StructuredGenerator;
+    }
+
+    public static function embeddings(): \EchoLabs\Prism\Embeddings\Generator
+    {
+        return new EmbeddingsGenerator;
     }
 }

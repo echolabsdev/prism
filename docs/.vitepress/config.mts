@@ -103,6 +103,10 @@ export default defineConfig({
                 link: "/core-concepts/tools-function-calling",
               },
               {
+                text: "Embeddings",
+                link: "/core-concepts/embeddings",
+              },
+              {
                 text: "Prism Server",
                 link: "/core-concepts/prism-server",
               },
