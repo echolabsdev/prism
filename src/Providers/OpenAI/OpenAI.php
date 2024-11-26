@@ -6,6 +6,9 @@ namespace EchoLabs\Prism\Providers\OpenAI;
 
 use Closure;
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
+use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
+use EchoLabs\Prism\Providers\OpenAI\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Structured;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -37,6 +40,17 @@ class OpenAI implements Provider
     public function structured(StructuredRequest $request): ProviderResponse
     {
         $handler = new Structured($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
+    }
+
+    #[\Override]
+    public function embeddings(EmbeddingsRequest $request): EmbeddingsResponse
+    {
+        $handler = new Embeddings($this->client(
             $request->clientOptions,
             $request->clientRetry
         ));
