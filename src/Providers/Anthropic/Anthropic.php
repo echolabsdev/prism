@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic;
 
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
+use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
@@ -31,6 +33,12 @@ class Anthropic implements Provider
     public function structured(StructuredRequest $request): ProviderResponse
     {
         throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
+    }
+
+    #[\Override]
+    public function embeddings(EmbeddingRequest $request): EmbeddingResponse
+    {
+        throw new \Exception(sprintf('%s does not support embeddings', class_basename($this)));
     }
 
     /**

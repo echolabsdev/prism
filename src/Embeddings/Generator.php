@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Embeddings;
 
+use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Exceptions\PrismException;
@@ -46,7 +47,13 @@ class Generator
             throw new PrismException(sprintf('%s is not a valid file', $path));
         }
 
-        $this->input = file_get_contents($path);
+        $contents = file_get_contents($path);
+
+        if ($contents === false) {
+            throw new PrismException(sprintf('%s contents could not be read', $path));
+        }
+
+        $this->input = $contents;
 
         return $this;
     }

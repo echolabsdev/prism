@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Testing;
 
+use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
+use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 
@@ -66,6 +70,31 @@ it('fake responses using the prism fake for structured', function (): void {
     $fake->assertRequest(function (array $requests): void {
         expect($requests)->toHaveCount(1);
         expect($requests[0])->toBeInstanceOf(StructuredRequest::class);
+    });
+});
+
+it('fake responses using the prism fake for emeddings', function (): void {
+    $fake = Prism::fake([
+        new EmbeddingResponse(
+            embeddings: [
+                -0.009639355,
+                -0.00047589254,
+                -0.022748338,
+                -0.005906468,
+            ],
+            usage: new EmbeddingsUsage(100)
+        ),
+    ]);
+
+    Prism::embeddings()
+        ->using(Provider::OpenAI, 'text-embedding-ada-002')
+        ->fromInput('What is the meaning of life?')
+        ->generate();
+
+    $fake->assertCallCount(1);
+    $fake->assertRequest(function (array $requests): void {
+        expect($requests)->toHaveCount(1);
+        expect($requests[0])->toBeInstanceOf(EmbeddingRequest::class);
     });
 });
 

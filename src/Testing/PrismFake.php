@@ -6,10 +6,13 @@ namespace EchoLabs\Prism\Testing;
 
 use Closure;
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
+use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -18,11 +21,11 @@ class PrismFake implements Provider
 {
     protected int $responseSequence = 0;
 
-    /** @var array<int, StructuredRequest|TextRequest> */
+    /** @var array<int, StructuredRequest|TextRequest|EmbeddingRequest> */
     protected array $recorded = [];
 
     /**
-     * @param  array<int, ProviderResponse>  $responses
+     * @param  array<int, ProviderResponse|EmbeddingResponse>  $responses
      */
     public function __construct(protected array $responses = []) {}
 
@@ -31,7 +34,7 @@ class PrismFake implements Provider
     {
         $this->recorded[] = $request;
 
-        return $this->nextResponse() ?? new ProviderResponse(
+        return $this->nextProviderResponse() ?? new ProviderResponse(
             text: '',
             toolCalls: [],
             usage: new Usage(0, 0),
@@ -41,11 +44,22 @@ class PrismFake implements Provider
     }
 
     #[\Override]
+    public function embeddings(EmbeddingRequest $request): EmbeddingResponse
+    {
+        $this->recorded[] = $request;
+
+        return $this->nextEmbeddingResponse() ?? new EmbeddingResponse(
+            embeddings: [],
+            usage: new EmbeddingsUsage(10),
+        );
+    }
+
+    #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
         $this->recorded[] = $request;
 
-        return $this->nextResponse() ?? new ProviderResponse(
+        return $this->nextProviderResponse() ?? new ProviderResponse(
             text: '',
             toolCalls: [],
             usage: new Usage(0, 0),
@@ -55,7 +69,7 @@ class PrismFake implements Provider
     }
 
     /**
-     * @param  Closure(array<int, StructuredRequest|TextRequest>):void  $fn
+     * @param  Closure(array<int, StructuredRequest|TextRequest|EmbeddingRequest>):void  $fn
      */
     public function assertRequest(Closure $fn): void
     {
@@ -85,12 +99,32 @@ class PrismFake implements Provider
         PHPUnit::assertEquals($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
     }
 
-    protected function nextResponse(): ?ProviderResponse
+    protected function nextProviderResponse(): ?ProviderResponse
     {
         if (! isset($this->responses)) {
             return null;
         }
 
+        /** @var ProviderResponse[] */
+        $responses = $this->responses;
+        $sequence = $this->responseSequence;
+
+        if (! isset($responses[$sequence])) {
+            throw new Exception('Could not find a response for the request');
+        }
+
+        $this->responseSequence++;
+
+        return $responses[$sequence];
+    }
+
+    protected function nextEmbeddingResponse(): ?EmbeddingResponse
+    {
+        if (! isset($this->responses)) {
+            return null;
+        }
+
+        /** @var EmbeddingResponse[] */
         $responses = $this->responses;
         $sequence = $this->responseSequence;
 

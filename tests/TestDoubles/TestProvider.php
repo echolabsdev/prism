@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace Tests\TestDoubles;
 
 use EchoLabs\Prism\Contracts\Provider;
+use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
+use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 class TestProvider implements Provider
 {
-    public StructuredRequest|TextRequest $request;
+    public StructuredRequest|TextRequest|EmbeddingRequest $request;
 
     /** @var array<string, mixed> */
     public array $clientOptions;
@@ -21,7 +24,7 @@ class TestProvider implements Provider
     /** @var array<mixed> */
     public array $clientRetry;
 
-    /** @var array<int, ProviderResponse> */
+    /** @var array<int, ProviderResponse|EmbeddingResponse> */
     public array $responses = [];
 
     public $callCount = 0;
@@ -55,6 +58,19 @@ class TestProvider implements Provider
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
             response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+        );
+    }
+
+    #[\Override]
+    public function embeddings(EmbeddingRequest $request): EmbeddingResponse
+    {
+        $this->callCount++;
+
+        $this->request = $request;
+
+        return $this->responses[$this->callCount - 1] ?? new EmbeddingResponse(
+            embeddings: [],
+            usage: new EmbeddingsUsage(10),
         );
     }
 
