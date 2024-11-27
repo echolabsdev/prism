@@ -9,7 +9,7 @@ use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 class Response
 {
     /**
-     * @param  array<int, int|string>  $embeddings
+     * @param  array<int, int|string|array<int, string|float>>  $embeddings
      */
     public function __construct(
         public readonly array $embeddings,
