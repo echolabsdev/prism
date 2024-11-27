@@ -36,8 +36,14 @@ class Embeddings
             ));
         }
 
+        $embeddings = collect(data_get($data, 'data.0'))
+            ->sortBy('index')
+            ->pluck('embedding')
+            ->values()
+            ->all();
+
         return new EmbeddingsResponse(
-            embeddings: data_get($data, 'data.0.embedding', []),
+            embeddings: $embeddings ?? [],
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
         );
     }
