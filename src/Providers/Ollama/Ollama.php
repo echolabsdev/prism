@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Ollama;
 
 use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
+use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
+use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
+use EchoLabs\Prism\Providers\Ollama\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
@@ -36,9 +37,14 @@ class Ollama implements Provider
     }
 
     #[\Override]
-    public function embeddings(EmbeddingRequest $request): EmbeddingResponse
+    public function embeddings(EmbeddingsRequest $request): EmbeddingsResponse
     {
-        throw new \Exception(sprintf('%s does not support embeddings', class_basename($this)));
+        $handler = new Embeddings($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
     }
 
     /**

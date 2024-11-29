@@ -26,7 +26,7 @@ class FixtureResponse
         return sprintf('%s/%s', __DIR__, $filePath);
     }
 
-    public static function recordResponses(string $name): void
+    public static function recordResponses(string $requetPath, string $name): void
     {
         $iterator = 0;
 
