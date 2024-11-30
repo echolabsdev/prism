@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Schema;
-use Illuminate\Support\Collection;
 
 class EnumSchema implements Schema
 {
@@ -31,31 +30,49 @@ class EnumSchema implements Schema
         return [
             'description' => $this->description,
             'enum' => $this->options,
-            'type' => $this->getOptionTypes(),
+            'type' => $this->types(),
         ];
     }
 
     /**
-     * @return string|array<int, string>
+     * @return string[]|string
      */
-    protected function getOptionTypes(): array|string
+    protected function types(): array|string
     {
-        // @phpstan-ignore return.type
+        $types = $this->resolveTypes();
+
+        if ($this->nullable) {
+            $types[] = 'null';
+        }
+
+        if ($this->hasSingleType($types)) {
+            return $types[0];
+        }
+
+        return $types;
+    }
+
+    /**
+     * @param  string[]  $types
+     */
+    protected function hasSingleType(array $types): bool
+    {
+        return count($types) === 1;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function resolveTypes(): array
+    {
         return collect($this->options)
             ->map(fn (mixed $option): string => match (gettype($option)) {
                 'integer', 'double' => 'number',
                 'string' => 'string'
             })
-            ->when(
-                $this->nullable,
-                fn (Collection $collection): Collection => $collection->push('null')
-            )
             ->unique()
             ->values()
-            ->when(
-                fn (Collection $collection): bool => $collection->count() === 1,
-                fn (Collection $collection): string => $collection[0],
-                fn (Collection $collection): array => $collection->all()
-            );
+            ->toArray();
+
     }
 }
