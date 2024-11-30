@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Schema;
+use Illuminate\Support\Collection;
 
 class EnumSchema implements Schema
 {
@@ -39,28 +40,22 @@ class EnumSchema implements Schema
      */
     protected function getOptionTypes(): array|string
     {
-        $types = [];
-        foreach ($this->options as $option) {
-            $type = gettype($option);
-            $types[] = match ($type) {
+        // @phpstan-ignore return.type
+        return collect($this->options)
+            ->map(fn (mixed $option): string => match (gettype($option)) {
                 'integer', 'double' => 'number',
                 'string' => 'string'
-            };
-        }
-
-        if ($this->nullable) {
-            $types[] = 'null';
-        }
-
-        $types = collect($types)
+            })
+            ->when(
+                $this->nullable,
+                fn (Collection $collection): Collection => $collection->push('null')
+            )
             ->unique()
             ->values()
-            ->all();
-
-        if (count($types) === 1) {
-            return $types[0];
-        }
-
-        return $types;
+            ->when(
+                fn (Collection $collection): bool => $collection->count() === 1,
+                fn (Collection $collection): string => $collection[0],
+                fn (Collection $collection): array => $collection->all()
+            );
     }
 }
