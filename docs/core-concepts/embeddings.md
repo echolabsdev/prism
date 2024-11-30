@@ -35,17 +35,6 @@ $response = Prism::embeddings()
     ->generate();
 ```
 
-### Multiple Inputs
-
-```php
-$response = Prism::embeddings()
-    ->using(Provider::OpenAI, 'text-embedding-3-large')
-    ->fromInput(['Analyze this text', 'And this one too'])
-    ->generate();
-
-[$embeddings1, $embeddings2] = $response->embeddings;
-```
-
 ### From File
 
 Need to analyze a larger document? No problem:
