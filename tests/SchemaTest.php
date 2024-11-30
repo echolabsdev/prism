@@ -65,6 +65,7 @@ it('they can have nested properties', function (): void {
                     'inactive',
                     'suspended',
                 ],
+                'type' => 'string',
             ],
             'hobbies' => [
                 'description' => 'the users hobbies',
@@ -104,7 +105,7 @@ it('they can have nested properties', function (): void {
     ]);
 });
 
-it('they can be nullable', function(): void {
+it('they can be nullable', function (): void {
     $schema = new ObjectSchema(
         name: 'user',
         description: 'a user object',
@@ -162,6 +163,7 @@ it('they can be nullable', function(): void {
                     'inactive',
                     'suspended',
                 ],
+                'type' => ['string', 'null']
             ],
             'hobbies' => [
                 'description' => 'the users hobbies',
@@ -202,5 +204,24 @@ it('they can be nullable', function(): void {
         ],
         'required' => [],
         'additionalProperties' => false,
+    ]);
+});
+
+it('enums include type', function (): void {
+    $enumSchema = new EnumSchema(
+        name: 'temp',
+        description: 'sick or fever temp',
+        options: [98.6, 100, 'unknown', 105],
+        nullable: true
+    );
+
+    expect($enumSchema->toArray())->toBe([
+        'description' => 'sick or fever temp',
+        'enum' => [98.6, 100, 'unknown', 105],
+        'type' => [
+            'number',
+            'string',
+            'null',
+        ],
     ]);
 });
