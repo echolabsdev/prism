@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
+use EchoLabs\Prism\Concerns\NullableSchema;
 use EchoLabs\Prism\Contracts\Schema;
 
 class ObjectSchema implements Schema
 {
+    use NullableSchema;
+
     /**
      * @param  array<int, Schema>  $properties
      * @param  array<int, string>  $requiredFields
@@ -18,6 +21,7 @@ class ObjectSchema implements Schema
         public readonly array $properties,
         public readonly array $requiredFields = [],
         public readonly bool $allowAdditionalProperties = false,
+        public readonly bool $nullable = false,
     ) {}
 
     #[\Override]
@@ -31,7 +35,7 @@ class ObjectSchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => 'object',
+            'type' => $this->getNullableType('object'),
             'properties' => $this->propertiesArray(),
             'required' => $this->requiredFields,
             'additionalProperties' => $this->allowAdditionalProperties,
