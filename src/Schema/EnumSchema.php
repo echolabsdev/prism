@@ -16,8 +16,7 @@ class EnumSchema implements Schema
         public readonly string $description,
         public readonly array $options,
         public readonly bool $nullable = false,
-    ) {
-    }
+    ) {}
 
     #[\Override]
     public function name(): string

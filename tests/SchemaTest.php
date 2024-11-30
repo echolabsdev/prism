@@ -163,7 +163,7 @@ it('they can be nullable', function (): void {
                     'inactive',
                     'suspended',
                 ],
-                'type' => ['string', 'null']
+                'type' => ['string', 'null'],
             ],
             'hobbies' => [
                 'description' => 'the users hobbies',
