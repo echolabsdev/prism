@@ -1,0 +1,20 @@
+{
+    "id": "img-345-678",
+    "model": "grok-vision-beta",
+    "created": 1710835200,
+    "usage": {
+        "prompt_tokens": 250,
+        "completion_tokens": 85,
+        "total_tokens": 335
+    },
+    "choices": [
+        {
+            "message": {
+                "role": "assistant",
+                "content": "I can see the test image that was provided via URL."
+            },
+            "finish_reason": "stop",
+            "index": 0
+        }
+    ]
+} 

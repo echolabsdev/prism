@@ -6,6 +6,10 @@ namespace Tests\Providers\XAI;
 
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
@@ -93,5 +97,105 @@ describe('Text generation for XAI', function (): void {
         expect($response->text)->toBe(
             'The Tigers game in Detroit today is at 3pm, and considering the weather will be 45° and cold, you should definitely wear a coat.'
         );
+    });
+});
+
+describe('Image support with XAI', function (): void {
+    it('can send images from path', function (): void {
+        FixtureResponse::fakeResponseSequence('chat/completions', 'xai/image-detection');
+
+        $response = Prism::text()
+            ->using('xai', 'grok-vision-beta')
+            ->withMessages([
+                new UserMessage(
+                    'What is this image',
+                    additionalContent: [
+                        Image::fromPath('tests/Fixtures/test-image.png'),
+                    ],
+                ),
+            ])
+            ->generate();
+
+        Http::assertSent(function (Request $request): true {
+            $message = $request->data()['messages'][0]['content'];
+
+            expect($message[0])->toBe([
+                'type' => 'text',
+                'text' => 'What is this image',
+            ]);
+
+            expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
+            expect($message[1]['image_url']['url'])->toContain(
+                base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
+            );
+
+            return true;
+        });
+    });
+
+    it('can send images from base64', function (): void {
+        FixtureResponse::fakeResponseSequence('chat/completions', 'xai/text-image-from-base64');
+
+        Prism::text()
+            ->using('xai', 'grok-vision-beta')
+            ->withMessages([
+                new UserMessage(
+                    'What is this image',
+                    additionalContent: [
+                        Image::fromBase64(
+                            base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                            'image/png'
+                        ),
+                    ],
+                ),
+            ])
+            ->generate();
+
+        Http::assertSent(function (Request $request): true {
+            $message = $request->data()['messages'][0]['content'];
+
+            expect($message[0])->toBe([
+                'type' => 'text',
+                'text' => 'What is this image',
+            ]);
+
+            expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
+            expect($message[1]['image_url']['url'])->toContain(
+                base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
+            );
+
+            return true;
+        });
+    });
+
+    it('can send images from url', function (): void {
+        FixtureResponse::fakeResponseSequence('chat/completions', 'xai/text-image-from-url');
+
+        $image = 'https://storage.echolabs.dev/api/v1/buckets/public/objects/download?preview=true&prefix=test-image.png';
+
+        Prism::text()
+            ->using('xai', 'grok-vision-beta')
+            ->withMessages([
+                new UserMessage(
+                    'What is this image',
+                    additionalContent: [
+                        Image::fromUrl($image),
+                    ],
+                ),
+            ])
+            ->generate();
+
+        Http::assertSent(function (Request $request) use ($image): true {
+            $message = $request->data()['messages'][0]['content'];
+
+            expect($message[0])->toBe([
+                'type' => 'text',
+                'text' => 'What is this image',
+            ]);
+
+            expect($message[1]['image_url']['url'])->toBe($image);
+
+            return true;
+        });
     });
 });

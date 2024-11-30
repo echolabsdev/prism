@@ -1,0 +1,20 @@
+{
+    "id": "img-123-456",
+    "model": "grok-vision-beta",
+    "created": 1710835200,
+    "usage": {
+        "prompt_tokens": 250,
+        "completion_tokens": 85,
+        "total_tokens": 335
+    },
+    "choices": [
+        {
+            "message": {
+                "role": "assistant",
+                "content": "This image is a simple black and white line drawing of a diamond. It features the classic geometric shape of a cut diamond, with straight lines forming triangular facets"
+            },
+            "finish_reason": "stop",
+            "index": 0
+        }
+    ]
+} 

@@ -1,0 +1,20 @@
+{
+    "id": "img-789-012",
+    "model": "grok-vision-beta",
+    "created": 1710835200,
+    "usage": {
+        "prompt_tokens": 250,
+        "completion_tokens": 85,
+        "total_tokens": 335
+    },
+    "choices": [
+        {
+            "message": {
+                "role": "assistant",
+                "content": "This image is a simple line drawing of a diamond. It features the typical geometric facets of a cut diamond, with lines indicating the different surfaces and angles."
+            },
+            "finish_reason": "stop",
+            "index": 0
+        }
+    ]
+} 
