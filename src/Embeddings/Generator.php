@@ -12,8 +12,7 @@ use EchoLabs\Prism\PrismManager;
 
 class Generator
 {
-    /** @var string|array<int, string> */
-    protected string|array $input = '';
+    protected string $input = '';
 
     /** @var array<string, mixed> */
     protected array $clientOptions = [];
@@ -35,8 +34,7 @@ class Generator
         return $this;
     }
 
-    /** @param string|array<int, string> $input */
-    public function fromInput(string|array $input): self
+    public function fromInput(string $input): self
     {
         $this->input = $input;
 

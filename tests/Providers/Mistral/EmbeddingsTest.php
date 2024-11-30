@@ -36,18 +36,3 @@ it('returns embeddings from file', function (): void {
     expect($response->embeddings)->not->toBeEmpty();
     expect($response->usage->tokens)->toBe(1174);
 });
-
-it('returns multiple embeddings from input', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/embeddings', 'mistral/embeddings-multiple');
-
-    $response = Prism::embeddings()
-        ->using(Provider::Mistral, 'mistral-small-latest')
-        ->fromInput(['Embed this sentence.', 'And this one too.'])
-        ->generate();
-
-    expect($response->embeddings)->toBeArray();
-    expect($response->embeddings)->toHaveCount(2);
-    expect($response->embeddings[0])->toBeArray();
-    expect($response->embeddings[1])->toBeArray();
-    expect($response->usage->tokens)->toBe(50);
-});
