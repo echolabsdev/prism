@@ -10,7 +10,6 @@ use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
     config()->set('prism.providers.xai.api_key', env('XAI_API_KEY', 'xai-123'));
-
 });
 
 describe('Text generation for XAI', function (): void {

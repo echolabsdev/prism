@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Mistral;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
+use EchoLabs\Prism\Providers\Mistral\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Mistral\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
@@ -38,7 +39,12 @@ class Mistral implements Provider
     #[\Override]
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
-        throw new \Exception(sprintf('%s does not support embeddings', class_basename($this)));
+        $handler = new Embeddings($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
     }
 
     /**
