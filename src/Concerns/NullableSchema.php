@@ -7,12 +7,8 @@ trait NullableSchema
     /**
      * @return array<int, string>|string
      */
-    protected function getNullableType(string $type): array|string
+    protected function castToNullable(string $type): array|string
     {
-        if ($this->nullable) {
-            return [$type, 'null'];
-        }
-
-        return $type;
+        return [$type, 'null'];
     }
 }

@@ -29,7 +29,9 @@ class ArraySchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => $this->getNullableType('array'),
+            'type' => $this->nullable
+                ? $this->castToNullable('array')
+                : 'array',
             'items' => $this->items->toArray(),
         ];
     }

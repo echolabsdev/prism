@@ -35,7 +35,9 @@ class ObjectSchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => $this->getNullableType('object'),
+            'type' => $this->nullable
+                ? $this->castToNullable('object')
+                : 'object',
             'properties' => $this->propertiesArray(),
             'required' => $this->requiredFields,
             'additionalProperties' => $this->allowAdditionalProperties,

@@ -28,7 +28,9 @@ class BooleanSchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => $this->getNullableType('boolean'),
+            'type' => $this->nullable
+                ? $this->castToNullable('boolean')
+                : 'boolean',
         ];
     }
 }

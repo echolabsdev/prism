@@ -28,7 +28,9 @@ class StringSchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => $this->getNullableType('string'),
+            'type' => $this->nullable
+                ? $this->castToNullable('string')
+                : 'string',
         ];
     }
 }

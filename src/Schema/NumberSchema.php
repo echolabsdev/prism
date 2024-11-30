@@ -28,7 +28,9 @@ class NumberSchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => $this->getNullableType('number'),
+            'type' => $this->nullable
+                ? $this->castToNullable('number')
+                : 'number',
         ];
     }
 }
