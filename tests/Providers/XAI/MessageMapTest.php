@@ -6,6 +6,7 @@ namespace Tests\Providers\XAI;
 
 use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -22,7 +23,7 @@ it('maps user messages', function (): void {
     expect($messageMap())->toBe([[
         'role' => 'user',
         'content' => [
-            'type' => 'text', 'text' => 'Who are you?',
+            ['type' => 'text', 'text' => 'Who are you?'],
         ],
     ]]);
 });
@@ -107,4 +108,76 @@ it('maps system prompt', function (): void {
         'role' => 'system',
         'content' => 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]',
     ]);
+});
+
+it('maps user messages with images from path', function (): void {
+    $messageMap = new MessageMap(
+        messages: [
+            new UserMessage('Who are you?', [
+                Image::fromPath('tests/Fixtures/test-image.png'),
+            ]),
+        ],
+        systemPrompt: ''
+    );
+
+    expect($messageMap())->toBe([[
+        'role' => 'user',
+        'content' => [
+            ['type' => 'text', 'text' => 'Who are you?'],
+            [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => 'data:image/png;base64,'.base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                ],
+            ],
+        ],
+    ]]);
+});
+
+it('maps user messages with images from base64', function (): void {
+    $messageMap = new MessageMap(
+        messages: [
+            new UserMessage('Who are you?', [
+                Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png'),
+            ]),
+        ],
+        systemPrompt: ''
+    );
+
+    expect($messageMap())->toBe([[
+        'role' => 'user',
+        'content' => [
+            ['type' => 'text', 'text' => 'Who are you?'],
+            [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => 'data:image/png;base64,'.base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                ],
+            ],
+        ],
+    ]]);
+});
+
+it('maps user messages with images from url', function (): void {
+    $messageMap = new MessageMap(
+        messages: [
+            new UserMessage('Who are you?', [
+                Image::fromUrl('https://storage.echolabs.dev/assets/logo.png'),
+            ]),
+        ],
+        systemPrompt: ''
+    );
+
+    expect($messageMap())->toBe([[
+        'role' => 'user',
+        'content' => [
+            ['type' => 'text', 'text' => 'Who are you?'],
+            [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => 'https://storage.echolabs.dev/assets/logo.png',
+                ],
+            ],
+        ],
+    ]]);
 });
