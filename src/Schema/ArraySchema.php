@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
+use EchoLabs\Prism\Concerns\NullableSchema;
 use EchoLabs\Prism\Contracts\Schema;
 
 class ArraySchema implements Schema
 {
+    use NullableSchema;
+
     public function __construct(
         public readonly string $name,
         public readonly string $description,
         public readonly Schema $items,
+        public readonly bool $nullable = false,
     ) {}
 
     #[\Override]
@@ -25,7 +29,9 @@ class ArraySchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => 'array',
+            'type' => $this->nullable
+                ? $this->castToNullable('array')
+                : 'array',
             'items' => $this->items->toArray(),
         ];
     }

@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Schema;
 
+use EchoLabs\Prism\Concerns\NullableSchema;
 use EchoLabs\Prism\Contracts\Schema;
 
 class NumberSchema implements Schema
 {
+    use NullableSchema;
+
     public function __construct(
         public readonly string $name,
         public readonly string $description,
+        public readonly bool $nullable = false,
     ) {}
 
     #[\Override]
@@ -24,7 +28,9 @@ class NumberSchema implements Schema
     {
         return [
             'description' => $this->description,
-            'type' => 'number',
+            'type' => $this->nullable
+                ? $this->castToNullable('number')
+                : 'number',
         ];
     }
 }
