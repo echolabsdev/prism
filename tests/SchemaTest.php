@@ -227,7 +227,11 @@ it('nullable enums include types', function (): void {
 });
 
 it('non-nullable enum with single type returns single type', function (): void {
-    $enumSchema = new EnumSchema(name: 'user_type', description: 'the type of user', options: ['admin', 'super_admin', 'standard']);
+    $enumSchema = new EnumSchema(
+        name: 'user_type',
+        description: 'the type of user',
+        options: ['admin', 'super_admin', 'standard']
+    );
 
     expect($enumSchema->toArray())->toBe([
         'description' => 'the type of user',
