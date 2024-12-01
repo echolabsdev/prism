@@ -71,7 +71,7 @@ Each provider brings its own strengths to the table, and Prism makes it easy to 
 
 ## Provider Support
 
-Make sure you check the dedicated provider pages considerations, limitations, and options. Support may be model dependant, check with your provider for model specific features and support.
+Make sure you check the dedicated provider pages for considerations, limitations, and options. Support may be model dependant, check with your provider for model specific features and support.
 
 |   | Text | Structured | Embeddings | Image | Tools |
 |---|:---:|:---:|:---:|:---:|:---:|
