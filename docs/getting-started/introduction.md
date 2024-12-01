@@ -56,7 +56,7 @@ Prism draws significant inspiration from the [Vercel AI SDK](https://sdk.vercel.
 - **Tool System**: Extend AI capabilities by defining custom tools that can interact with your application's business logic.
 - **Image Support**: Work with multi-modal models that can process both text and images.
 
-## Supported Providers
+## Providers
 
 We currently offer first-party support for these leading AI providers:
 
@@ -68,3 +68,20 @@ We currently offer first-party support for these leading AI providers:
 - [xAI](https://x.ai/)
 
 Each provider brings its own strengths to the table, and Prism makes it easy to use them all through a consistent, elegajnt interface.
+
+## Provider Support
+
+Make sure you check the dedicated provider pages considerations, limitations, and options.
+
+|   | Text | Structured | Embeddings | Image | Tools |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Anthropic | 🟢 | 🟠 | 🔴 | 🟢 | 🟢 |
+| Groq | 🟢 | 🟠 | 🟠 | 🟢 | 🟢 |
+| Mistral | 🟢 | 🟠 | 🟢 | 🟢 | 🟢 |
+| Ollama | 🟢 | 🟠 | 🟢 | 🟢 | 🟢 |
+| OpenAI | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
+| xAI | 🟢 | 🟠 | 🔴 | 🟢 | 🟢 |
+
+🟢 Supported \
+🟠 Planned Support \
+🔴 Provider Unsupported
