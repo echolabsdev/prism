@@ -67,11 +67,11 @@ We currently offer first-party support for these leading AI providers:
 - [OpenAI](https://openai.com)
 - [xAI](https://x.ai/)
 
-Each provider brings its own strengths to the table, and Prism makes it easy to use them all through a consistent, elegajnt interface.
+Each provider brings its own strengths to the table, and Prism makes it easy to use them all through a consistent, elegant interface.
 
 ## Provider Support
 
-Make sure you check the dedicated provider pages considerations, limitations, and options.
+Make sure you check the dedicated provider pages considerations, limitations, and options. Support may be model dependant, check with your provider for model specific features and support.
 
 |   | Text | Structured | Embeddings | Image | Tools |
 |---|:---:|:---:|:---:|:---:|:---:|
