@@ -101,12 +101,12 @@ export default defineConfig({
                 link: "/core-concepts/text-generation",
               },
               {
-                text: "Structured Output",
-                link: "/core-concepts/structured-output",
-              },
-              {
                 text: "Tool & Function Calling",
                 link: "/core-concepts/tools-function-calling",
+              },
+              {
+                text: "Structured Output",
+                link: "/core-concepts/structured-output",
               },
               {
                 text: "Embeddings",
