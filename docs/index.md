@@ -24,4 +24,10 @@ features:
     details: Craft AI-powered text with an intuitive, chainable API that feels right at home in your Laravel projects.
   - title: Seamless Tool Integration
     details: Empower your AI with custom tools and external APIs, extending its capabilities with Laravel-like simplicity.
+  - title: Structured Output Handling
+    details: Transform AI responses into strongly-typed data with schema validation and rich object mapping - perfect for building robust APIs and applications.
+  - title: First-Class Testing Support
+    details: Write confident code with our comprehensive testing utilities, including response faking and detailed assertion helpers that make unit testing a breeze.
+  - title: Multi-Modal Capabilities
+    details: Work with both text and images seamlessly using the same elegant API, enabling rich visual understanding and context-aware responses.
 ---
