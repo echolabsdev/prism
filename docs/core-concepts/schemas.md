@@ -267,5 +267,5 @@ $userSchema = new ObjectSchema(
    );
    ```
 
-> [!TIP]
+> [!NOTE]
 > Remember that while schemas help define the structure of your data, Prism doesn't currently validate the data against these schemas. Schema validation is planned for a future release!
