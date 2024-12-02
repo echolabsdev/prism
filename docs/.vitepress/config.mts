@@ -113,6 +113,10 @@ export default defineConfig({
                 link: "/core-concepts/embeddings",
               },
               {
+                text: "Schemas",
+                link: "/core-concepts/schemas",
+              },
+              {
                 text: "Prism Server",
                 link: "/core-concepts/prism-server",
               },

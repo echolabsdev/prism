@@ -34,49 +34,131 @@ $searchTool = Tool::as('search')
 
 ## Parameter Definition
 
-Prism offers multiple ways to define tool parameters, from simple strings to complex objects. Here's how you can define different parameter types:
+Prism offers multiple ways to define tool parameters, from simple primitives to complex objects.
+
+### String Parameters
+
+Perfect for text inputs:
 
 ```php
-$tool = Tool::as('user_manager')
-    ->for('Manage user data')
-    ->withStringParameter('name', 'User name')
-    ->withNumberParameter('age', 'User age')
-    ->withBooleanParameter('active', 'Account status')
-    ->withArrayParameter('hobbies', 'User hobbies', new StringSchema('hobby', 'A hobby'))
-    ->using(function (string $name, int $age, bool $active, array $hobbies): string {
-        // Implementation
+$tool = Tool::as('search')
+    ->for('Search for information')
+    ->withStringParameter('query', 'The search query')
+    ->using(function (string $query): string {
+        return "Search results for: {$query}";
     });
 ```
 
-For more complex scenarios, you can use schema objects:
+### Number Parameters
+
+For integer or floating-point values:
 
 ```php
-use EchoLabs\Prism\Schema\ArraySchema;
+$tool = Tool::as('calculate')
+    ->for('Perform calculations')
+    ->withNumberParameter('value', 'The number to process')
+    ->using(function (float $value): string {
+        return "Calculated result: {$value * 2}";
+    });
+```
+
+### Boolean Parameters
+
+For true/false flags:
+
+```php
+$tool = Tool::as('feature_toggle')
+    ->for('Toggle a feature')
+    ->withBooleanParameter('enabled', 'Whether to enable the feature')
+    ->using(function (bool $enabled): string {
+        return "Feature is now " . ($enabled ? 'enabled' : 'disabled');
+    });
+```
+
+### Array Parameters
+
+For handling lists of items:
+
+```php
+$tool = Tool::as('process_tags')
+    ->for('Process a list of tags')
+    ->withArrayParameter(
+        'tags',
+        'List of tags to process',
+        new StringSchema('tag', 'A single tag')
+    )
+    ->using(function (array $tags): string {
+        return "Processing tags: " . implode(', ', $tags);
+    });
+```
+
+### Enum Parameters
+
+When you need to restrict values to a specific set:
+
+```php
+$tool = Tool::as('set_status')
+    ->for('Set the status')
+    ->withEnumParameter(
+        'status',
+        'The new status',
+        ['draft', 'published', 'archived']
+    )
+    ->using(function (string $status): string {
+        return "Status set to: {$status}";
+    });
+```
+
+### Object Parameters
+
+For complex objects without needing to create separate schema instances:
+
+```php
+$tool = Tool::as('update_user')
+    ->for('Update a user profile')
+    ->withObjectParameter(
+        'user',
+        'The user profile data',
+        [
+            new StringSchema('name', 'User\'s full name'),
+            new NumberSchema('age', 'User\'s age'),
+            new StringSchema('email', 'User\'s email address')
+        ],
+        requiredFields: ['name', 'email']
+    )
+    ->using(function (array $user): string {
+        return "Updated user profile for: {$user['name']}";
+    });
+```
+
+### Schema-based Parameters
+
+For complex, nested data structures, you can use Prism's schema system:
+
+```php
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use EchoLabs\Prism\Schema\NumberSchema;
 
-$userSchema = new ObjectSchema(
-    name: 'user',
-    description: 'the user object',
-    properties: [
-        new StringSchema('name', 'the users name'),
-        new ArraySchema(
-            name: 'hobbies',
-            description: 'the users hobbies',
-            items: new ObjectSchema(
-                name: 'hobby',
-                description: 'the hobby object',
-                properties: [
-                    new StringSchema('name', 'the hobby name'),
-                    new StringSchema('description', 'the hobby description'),
-                ],
-                requiredFields: ['name', 'description']
-            )
-        ),
-    ],
-    requiredFields: ['name', 'hobbies']
-);
+$tool = Tool::as('create_user')
+    ->for('Create a new user profile')
+    ->withParameter(new ObjectSchema(
+        name: 'user',
+        description: 'The user profile data',
+        properties: [
+            new StringSchema('name', 'User\'s full name'),
+            new NumberSchema('age', 'User\'s age'),
+            new StringSchema('email', 'User\'s email address')
+        ],
+        requiredFields: ['name', 'email']
+    ))
+    ->using(function (array $user): string {
+        return "Created user profile for: {$user['name']}";
+    });
 ```
+
+> [!TIP]
+> For more complex parameter definitions, Prism provides a powerful schema system. See our [complete schemas guide](/core-concepts/schemas) to learn how to define complex nested objects, arrays, enums, and more.
 
 ## Complex Tool Implementation
 
