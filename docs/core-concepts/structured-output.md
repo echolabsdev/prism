@@ -36,6 +36,9 @@ echo $review['rating'];   // "5 stars"
 echo $review['summary'];  // "A mind-bending..."
 ```
 
+> [!TIP]
+> This is just a basic example of schema usage. Check out our [dedicated schemas guide](/core-concepts/schemas) to learn about all available schema types, nullable fields, and best practices for structuring your data.
+
 ## Understanding Output Modes
 
 Different AI providers handle structured output in two main ways:
@@ -45,52 +48,6 @@ Different AI providers handle structured output in two main ways:
 
 > [!NOTE]
 > Check your provider's documentation to understand which mode they support. Provider support can vary by model, so always verify capabilities for your specific use case.
-
-## Available Schema Types
-
-Build your schemas using these fundamental types:
-
-```php
-use EchoLabs\Prism\Schema\{
-    StringSchema,
-    NumberSchema,
-    BooleanSchema,
-    ArraySchema,
-    ObjectSchema,
-    EnumSchema
-};
-
-// String
-new StringSchema('name', 'description');
-
-// Number
-new NumberSchema('age', 'description');
-
-// Boolean
-new BooleanSchema('is_active', 'description');
-
-// Array
-new ArraySchema('tags', 'description', new StringSchema('tag', 'A single tag'));
-
-// Enum
-new EnumSchema('status', 'description', ['draft', 'published', 'archived']);
-
-// Object (nested structures)
-new ObjectSchema(
-    name: 'user',
-    description: 'User profile',
-    properties: [
-        new StringSchema('name', 'Full name'),
-        new NumberSchema('age', 'User age'),
-        new ArraySchema(
-            name: 'hobbies',
-            description: 'List of hobbies',
-            items: new StringSchema('hobby', 'A hobby name')
-        )
-    ],
-    requiredFields: ['name']
-);
-```
 
 ## Provider-Specific Options
 
