@@ -123,12 +123,28 @@ export default {
       features: ["Text", "Structured", "Embeddings", "Image", "Tools"],
       providers: [
         {
+          name: "Amazon Bedrock",
+          text: "planned",
+          structured: "planned",
+          embeddings: "planned",
+          image: "planned",
+          tools: "planned",
+        },
+        {
           name: "Anthropic",
           text: "supported",
           structured: "planned",
           embeddings: "unsupported",
           image: "supported",
           tools: "supported",
+        },
+        {
+          name: "Gemini",
+          text: "planned",
+          structured: "planned",
+          embeddings: "planned",
+          image: "planned",
+          tools: "planned",
         },
         {
           name: "Groq",
