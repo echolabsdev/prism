@@ -7,6 +7,12 @@ export default defineConfig({
     [
       "script",
       {
+        src: "https://cdn.tailwindcss.com",
+      },
+    ],
+    [
+      "script",
+      {
         defer: "",
         src: "https://analytics.echolabs.dev/script.js",
         "data-website-id": "38989bda-90b5-47af-81ab-57a823480b9e",

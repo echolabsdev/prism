@@ -1,3 +1,7 @@
+<script setup>
+import ProviderSupport from '../components/ProviderSupport.vue'
+</script>
+
 # Introduction
 
 Large Language Models (LLMs) have revolutionized how we interact with artificial intelligence, enabling applications to understand, generate, and manipulate human language with unprecedented sophistication. These powerful models open up exciting possibilities for developers, from creating chatbots and content generators to building complex AI-driven applications.
@@ -73,15 +77,4 @@ Each provider brings its own strengths to the table, and Prism makes it easy to 
 
 Make sure you check the dedicated provider pages for considerations, limitations, and options. Support may be model dependant, check with your provider for model specific features and support.
 
-|   | Text | Structured | Embeddings | Image | Tools |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Anthropic | 🟢 | 🟠 | 🔴 | 🟢 | 🟢 |
-| Groq | 🟢 | 🟠 | 🟠 | 🟢 | 🟢 |
-| Mistral | 🟢 | 🟠 | 🟢 | 🟢 | 🟢 |
-| Ollama | 🟢 | 🟠 | 🟢 | 🟢 | 🟢 |
-| OpenAI | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
-| xAI | 🟢 | 🟠 | 🔴 | 🟢 | 🟢 |
-
-🟢 Supported \
-🟠 Planned Support \
-🔴 Provider Unsupported
+<ProviderSupport />
