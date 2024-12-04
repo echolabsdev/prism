@@ -36,8 +36,11 @@ class Embeddings
             ));
         }
 
+        /** @var array<int, array<string, mixed>> $dataItems */
+        $dataItems = data_get($data, 'data', []);
+
         return new EmbeddingsResponse(
-            embeddings: data_get($data, 'data.0.embedding', []),
+            embeddings: collect($dataItems)->pluck('embedding')->toArray(),
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
         );
     }
