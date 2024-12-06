@@ -14,6 +14,10 @@ class ToolChoiceMap
      */
     public static function map(string|ToolChoice|null $toolChoice): string|array|null
     {
+        if (is_null($toolChoice)) {
+            return null;
+        }
+
         if (is_string($toolChoice)) {
             return [
                 'type' => 'function',
@@ -23,11 +27,13 @@ class ToolChoiceMap
             ];
         }
 
+        if (! in_array($toolChoice, [ToolChoice::Auto, ToolChoice::Any])) {
+            throw new InvalidArgumentException('Invalid tool choice');
+        }
+
         return match ($toolChoice) {
             ToolChoice::Auto => 'auto',
             ToolChoice::Any => 'required',
-            null => $toolChoice,
-            default => throw new InvalidArgumentException('Invalid tool choice')
         };
     }
 }

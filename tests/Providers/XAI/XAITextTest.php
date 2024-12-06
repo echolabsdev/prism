@@ -23,7 +23,7 @@ describe('Text generation for XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-a-prompt');
 
         $response = Prism::text()
-            ->using('xai', 'grok-beta')
+            ->using(Provider::XAI, 'grok-beta')
             ->withPrompt('Who are you?')
             ->generate();
 
@@ -40,7 +40,7 @@ describe('Text generation for XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-system-prompt');
 
         $response = Prism::text()
-            ->using('xai', 'grok-beta')
+            ->using(Provider::XAI, 'grok-beta')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
             ->withPrompt('Who are you?')
             ->generate();
@@ -69,7 +69,7 @@ describe('Text generation for XAI', function (): void {
         ];
 
         $response = Prism::text()
-            ->using('xai', 'grok-beta')
+            ->using(Provider::XAI, 'grok-beta')
             ->withTools($tools)
             ->withMaxSteps(4)
             ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat? please check all the details from tools')
@@ -107,7 +107,7 @@ describe('Image support with XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/image-detection');
 
         $response = Prism::text()
-            ->using('xai', 'grok-vision-beta')
+            ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -139,7 +139,7 @@ describe('Image support with XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/text-image-from-base64');
 
         Prism::text()
-            ->using('xai', 'grok-vision-beta')
+            ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -176,7 +176,7 @@ describe('Image support with XAI', function (): void {
         $image = 'https://storage.echolabs.dev/api/v1/buckets/public/objects/download?preview=true&prefix=test-image.png';
 
         Prism::text()
-            ->using('xai', 'grok-vision-beta')
+            ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
