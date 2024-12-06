@@ -9,6 +9,7 @@
 ```
 
 ## Considerations
+### Message Order
 
 - Message order matters. Anthropic is strict about the message order being:
 
@@ -16,7 +17,18 @@
 2. `AssistantMessage`
 3. `UserMessage`
 
-## Limitations
+### Structured Output
 
-- Does not support the `SystemMessage` message type, we automatically convert `SystemMessage` to `UserMessage`.
-- Does not support `Image::fromURL`
+While Anthropic models don't have native JSON mode or structured output like some providers, Prism implements a robust workaround for structured output:
+
+- We automatically append instructions to your prompt that guide the model to output valid JSON matching your schema
+- If the response isn't valid JSON, Prism will raise a PrismException
+
+## Limitations
+### Messages
+
+Does not support the `SystemMessage` message type, we automatically convert `SystemMessage` to `UserMessage`.
+
+### Images
+
+Does not support `Image::fromURL`
