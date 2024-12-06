@@ -8,6 +8,7 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Providers\XAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
+use EchoLabs\Prism\Providers\XAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -67,6 +68,7 @@ class Text
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
                 'tools' => ToolMap::map($request->tools),
+                'tool_choice' => ToolChoiceMap::map($request->toolChoice),
             ]))
         );
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -21,7 +23,7 @@ describe('Text generation for XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-a-prompt');
 
         $response = Prism::text()
-            ->using('xai', 'grok-beta')
+            ->using(Provider::XAI, 'grok-beta')
             ->withPrompt('Who are you?')
             ->generate();
 
@@ -38,7 +40,7 @@ describe('Text generation for XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-system-prompt');
 
         $response = Prism::text()
-            ->using('xai', 'grok-beta')
+            ->using(Provider::XAI, 'grok-beta')
             ->withSystemPrompt('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!')
             ->withPrompt('Who are you?')
             ->generate();
@@ -67,7 +69,7 @@ describe('Text generation for XAI', function (): void {
         ];
 
         $response = Prism::text()
-            ->using('xai', 'grok-beta')
+            ->using(Provider::XAI, 'grok-beta')
             ->withTools($tools)
             ->withMaxSteps(4)
             ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat? please check all the details from tools')
@@ -105,7 +107,7 @@ describe('Image support with XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/image-detection');
 
         $response = Prism::text()
-            ->using('xai', 'grok-vision-beta')
+            ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -137,7 +139,7 @@ describe('Image support with XAI', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/text-image-from-base64');
 
         Prism::text()
-            ->using('xai', 'grok-vision-beta')
+            ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -174,7 +176,7 @@ describe('Image support with XAI', function (): void {
         $image = 'https://storage.echolabs.dev/api/v1/buckets/public/objects/download?preview=true&prefix=test-image.png';
 
         Prism::text()
-            ->using('xai', 'grok-vision-beta')
+            ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
                     'What is this image',
@@ -198,4 +200,52 @@ describe('Image support with XAI', function (): void {
             return true;
         });
     });
+});
+
+it('handles specific tool choice', function (): void {
+    FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-specific-tool-call');
+
+    $tools = [
+        Tool::as('weather')
+            ->for('useful when you need to search for current weather conditions')
+            ->withStringParameter('city', 'The city that you want the weather for')
+            ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+        Tool::as('search')
+            ->for('useful for searching curret events or data')
+            ->withStringParameter('query', 'The detailed search query')
+            ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+    ];
+
+    $response = Prism::text()
+        ->using(Provider::XAI, 'grok-beta')
+        ->withPrompt('Do something')
+        ->withTools($tools)
+        ->withToolChoice('weather')
+        ->generate();
+
+    expect($response->toolCalls[0]->name)->toBe('weather');
+});
+
+it('handles required tool choice', function (): void {
+    FixtureResponse::fakeResponseSequence('chat/completions', 'xai/generate-text-with-required-tool-call');
+
+    $tools = [
+        Tool::as('weather')
+            ->for('useful when you need to search for current weather conditions')
+            ->withStringParameter('city', 'The city that you want the weather for')
+            ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+        Tool::as('search')
+            ->for('useful for searching curret events or data')
+            ->withStringParameter('query', 'The detailed search query')
+            ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+    ];
+
+    $response = Prism::text()
+        ->using(Provider::XAI, 'grok-beta')
+        ->withPrompt('Do something')
+        ->withTools($tools)
+        ->withToolChoice(ToolChoice::Any)
+        ->generate();
+
+    expect($response->toolCalls[0]->name)->toBeIn(['weather', 'search']);
 });
