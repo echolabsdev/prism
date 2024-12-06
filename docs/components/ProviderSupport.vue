@@ -45,6 +45,21 @@
                 />
               </svg>
               <svg
+                v-else-if="provider[feature.toLowerCase()] === 'adapted'"
+                class="w-6 h-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 3v3m0 12v3M3 12h3m12 0h3"
+                  stroke="green"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <circle cx="12" cy="12" r="4" stroke="green" stroke-width="2" />
+              </svg>
+              <svg
                 v-else
                 class="w-6 h-6"
                 viewBox="0 0 24 24"
@@ -102,6 +117,23 @@
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
+            d="M12 3v3m0 12v3M3 12h3m12 0h3"
+            stroke="green"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <circle cx="12" cy="12" r="4" stroke="green" stroke-width="2" />
+        </svg>
+        <span>Adapted Support</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
             d="M18 6L6 18M6 6l12 12"
             stroke="red"
             stroke-width="2"
@@ -118,6 +150,7 @@
 <script>
 const Supported = "supported";
 const Planned = "planned";
+const Adapted = "adapted";
 const Unsupported = "unsupported";
 
 export default {
@@ -137,7 +170,7 @@ export default {
         {
           name: "Anthropic",
           text: Supported,
-          structured: Supported,
+          structured: Adapted,
           embeddings: Unsupported,
           image: Supported,
           tools: Supported,
@@ -169,7 +202,7 @@ export default {
         {
           name: "Ollama",
           text: Supported,
-          structured: Planned,
+          structured: Adapted,
           embeddings: Supported,
           image: Supported,
           tools: Supported,

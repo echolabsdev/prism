@@ -18,6 +18,13 @@ Prism::text() // [!code focus]
   ->withClientOptions(['timeout' => 60]) // [!code focus]
 ```
 
+### Structured Output
+
+Ollama doesn't have native JSON mode or structured output like some providers, Prism implements a robust workaround for structured output:
+
+- We automatically append instructions to your prompt that guide the model to output valid JSON matching your schema
+- If the response isn't valid JSON, Prism will raise a PrismException
+
 ## Limitations
 ### Image URL
 
