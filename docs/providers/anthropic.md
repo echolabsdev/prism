@@ -9,7 +9,7 @@
 ```
 
 ## Considerations
-
+### Message Order
 - Message order matters. Anthropic is strict about the message order being:
 
 1. `UserMessage`
@@ -17,6 +17,8 @@
 3. `UserMessage`
 
 ## Limitations
+### Messages
+Does not support the `SystemMessage` message type, we automatically convert `SystemMessage` to `UserMessage`.
 
-- Does not support the `SystemMessage` message type, we automatically convert `SystemMessage` to `UserMessage`.
-- Does not support `Image::fromURL`
+### Images
+Does not support `Image::fromURL`
