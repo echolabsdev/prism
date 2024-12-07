@@ -21,6 +21,8 @@ class Generator
 
     protected ResponseBuilder $responseBuilder;
 
+    protected $isFinalResponse = false;
+
     public function __construct()
     {
         $this->responseBuilder = new ResponseBuilder;
@@ -44,6 +46,12 @@ class Generator
             response: $response->response,
             messages: $this->messages,
         ));
+
+        if ($response->finishReason === FinishReason::Stop && ! $this->isFinalResponse) {
+            $this->isFinalResponse = true;
+
+            return $this->generate();
+        }
 
         if ($this->shouldContinue($response)) {
             return $this->generate();
@@ -72,6 +80,7 @@ class Generator
             toolChoice: $this->toolChoice,
             schema: $this->schema,
             providerMeta: $this->providerMeta,
+            isFinalResponse: $this->isFinalResponse,
         );
     }
 

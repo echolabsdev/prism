@@ -36,6 +36,7 @@ class Request
         public readonly array $clientRetry,
         public readonly Schema $schema,
         public readonly array $providerMeta,
+        public readonly bool $isFinalResponse,
     ) {}
 
     public function addMessage(UserMessage|SystemMessage $message): self
@@ -56,6 +57,7 @@ class Request
             toolChoice: $this->toolChoice,
             schema: $this->schema,
             providerMeta: $this->providerMeta,
+            isFinalResponse: $this->isFinalResponse,
         );
     }
 

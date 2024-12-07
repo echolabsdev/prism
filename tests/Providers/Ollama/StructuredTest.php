@@ -13,7 +13,7 @@ use EchoLabs\Prism\Schema\StringSchema;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured-with-multiple-tools-structured-mode');
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured-output-with-tools');
 
     $tools = [
         Tool::as('weather')
@@ -43,11 +43,13 @@ it('returns structured output', function (): void {
         ->withTools($tools)
         ->withMaxSteps(4)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->withClientOptions(['timeout' => 120])
+        ->withClientRetry(2)
         ->generate();
 
     expect($response->object)->toBeArray();
-    expect($response->object)->toBe([
-        'weather' => 'sunny, 90°',
+    expect($response->object)->toMatchArray([
+        'weather' => '90° and sunny',
         'game_time' => '3pm',
         'coat_required' => false,
     ]);

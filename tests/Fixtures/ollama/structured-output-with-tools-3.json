@@ -1,0 +1,1 @@
+{"id":"chatcmpl-645","object":"chat.completion","created":1733583109,"model":"qwen2.5:14b","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\"coat_required\": false, \"game_time\": \"3pm\", \"weather\": \"90° and sunny\"}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":399,"completion_tokens":29,"total_tokens":428}}

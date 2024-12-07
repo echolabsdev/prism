@@ -1,17 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
+use EchoLabs\Prism\Providers\Ollama\Maps\ToolCallMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -24,13 +22,11 @@ class Structured
     public function handle(Request $request): ProviderResponse
     {
         try {
-            $request = $this->appendMessageForJsonMode($request);
             $response = $this->sendRequest($request);
+            $data = $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
-
-        $data = $response->json();
 
         if (data_get($data, 'error') || ! $data) {
             throw PrismException::providerResponseError(vsprintf(
@@ -44,7 +40,7 @@ class Structured
 
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', []) ?? []),
+            toolCalls: ToolCallMap::map(data_get($data, 'choices.0.message.tool_calls', [])),
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
@@ -69,28 +65,23 @@ class Structured
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
                 'tools' => ToolMap::map($request->tools),
+                'response_format' => $request->isFinalResponse ? $this->mapResponseFormat($request) : null,
             ]))
         );
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $toolCalls
-     * @return array<int, ToolCall>
+     * @return array{type: 'json_schema', json_schema: array<string, mixed>}
      */
-    protected function mapToolCalls(array $toolCalls): array
+    protected function mapResponseFormat(Request $request): array
     {
-        return array_map(fn (array $toolCall): ToolCall => new ToolCall(
-            id: data_get($toolCall, 'id'),
-            name: data_get($toolCall, 'function.name'),
-            arguments: data_get($toolCall, 'function.arguments'),
-        ), $toolCalls);
-    }
-
-    protected function appendMessageForJsonMode(Request $request): Request
-    {
-        return $request->addMessage(new SystemMessage(sprintf(
-            "Respond with ONLY JSON that matches the following schema: \n %s",
-            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
-        )));
+        return [
+            'type' => 'json_schema',
+            'json_schema' => array_filter([
+                'name' => $request->schema->name(),
+                'schema' => $request->schema->toArray(),
+                'strict' => $request->providerMeta(Provider::OpenAI, 'schema.strict'),
+            ]),
+        ];
     }
 }
