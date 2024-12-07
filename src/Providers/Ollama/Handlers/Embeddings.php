@@ -28,7 +28,7 @@ class Embeddings
 
         if (data_get($data, 'error') || ! $data) {
             throw PrismException::providerResponseError(vsprintf(
-                'OpenAI Error:  [%s] %s',
+                'Ollama Error:  [%s] %s',
                 [
                     data_get($data, 'error.type', 'unknown'),
                     data_get($data, 'error.message', 'unknown'),
