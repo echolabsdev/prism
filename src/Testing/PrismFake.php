@@ -24,6 +24,7 @@ class PrismFake implements Provider
     /** @var array<int, StructuredRequest|TextRequest|EmbeddingRequest> */
     protected array $recorded = [];
 
+    /** @var array<string, mixed> */
     protected $providerConfig = [];
 
     /**
@@ -99,6 +100,9 @@ class PrismFake implements Provider
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $providerConfig
+     */
     public function assertProviderConfig(array $providerConfig): void
     {
         PHPUnit::assertEqualsCanonicalizing(
