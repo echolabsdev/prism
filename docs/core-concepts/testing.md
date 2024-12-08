@@ -199,4 +199,7 @@ $fake->assertRequest(function ($requests) {
     expect($requests[0]->provider)->toBe('anthropic');
     expect($requests[0]->model)->toBe('claude-3-sonnet');
 });
+
+// Assert provider configuration
+$fake->assertProviderConfig(['api_key' => 'sk-1234']);
 ```
