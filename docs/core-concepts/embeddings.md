@@ -16,10 +16,24 @@ $response = Prism::embeddings()
     ->generate();
 
 // Get your embeddings vector
-$embeddings = $response->embeddings;
+$embeddings = $response->embeddings[0];
 
 // Check token usage
 echo $response->usage->tokens;
+```
+
+Each vector index corresponds to the input text index when sending multiple chunks:
+
+```php
+$response = Prism::embeddings()
+    ->using(Provider::OpenAI, 'text-embedding-3-large')
+    ->fromInput(['Your text here', 'Another text here'])
+    ->generate();
+```
+
+```php
+// Get the embeddings vectors
+$vectors = $response->embeddings;
 ```
 
 ## Input Methods
@@ -68,7 +82,7 @@ The embeddings response gives you everything you need:
 
 ```php
 // Get the embeddings vector
-$vector = $response->embeddings;
+$vector = $response->embeddings[0];
 
 // Check token usage
 $tokenCount = $response->usage->tokens;
