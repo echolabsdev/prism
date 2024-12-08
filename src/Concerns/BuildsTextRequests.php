@@ -46,6 +46,9 @@ trait BuildsTextRequests
 
     protected string $model;
 
+    /** @var array<string, mixed> */
+    protected array $providerConfig = [];
+
     /** @var array<string, array<string, mixed>> */
     protected $providerMeta = [];
 
@@ -193,5 +196,15 @@ trait BuildsTextRequests
             toolChoice: $this->toolChoice,
             providerMeta: $this->providerMeta,
         );
+    }
+
+    /**
+     * @param  array<string, mixed>  $config
+     */
+    public function usingProviderConfig(array $config): self
+    {
+        $this->providerConfig = $config;
+
+        return $this;
     }
 }
