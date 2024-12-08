@@ -137,6 +137,10 @@ Under the hood we use Laravel's [HTTP client](https://laravel.com/docs/11.x/http
 
 Under the hood we use Laravel's [HTTP client](https://laravel.com/docs/11.x/http-client#main-content). You can use this method to set [retries](https://laravel.com/docs/11.x/http-client#retries) e.g. `->withClientRetry(3, 100)`.
 
+`usingProviderConfig`
+
+This allows for complete or partial override of the providers configuration. This is great for multi-tenant applications where users supply their own API keys. These values are merged with the original configuration allowing for partial or complete config override.
+
 ## Response Handling
 
 The response object provides rich access to the generation results:

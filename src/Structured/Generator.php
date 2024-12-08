@@ -97,7 +97,7 @@ class Generator
     protected function sendProviderRequest(): ProviderResponse
     {
         $response = resolve(PrismManager::class)
-            ->resolve($this->provider)
+            ->resolve($this->provider, $this->providerConfig)
             ->structured($this->structuredRequest());
 
         $responseMessage = new AssistantMessage(

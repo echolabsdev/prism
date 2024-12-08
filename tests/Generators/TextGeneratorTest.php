@@ -16,6 +16,7 @@ use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
+use Illuminate\Contracts\Foundation\Application;
 use Tests\TestDoubles\TestProvider;
 
 it('correctly resolves a provider', function (): void {
@@ -315,4 +316,32 @@ it('throws and exception if you send prompt and messages', function (): void {
         ->withMessages([
             new UserMessage('Who are you?'),
         ]);
+});
+
+it('allows for custom provider configuration', function (): void {
+    $provider = new TestProvider;
+
+    $provider->withResponseChain([
+        new ProviderResponse(
+            text: 'I\'m Nyx!',
+            toolCalls: [],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::Stop,
+            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+        ),
+    ]);
+
+    resolve(PrismManager::class)
+        ->extend('test', function (Application $app, array $config) use ($provider): \Tests\TestDoubles\TestProvider {
+
+            expect($config)->toBe(['api_key' => '1234']);
+
+            return $provider;
+        });
+
+    (new Generator)
+        ->using('test', 'latest')
+        ->withPrompt('Who are you?')
+        ->usingProviderConfig(['api_key' => '1234'])
+        ->generate();
 });

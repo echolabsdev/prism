@@ -122,3 +122,23 @@ it("throws an exception when it can't runs out of responses", function (): void 
         ->withPrompt('What is the meaning of life?')
         ->generate();
 });
+
+it('asserts provider config', function (): void {
+    $fake = Prism::fake([
+        new ProviderResponse(
+            text: 'The meaning of life is 42',
+            toolCalls: [],
+            usage: new Usage(42, 42),
+            finishReason: FinishReason::Stop,
+            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+        ),
+    ]);
+
+    Prism::text()
+        ->using('anthropic', 'claude-3-sonnet')
+        ->withPrompt('What is the meaning of life?')
+        ->usingProviderConfig(['api_key' => '1234'])
+        ->generate();
+
+    $fake->assertProviderConfig(['api_key' => '1234']);
+});

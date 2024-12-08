@@ -27,8 +27,10 @@ class Prism
                 private readonly PrismFake $fake
             ) {}
 
-            public function resolve(ProviderEnum|string $name): Provider
+            public function resolve(ProviderEnum|string $name, array $providerConfig = []): Provider
             {
+                $this->fake->setProviderConfig($providerConfig);
+
                 return $this->fake;
             }
         });

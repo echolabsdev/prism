@@ -114,6 +114,9 @@ Structured output supports all the same options as text generation, including:
 - Message history
 - Tools and function calling
 - System prompts
+- withClientOptions
+- withClientRetry
+- usingProviderConfig
 
 See the [Text Generation](./text-generation.md) documentation for details on these common settings.
 

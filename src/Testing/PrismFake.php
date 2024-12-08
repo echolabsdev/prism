@@ -24,6 +24,9 @@ class PrismFake implements Provider
     /** @var array<int, StructuredRequest|TextRequest|EmbeddingRequest> */
     protected array $recorded = [];
 
+    /** @var array<string, mixed> */
+    protected $providerConfig = [];
+
     /**
      * @param  array<int, ProviderResponse|EmbeddingResponse>  $responses
      */
@@ -69,6 +72,14 @@ class PrismFake implements Provider
     }
 
     /**
+     * @param  array<string, mixed>  $config
+     */
+    public function setProviderConfig(array $config): void
+    {
+        $this->providerConfig = $config;
+    }
+
+    /**
      * @param  Closure(array<int, StructuredRequest|TextRequest|EmbeddingRequest>):void  $fn
      */
     public function assertRequest(Closure $fn): void
@@ -86,6 +97,17 @@ class PrismFake implements Provider
         PHPUnit::assertTrue(
             $prompts->contains($prompt),
             "Could not find the prompt {$prompt} in the recorded requests"
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $providerConfig
+     */
+    public function assertProviderConfig(array $providerConfig): void
+    {
+        PHPUnit::assertEqualsCanonicalizing(
+            $providerConfig,
+            $this->providerConfig
         );
     }
 

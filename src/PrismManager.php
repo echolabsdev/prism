@@ -27,13 +27,15 @@ class PrismManager
     ) {}
 
     /**
+     * @param  array<string, mixed>  $providerConfig
+     *
      * @throws InvalidArgumentException
      */
-    public function resolve(ProviderEnum|string $name): Provider
+    public function resolve(ProviderEnum|string $name, array $providerConfig = []): Provider
     {
         $name = $this->resolveName($name);
 
-        $config = $this->getConfig($name) ?? [];
+        $config = array_merge($this->getConfig($name), $providerConfig);
 
         if (isset($this->customCreators[$name])) {
             return $this->callCustomCreator($name, $config);
@@ -127,15 +129,11 @@ class PrismManager
     }
 
     /**
-     * @return null|array<string, mixed>
+     * @return array<string, mixed>
      */
-    protected function getConfig(string $name): ?array
+    protected function getConfig(string $name): array
     {
-        if ($name !== '' && $name !== '0') {
-            return config("prism.providers.{$name}");
-        }
-
-        return ['driver' => 'null'];
+        return config("prism.providers.{$name}", []);
     }
 
     /**
