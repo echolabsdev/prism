@@ -63,7 +63,7 @@ class Text
             array_merge([
                 'model' => $request->model,
                 'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_tokens' => $request->maxTokens ?? 2048,
+                'max_completion_tokens' => $request->maxTokens ?? 2048,
             ], array_filter([
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
