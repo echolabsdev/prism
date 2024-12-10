@@ -12,14 +12,14 @@ use Illuminate\Support\ItemNotFoundException;
 use Illuminate\Support\MultipleItemsFoundException;
 use Throwable;
 
-trait HandlesToolCalls
+trait CallsTools
 {
     /**
      * @param  Tool[]  $tools
      * @param  ToolCalls[]  $toolCalls
      * @return ToolResult[]
      */
-    protected function handleToolCalls(array $tools, array $toolCalls): array
+    protected function callTools(array $tools, array $toolCalls): array
     {
         return array_map(
             function (ToolCall $toolCall) use ($tools): ToolResult {

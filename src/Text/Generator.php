@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Concerns\BuildsTextRequests;
-use EchoLabs\Prism\Concerns\HandlesToolCalls;
+use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -13,7 +13,11 @@ use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 
 class Generator
 {
-    use BuildsTextRequests, HandlesToolCalls;
+    public $messages;
+    public $provider;
+    public $providerConfig;
+    public $maxSteps;
+    use BuildsTextRequests, CallsTools;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -27,7 +31,7 @@ class Generator
         $response = $this->sendProviderRequest();
 
         if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->handleToolCalls($response);
+            $toolResults = $this->callTools($response);
         }
 
         $this->responseBuilder->addStep(new Step(

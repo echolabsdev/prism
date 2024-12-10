@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
-use EchoLabs\Prism\Concerns\HandlesToolCalls;
+use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
@@ -27,7 +27,7 @@ class Structured
 {
     public $maxSteps;
 
-    use HandlesToolCalls;
+    use CallsTools;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -53,60 +53,13 @@ class Structured
         $this->responseBuilder->addResponseMessage($responseMessage);
 
         if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->handleToolCalls(
-                $request->tools,
-                $response->toolCalls
-            );
-
-            $resultMessage = new ToolResultMessage($toolResults);
-
-            $request = $request->addMessage($resultMessage);
-            $this->responseBuilder->addResponseMessage($resultMessage);
-
-            $this->responseBuilder->addStep(new Step(
-                text: $response->text,
-                finishReason: $response->finishReason,
-                toolCalls: $response->toolCalls,
-                toolResults: $toolResults ?? [],
-                usage: $response->usage,
-                response: $response->response,
-                messages: $request->messages,
-            ));
-
-            return $this->handle($request);
+            return $this->handleToolCalls($request, $response);
         }
 
         if ($response->finishReason === FinishReason::Stop) {
-            if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
-                throw new PrismException('Max steps exceeded');
-            }
-
-            $request = $this->appendMessageForJsonMode($request);
-
-            $response = $this->sendRequest($request);
-
-            $responseMessage = new AssistantMessage(
-                $response->text,
-                $response->toolCalls
-            );
-
-            $request = $request->addMessage($responseMessage);
-            $this->responseBuilder->addResponseMessage($responseMessage);
-
-            $this->responseBuilder->addStep(new Step(
-                text: $response->text,
-                finishReason: $response->finishReason,
-                toolCalls: $response->toolCalls,
-                toolResults: [],
-                usage: $response->usage,
-                response: $response->response,
-                messages: $request->messages,
-            ));
-
-            return $this->responseBuilder->toResponse();
+            return $this->handleStop($request);
         }
     }
-
     public function sendRequest(Request $request): ProviderResponse
     {
         try {
@@ -154,6 +107,62 @@ class Structured
                 'model' => data_get($data, 'model'),
             ]
         );
+    }
+
+    protected function handleToolCalls(Request $request, ProviderResponse $response): \EchoLabs\Prism\Structured\Response
+    {
+        $toolResults = $this->callTools(
+            $request->tools,
+            $response->toolCalls
+        );
+
+        $resultMessage = new ToolResultMessage($toolResults);
+
+        $request = $request->addMessage($resultMessage);
+        $this->responseBuilder->addResponseMessage($resultMessage);
+
+        $this->responseBuilder->addStep(new Step(
+            text: $response->text,
+            finishReason: $response->finishReason,
+            toolCalls: $response->toolCalls,
+            toolResults: $toolResults ?? [],
+            usage: $response->usage,
+            response: $response->response,
+            messages: $request->messages,
+        ));
+
+        return $this->handle($request);
+    }
+
+    protected function handleStop(Request $request): StructuredResponse
+    {
+        if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
+            throw new PrismException('Max steps exceeded');
+        }
+
+        $request = $this->appendMessageForJsonMode($request);
+
+        $response = $this->sendRequest($request);
+
+        $responseMessage = new AssistantMessage(
+            $response->text,
+            $response->toolCalls
+        );
+
+        $request = $request->addMessage($responseMessage);
+        $this->responseBuilder->addResponseMessage($responseMessage);
+
+        $this->responseBuilder->addStep(new Step(
+            text: $response->text,
+            finishReason: $response->finishReason,
+            toolCalls: $response->toolCalls,
+            toolResults: [],
+            usage: $response->usage,
+            response: $response->response,
+            messages: $request->messages,
+        ));
+
+        return $this->responseBuilder->toResponse();
     }
 
     protected function shouldContinue(Request $request, ProviderResponse $response): bool
