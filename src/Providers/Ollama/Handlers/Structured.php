@@ -60,7 +60,8 @@ class Structured
             return $this->handleStop($request);
         }
     }
-    public function sendRequest(Request $request): ProviderResponse
+
+    public function sendRequest(Request $request, bool $withSchema = false): ProviderResponse
     {
         try {
             $response = $this->client->post(
@@ -76,7 +77,15 @@ class Structured
                     'temperature' => $request->temperature,
                     'top_p' => $request->topP,
                     'tools' => ToolMap::map($request->tools),
-                ]))
+                ]), $withSchema ? [
+                    'response_format' => [
+                        'type' => 'json_schema',
+                        'json_schema' => [
+                            'name' => $request->schema->name(),
+                            'schema' => $request->schema->toArray(),
+                        ],
+                    ],
+                ] : [])
             );
 
             $data = $response->json();
@@ -109,7 +118,7 @@ class Structured
         );
     }
 
-    protected function handleToolCalls(Request $request, ProviderResponse $response): \EchoLabs\Prism\Structured\Response
+    protected function handleToolCalls(Request $request, ProviderResponse $response): StructuredResponse
     {
         $toolResults = $this->callTools(
             $request->tools,
@@ -142,7 +151,7 @@ class Structured
 
         $request = $this->appendMessageForJsonMode($request);
 
-        $response = $this->sendRequest($request);
+        $response = $this->sendRequest($request, withSchema: true);
 
         $responseMessage = new AssistantMessage(
             $response->text,

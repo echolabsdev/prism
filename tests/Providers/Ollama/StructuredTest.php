@@ -10,8 +10,14 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
+    FixtureResponse::fakeResponseSequence(
+        'v1/chat/completions',
+        'ollama/structured-with-multiple-tools-structured-mode'
+    );
+
     $tools = [
         Tool::as('weather')
             ->for('useful when you need to search for current weather conditions')
@@ -20,16 +26,16 @@ it('returns structured output', function (): void {
         Tool::as('search')
             ->for('useful for searching curret events or data')
             ->withStringParameter('query', 'The detailed search query')
-            ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+            ->using(fn (string $query): string => 'The tigers game is at 3pm'),
     ];
 
     $schema = new ObjectSchema(
         'output',
         'the output object',
         [
-            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('weather', 'The weather forecast, including temperature (if provided)'),
             new StringSchema('game_time', 'The tigers game time'),
-            new BooleanSchema('coat_required', 'whether a coat is required'),
+            new BooleanSchema('coat_required', 'whether a coat is required based on the weather conditions'),
         ],
         ['weather', 'game_time', 'coat_required']
     );
@@ -39,15 +45,12 @@ it('returns structured output', function (): void {
         ->using(Provider::Ollama, 'qwen2.5:14b')
         ->withTools($tools)
         ->withMaxSteps(4)
-        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->withPrompt('What time is the tigers game today in detroit and should I wear a coat?')
         ->generate();
 
-    ray('response', $response);
-    dd($response->object);
-
     expect($response->object)->toBeArray();
-    expect($response->object)->toBe([
-        'weather' => 'sunny, 90°',
+    expect($response->object)->toMatchArray([
+        'weather' => '90° and sunny',
         'game_time' => '3pm',
         'coat_required' => false,
     ]);
