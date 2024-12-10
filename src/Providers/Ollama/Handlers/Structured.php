@@ -25,8 +25,6 @@ use Throwable;
 
 class Structured
 {
-    public $maxSteps;
-
     use CallsTools;
 
     protected ResponseBuilder $responseBuilder;
@@ -38,154 +36,123 @@ class Structured
 
     public function handle(Request $request): StructuredResponse
     {
-        if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
-            throw new PrismException('Max steps exceeded');
-        }
+        $this->ensureStepsNotExceeded($request);
 
         $response = $this->sendRequest($request);
+        $request = $this->handleResponseMessage($request, $response);
 
-        $responseMessage = new AssistantMessage(
-            $response->text,
-            $response->toolCalls
-        );
-
-        $request = $request->addMessage($responseMessage);
-        $this->responseBuilder->addResponseMessage($responseMessage);
-
-        if ($response->finishReason === FinishReason::ToolCalls) {
-            return $this->handleToolCalls($request, $response);
-        }
-
-        if ($response->finishReason === FinishReason::Stop) {
-            return $this->handleStop($request);
-        }
+        return match ($response->finishReason) {
+            FinishReason::ToolCalls => $this->handleToolCalls($request, $response),
+            FinishReason::Stop => $this->handleStop($request),
+            default => throw PrismException::providerResponseError('Unexpected finish reason')
+        };
     }
-
     public function sendRequest(Request $request, bool $withSchema = false): ProviderResponse
     {
         try {
             $response = $this->client->post(
                 'chat/completions',
-                array_merge([
-                    'model' => $request->model,
-                    'messages' => (new MessageMap(
-                        $request->messages,
-                        $request->systemPrompt ?? ''
-                    ))(),
-                    'max_tokens' => $request->maxTokens ?? 2048,
-                ], array_filter([
-                    'temperature' => $request->temperature,
-                    'top_p' => $request->topP,
-                    'tools' => ToolMap::map($request->tools),
-                ]), $withSchema ? [
-                    'response_format' => [
-                        'type' => 'json_schema',
-                        'json_schema' => [
-                            'name' => $request->schema->name(),
-                            'schema' => $request->schema->toArray(),
-                        ],
-                    ],
-                ] : [])
+                $this->buildRequestPayload($request, $withSchema)
             );
 
-            $data = $response->json();
+            return $this->buildProviderResponse($response->json());
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
-
-        if (data_get($data, 'error') || ! $data) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Ollama Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
-        }
-
-        return new ProviderResponse(
-            text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', []) ?? []),
-            usage: new Usage(
-                data_get($data, 'usage.prompt_tokens'),
-                data_get($data, 'usage.completion_tokens'),
-            ),
-            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
-            response: [
-                'id' => data_get($data, 'id'),
-                'model' => data_get($data, 'model'),
-            ]
-        );
     }
 
-    protected function handleToolCalls(Request $request, ProviderResponse $response): StructuredResponse
-    {
-        $toolResults = $this->callTools(
-            $request->tools,
-            $response->toolCalls
-        );
-
-        $resultMessage = new ToolResultMessage($toolResults);
-
-        $request = $request->addMessage($resultMessage);
-        $this->responseBuilder->addResponseMessage($resultMessage);
-
-        $this->responseBuilder->addStep(new Step(
-            text: $response->text,
-            finishReason: $response->finishReason,
-            toolCalls: $response->toolCalls,
-            toolResults: $toolResults ?? [],
-            usage: $response->usage,
-            response: $response->response,
-            messages: $request->messages,
-        ));
-
-        return $this->handle($request);
-    }
-
-    protected function handleStop(Request $request): StructuredResponse
+    protected function ensureStepsNotExceeded(Request $request): void
     {
         if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
             throw new PrismException('Max steps exceeded');
         }
+    }
 
-        $request = $this->appendMessageForJsonMode($request);
+    protected function handleResponseMessage(Request $request, ProviderResponse $response): Request
+    {
+        $message = new AssistantMessage($response->text, $response->toolCalls);
+        $this->responseBuilder->addResponseMessage($message);
 
-        $response = $this->sendRequest($request, withSchema: true);
+        return $request->addMessage($message);
+    }
 
-        $responseMessage = new AssistantMessage(
-            $response->text,
-            $response->toolCalls
+    protected function buildRequestPayload(Request $request, bool $withSchema = false): array
+    {
+        $payload = [
+            'model' => $request->model,
+            'messages' => $this->buildMessages($request),
+            'max_tokens' => $request->maxTokens ?? 2048,
+        ];
+
+        return array_merge(
+            $payload,
+            $this->buildOptionalParameters($request),
+            $this->buildSchemaFormat($request, $withSchema)
         );
-
-        $request = $request->addMessage($responseMessage);
-        $this->responseBuilder->addResponseMessage($responseMessage);
-
-        $this->responseBuilder->addStep(new Step(
-            text: $response->text,
-            finishReason: $response->finishReason,
-            toolCalls: $response->toolCalls,
-            toolResults: [],
-            usage: $response->usage,
-            response: $response->response,
-            messages: $request->messages,
-        ));
-
-        return $this->responseBuilder->toResponse();
     }
 
-    protected function shouldContinue(Request $request, ProviderResponse $response): bool
+    protected function buildMessages(Request $request): array
     {
-        return $this->responseBuilder->steps->count() < $request->maxSteps
-            && $response->finishReason !== FinishReason::Stop;
+        return (new MessageMap(
+            $request->messages,
+            $request->systemPrompt ?? ''
+        ))();
     }
 
-    /**
-     * @param  array<int, array<string, mixed>>  $toolCalls
-     * @return array<int, ToolCall>
-     */
-    protected function mapToolCalls(array $toolCalls): array
+    protected function buildOptionalParameters(Request $request): array
     {
+        return array_filter([
+            'temperature' => $request->temperature,
+            'top_p' => $request->topP,
+            'tools' => ToolMap::map($request->tools),
+        ]);
+    }
+
+    protected function buildSchemaFormat(Request $request, bool $withSchema): array
+    {
+        if (! $withSchema) {
+            return [];
+        }
+
+        return [
+            'response_format' => [
+                'type' => 'json_schema',
+                'json_schema' => [
+                    'name' => $request->schema->name(),
+                    'schema' => $request->schema->toArray(),
+                ],
+            ],
+        ];
+    }
+
+    protected function buildProviderResponse(array $data): ProviderResponse
+    {
+        $this->validateResponseData($data);
+
+        return new ProviderResponse(
+            text: data_get($data, 'choices.0.message.content') ?? '',
+            toolCalls: $this->buildToolCalls($data),
+            usage: $this->buildUsage($data),
+            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
+            response: $this->buildResponseMetadata($data)
+        );
+    }
+
+    protected function validateResponseData(array $data): void
+    {
+        if (data_get($data, 'error') || ! $data) {
+            throw PrismException::providerResponseError(sprintf(
+                'Ollama Error: [%s] %s',
+                data_get($data, 'error.type', 'unknown'),
+                data_get($data, 'error.message', 'unknown'),
+            ));
+        }
+    }
+
+    protected function buildToolCalls(array $data): array
+    {
+        $toolCalls = data_get($data, 'choices.0.message.tool_calls', []) ?? [];
+
         return array_map(fn (array $toolCall): ToolCall => new ToolCall(
             id: data_get($toolCall, 'id'),
             name: data_get($toolCall, 'function.name'),
@@ -193,7 +160,65 @@ class Structured
         ), $toolCalls);
     }
 
-    protected function appendMessageForJsonMode(Request $request): Request
+    protected function buildUsage(array $data): Usage
+    {
+        return new Usage(
+            data_get($data, 'usage.prompt_tokens'),
+            data_get($data, 'usage.completion_tokens')
+        );
+    }
+
+    protected function buildResponseMetadata(array $data): array
+    {
+        return [
+            'id' => data_get($data, 'id'),
+            'model' => data_get($data, 'model'),
+        ];
+    }
+
+    protected function handleToolCalls(Request $request, ProviderResponse $response): StructuredResponse
+    {
+        $toolResults = $this->callTools($request->tools, $response->toolCalls);
+        $request = $this->addToolResultMessage($request, $toolResults);
+        $this->addResponseStep($request, $response, $toolResults);
+
+        return $this->handle($request);
+    }
+
+    protected function addToolResultMessage(Request $request, array $toolResults): Request
+    {
+        $message = new ToolResultMessage($toolResults);
+        $this->responseBuilder->addResponseMessage($message);
+
+        return $request->addMessage($message);
+    }
+
+    protected function addResponseStep(Request $request, ProviderResponse $response, array $toolResults = []): void
+    {
+        $this->responseBuilder->addStep(new Step(
+            text: $response->text,
+            finishReason: $response->finishReason,
+            toolCalls: $response->toolCalls,
+            toolResults: $toolResults,
+            usage: $response->usage,
+            response: $response->response,
+            messages: $request->messages,
+        ));
+    }
+
+    protected function handleStop(Request $request): StructuredResponse
+    {
+        $this->ensureStepsNotExceeded($request);
+
+        $response = $this->sendRequest($request, withSchema: true);
+
+        $request = $this->handleResponseMessage($request, $response);
+        $this->addResponseStep($request, $response);
+
+        return $this->responseBuilder->toResponse();
+    }
+
+    protected function appendJsonModeMessage(Request $request): Request
     {
         return $request->addMessage(new SystemMessage(sprintf(
             "Respond with ONLY JSON that matches the following schema: \n %s",
