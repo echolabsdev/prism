@@ -15,9 +15,39 @@ use InvalidArgumentException;
 
 class Generator
 {
-    use BuildsTextRequests, HandlesToolCalls;
+    public $messages;
 
-    protected ?Schema $schema = null;
+    public $schema;
+
+    public $model;
+
+    public $systemPrompt;
+
+    public $prompt;
+
+    public $temperature;
+
+    public $maxTokens;
+
+    public $topP;
+
+    public $tools;
+
+    public $clientOptions;
+
+    public $clientRetry;
+
+    public $toolChoice;
+
+    public $providerMeta;
+
+    public $provider;
+
+    public $providerConfig;
+
+    public $maxSteps;
+
+    use BuildsTextRequests, HandlesToolCalls;
 
     protected ResponseBuilder $responseBuilder;
 

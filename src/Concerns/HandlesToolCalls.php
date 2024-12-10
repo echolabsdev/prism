@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Concerns;
 
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Tool;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Illuminate\Support\ItemNotFoundException;
@@ -17,46 +15,46 @@ use Throwable;
 trait HandlesToolCalls
 {
     /**
-     * @return array<int, ToolResult>
+     * @param  Tool[]  $tools
+     * @param  ToolCalls[]  $toolCalls
+     * @return ToolResult[]
      */
-    protected function handleToolCalls(ProviderResponse $response): array
+    protected function handleToolCalls(array $tools, array $toolCalls): array
     {
-        $toolResults = array_map(function (ToolCall $toolCall): ToolResult {
-            $result = $this->callTools($this->tools, $toolCall);
+        return array_map(
+            function (ToolCall $toolCall) use ($tools): ToolResult {
+                $tool = $this->locateCalledTool($toolCall->name, $tools);
 
-            return new ToolResult(
-                toolCallId: $toolCall->id,
-                toolName: $toolCall->name,
-                args: $toolCall->arguments(),
-                result: $result,
-            );
-        }, $response->toolCalls);
+                try {
+                    $result = call_user_func_array(
+                        $tool->handle(...),
+                        $toolCall->arguments()
+                    );
 
-        $resultMessage = new ToolResultMessage($toolResults);
+                    return new ToolResult(
+                        toolCallId: $toolCall->id,
+                        toolName: $toolCall->name,
+                        args: $toolCall->arguments(),
+                        result: $result,
+                    );
+                } catch (Throwable $e) {
+                    throw PrismException::toolCallFailed($toolCall, $e);
+                }
 
-        $this->messages[] = $resultMessage;
-        $this->responseBuilder->addResponseMessage($resultMessage);
-
-        return $toolResults;
+            },
+            $toolCalls
+        );
     }
 
-    /**
-     * @param  array<int, Tool>  $tools
-     */
-    protected function callTools(array $tools, ToolCall $toolCall): ?string
+    protected function locateCalledTool(string $name, array $tools): Tool
     {
         try {
-            /** @var Tool $tool */
-            $tool = collect($tools)
-                ->sole(fn (Tool $tool): bool => $tool->name() === $toolCall->name);
-
-            return call_user_func_array($tool->handle(...), $toolCall->arguments());
+            return collect($tools)
+                ->sole(fn (Tool $tool): bool => $tool->name() === $name);
         } catch (ItemNotFoundException $e) {
-            throw PrismException::toolNotFound($toolCall, $e);
+            throw PrismException::toolNotFound($name, $e);
         } catch (MultipleItemsFoundException $e) {
-            throw PrismException::multipleToolsFound($toolCall, $e);
-        } catch (Throwable $e) {
-            throw PrismException::toolCallFailed($toolCall, $e);
+            throw PrismException::multipleToolsFound($name, $e);
         }
     }
 }

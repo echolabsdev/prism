@@ -21,7 +21,6 @@ class Step
      */
     public function __construct(
         public readonly string $text,
-        public readonly ?array $object,
         public readonly FinishReason $finishReason,
         public readonly array $toolCalls,
         public readonly array $toolResults,

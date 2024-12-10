@@ -10,11 +10,8 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
-use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured-with-multiple-tools-structured-mode');
-
     $tools = [
         Tool::as('weather')
             ->for('useful when you need to search for current weather conditions')
@@ -44,6 +41,9 @@ it('returns structured output', function (): void {
         ->withMaxSteps(4)
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
+
+    ray('response', $response);
+    dd($response->object);
 
     expect($response->object)->toBeArray();
     expect($response->object)->toBe([

@@ -4,33 +4,132 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
+use EchoLabs\Prism\Concerns\HandlesToolCalls;
+use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
+use EchoLabs\Prism\Structured\ResponseBuilder;
+use EchoLabs\Prism\Structured\Step;
+use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Throwable;
 
 class Structured
 {
-    public function __construct(protected PendingRequest $client) {}
+    public $maxSteps;
 
-    public function handle(Request $request): ProviderResponse
+    use HandlesToolCalls;
+
+    protected ResponseBuilder $responseBuilder;
+
+    public function __construct(protected PendingRequest $client)
+    {
+        $this->responseBuilder = new ResponseBuilder;
+    }
+
+    public function handle(Request $request): StructuredResponse
+    {
+        if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
+            throw new PrismException('Max steps exceeded');
+        }
+
+        $response = $this->sendRequest($request);
+
+        $responseMessage = new AssistantMessage(
+            $response->text,
+            $response->toolCalls
+        );
+
+        $request = $request->addMessage($responseMessage);
+        $this->responseBuilder->addResponseMessage($responseMessage);
+
+        if ($response->finishReason === FinishReason::ToolCalls) {
+            $toolResults = $this->handleToolCalls(
+                $request->tools,
+                $response->toolCalls
+            );
+
+            $resultMessage = new ToolResultMessage($toolResults);
+
+            $request = $request->addMessage($resultMessage);
+            $this->responseBuilder->addResponseMessage($resultMessage);
+
+            $this->responseBuilder->addStep(new Step(
+                text: $response->text,
+                finishReason: $response->finishReason,
+                toolCalls: $response->toolCalls,
+                toolResults: $toolResults ?? [],
+                usage: $response->usage,
+                response: $response->response,
+                messages: $request->messages,
+            ));
+
+            return $this->handle($request);
+        }
+
+        if ($response->finishReason === FinishReason::Stop) {
+            if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
+                throw new PrismException('Max steps exceeded');
+            }
+
+            $request = $this->appendMessageForJsonMode($request);
+
+            $response = $this->sendRequest($request);
+
+            $responseMessage = new AssistantMessage(
+                $response->text,
+                $response->toolCalls
+            );
+
+            $request = $request->addMessage($responseMessage);
+            $this->responseBuilder->addResponseMessage($responseMessage);
+
+            $this->responseBuilder->addStep(new Step(
+                text: $response->text,
+                finishReason: $response->finishReason,
+                toolCalls: $response->toolCalls,
+                toolResults: [],
+                usage: $response->usage,
+                response: $response->response,
+                messages: $request->messages,
+            ));
+
+            return $this->responseBuilder->toResponse();
+        }
+    }
+
+    public function sendRequest(Request $request): ProviderResponse
     {
         try {
-            $request = $this->appendMessageForJsonMode($request);
-            $response = $this->sendRequest($request);
+            $response = $this->client->post(
+                'chat/completions',
+                array_merge([
+                    'model' => $request->model,
+                    'messages' => (new MessageMap(
+                        $request->messages,
+                        $request->systemPrompt ?? ''
+                    ))(),
+                    'max_tokens' => $request->maxTokens ?? 2048,
+                ], array_filter([
+                    'temperature' => $request->temperature,
+                    'top_p' => $request->topP,
+                    'tools' => ToolMap::map($request->tools),
+                ]))
+            );
+
+            $data = $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
-
-        $data = $response->json();
 
         if (data_get($data, 'error') || ! $data) {
             throw PrismException::providerResponseError(vsprintf(
@@ -57,20 +156,10 @@ class Structured
         );
     }
 
-    public function sendRequest(Request $request): Response
+    protected function shouldContinue(Request $request, ProviderResponse $response): bool
     {
-        return $this->client->post(
-            'chat/completions',
-            array_merge([
-                'model' => $request->model,
-                'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_tokens' => $request->maxTokens ?? 2048,
-            ], array_filter([
-                'temperature' => $request->temperature,
-                'top_p' => $request->topP,
-                'tools' => ToolMap::map($request->tools),
-            ]))
-        );
+        return $this->responseBuilder->steps->count() < $request->maxSteps
+            && $response->finishReason !== FinishReason::Stop;
     }
 
     /**

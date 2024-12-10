@@ -8,7 +8,7 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Generator as EmbeddingsGenerator;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Structured\Generator as StructuredGenerator;
+use EchoLabs\Prism\Structured\PendingRequest;
 use EchoLabs\Prism\Testing\PrismFake;
 use EchoLabs\Prism\Text\Generator as TextGenerator;
 
@@ -43,9 +43,9 @@ class Prism
         return new TextGenerator;
     }
 
-    public static function structured(): StructuredGenerator
+    public static function structured(): PendingRequest
     {
-        return new StructuredGenerator;
+        return new PendingRequest;
     }
 
     public static function embeddings(): \EchoLabs\Prism\Embeddings\Generator

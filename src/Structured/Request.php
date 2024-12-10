@@ -10,8 +10,6 @@ use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 class Request
 {
@@ -28,6 +26,7 @@ class Request
         public readonly ?string $prompt,
         public readonly array $messages,
         public readonly ?int $maxTokens,
+        public readonly int $maxSteps,
         public readonly int|float|null $temperature,
         public readonly int|float|null $topP,
         public readonly array $tools,
@@ -38,7 +37,7 @@ class Request
         public readonly array $providerMeta,
     ) {}
 
-    public function addMessage(UserMessage|SystemMessage $message): self
+    public function addMessage(Message $message): self
     {
         $messages = array_merge($this->messages, [$message]);
 
@@ -56,6 +55,7 @@ class Request
             toolChoice: $this->toolChoice,
             schema: $this->schema,
             providerMeta: $this->providerMeta,
+            maxSteps: $this->maxSteps,
         );
     }
 

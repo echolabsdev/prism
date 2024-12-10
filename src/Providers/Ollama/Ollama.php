@@ -12,6 +12,7 @@ use EchoLabs\Prism\Providers\Ollama\Handlers\Structured;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
@@ -35,7 +36,7 @@ class Ollama implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         $handler = new Structured($this->client(
             $request->clientOptions,
