@@ -16,7 +16,7 @@ trait CallsTools
 {
     /**
      * @param  Tool[]  $tools
-     * @param  ToolCalls[]  $toolCalls
+     * @param  ToolCall[]  $toolCall
      * @return ToolResult[]
      */
     protected function callTools(array $tools, array $toolCalls): array

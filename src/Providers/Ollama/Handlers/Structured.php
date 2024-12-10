@@ -16,9 +16,9 @@ use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Structured\ResponseBuilder;
 use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Throwable;
@@ -61,21 +61,9 @@ class Structured
         }
     }
 
-    protected function ensureStepsNotExceeded(Request $request): void
-    {
-        if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
-            throw new PrismException('Max steps exceeded');
-        }
-    }
-
-    protected function handleResponseMessage(Request $request, ProviderResponse $response): Request
-    {
-        $message = new AssistantMessage($response->text, $response->toolCalls);
-        $this->responseBuilder->addResponseMessage($message);
-
-        return $request->addMessage($message);
-    }
-
+    /**
+     * @return array<string, mixed>
+     */
     protected function buildRequestPayload(Request $request, bool $withSchema = false): array
     {
         $payload = [
@@ -91,6 +79,9 @@ class Structured
         );
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function buildMessages(Request $request): array
     {
         return (new MessageMap(
@@ -99,6 +90,9 @@ class Structured
         ))();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function buildOptionalParameters(Request $request): array
     {
         return array_filter([
@@ -108,6 +102,9 @@ class Structured
         ]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function buildSchemaFormat(Request $request, bool $withSchema): array
     {
         if (! $withSchema) {
@@ -125,6 +122,9 @@ class Structured
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function buildProviderResponse(array $data): ProviderResponse
     {
         $this->validateResponseData($data);
@@ -134,10 +134,16 @@ class Structured
             toolCalls: $this->buildToolCalls($data),
             usage: $this->buildUsage($data),
             finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
-            response: $this->buildResponseMetadata($data)
+            response: [
+                'id' => (string) data_get($data, 'id'),
+                'model' => (string) data_get($data, 'model'),
+            ]
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function validateResponseData(array $data): void
     {
         if (data_get($data, 'error') || ! $data) {
@@ -149,6 +155,10 @@ class Structured
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<int, ToolCall>
+     */
     protected function buildToolCalls(array $data): array
     {
         $toolCalls = data_get($data, 'choices.0.message.tool_calls', []) ?? [];
@@ -160,6 +170,9 @@ class Structured
         ), $toolCalls);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function buildUsage(array $data): Usage
     {
         return new Usage(
@@ -168,23 +181,33 @@ class Structured
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{id: string, model: string}
+     */
     protected function buildResponseMetadata(array $data): array
     {
         return [
-            'id' => data_get($data, 'id'),
-            'model' => data_get($data, 'model'),
+            'id' => (string) data_get($data, 'id'),
+            'model' => (string) data_get($data, 'model'),
         ];
     }
 
     protected function handleToolCalls(Request $request, ProviderResponse $response): StructuredResponse
     {
-        $toolResults = $this->callTools($request->tools, $response->toolCalls);
+        $toolResults = $this->callTools(
+            $request->tools,
+            $response->toolCalls,
+        );
         $request = $this->addToolResultMessage($request, $toolResults);
         $this->addResponseStep($request, $response, $toolResults);
 
         return $this->handle($request);
     }
 
+    /**
+     * @param  array<int, ToolResult>  $toolResults
+     */
     protected function addToolResultMessage(Request $request, array $toolResults): Request
     {
         $message = new ToolResultMessage($toolResults);
@@ -193,6 +216,9 @@ class Structured
         return $request->addMessage($message);
     }
 
+    /**
+     * @param  array<int, ToolResult>  $toolResults
+     */
     protected function addResponseStep(Request $request, ProviderResponse $response, array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
@@ -206,6 +232,21 @@ class Structured
         ));
     }
 
+    protected function ensureStepsNotExceeded(Request $request): void
+    {
+        if ($this->responseBuilder->steps->count() >= $request->maxSteps) {
+            throw new PrismException('Max steps exceeded');
+        }
+    }
+
+    protected function handleResponseMessage(Request $request, ProviderResponse $response): Request
+    {
+        $message = new AssistantMessage($response->text, $response->toolCalls);
+        $this->responseBuilder->addResponseMessage($message);
+
+        return $request->addMessage($message);
+    }
+
     protected function handleStop(Request $request): StructuredResponse
     {
         $this->ensureStepsNotExceeded($request);
@@ -216,13 +257,5 @@ class Structured
         $this->addResponseStep($request, $response);
 
         return $this->responseBuilder->toResponse();
-    }
-
-    protected function appendJsonModeMessage(Request $request): Request
-    {
-        return $request->addMessage(new SystemMessage(sprintf(
-            "Respond with ONLY JSON that matches the following schema: \n %s",
-            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
-        )));
     }
 }

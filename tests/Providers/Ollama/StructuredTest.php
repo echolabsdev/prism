@@ -44,6 +44,7 @@ it('returns structured output', function (): void {
         ->withSchema($schema)
         ->using(Provider::Ollama, 'qwen2.5:14b')
         ->withTools($tools)
+        ->usingTemperature(0)
         ->withMaxSteps(4)
         ->withPrompt('What time is the tigers game today in detroit and should I wear a coat?')
         ->generate();
