@@ -176,6 +176,14 @@ export default {
           tools: Supported,
         },
         {
+          name: "Azure OpenAI",
+          text: Planned,
+          structured: Planned,
+          embeddings: Planned,
+          image: Planned,
+          tools: Planned,
+        },
+        {
           name: "Gemini",
           text: Planned,
           structured: Planned,
