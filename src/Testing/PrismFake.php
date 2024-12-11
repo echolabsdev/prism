@@ -11,10 +11,12 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\Assert as PHPUnit;
 
 class PrismFake implements Provider
@@ -28,7 +30,7 @@ class PrismFake implements Provider
     protected $providerConfig = [];
 
     /**
-     * @param  array<int, ProviderResponse|EmbeddingResponse>  $responses
+     * @param  array<int, ProviderResponse|EmbeddingResponse|StructuredResponse>  $responses
      */
     public function __construct(protected array $responses = []) {}
 
@@ -37,7 +39,7 @@ class PrismFake implements Provider
     {
         $this->recorded[] = $request;
 
-        return $this->nextProviderResponse() ?? new ProviderResponse(
+        return $this->nextResponse() ?? new ProviderResponse(
             text: '',
             toolCalls: [],
             usage: new Usage(0, 0),
@@ -58,16 +60,20 @@ class PrismFake implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         $this->recorded[] = $request;
 
-        return $this->nextProviderResponse() ?? new ProviderResponse(
+        return $this->nextResponse() ?? new StructuredResponse(
+            steps: new Collection,
+            responseMessages: new Collection,
             text: '',
-            toolCalls: [],
-            usage: new Usage(0, 0),
+            object: [],
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake', 'model' => 'fake']
+            toolCalls: [],
+            toolResults: [],
+            usage: new Usage(10, 10),
+            response: [],
         );
     }
 
@@ -121,13 +127,13 @@ class PrismFake implements Provider
         PHPUnit::assertEquals($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
     }
 
-    protected function nextProviderResponse(): ?ProviderResponse
+    protected function nextResponse(): null|ProviderResponse|StructuredResponse
     {
         if (! isset($this->responses)) {
             return null;
         }
 
-        /** @var ProviderResponse[] */
+        /** @var array<int, ProviderResponse|StructuredResponse> */
         $responses = $this->responses;
         $sequence = $this->responseSequence;
 

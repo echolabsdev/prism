@@ -10,9 +10,11 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\Usage;
+use Illuminate\Support\Collection;
 
 class TestProvider implements Provider
 {
@@ -46,18 +48,22 @@ class TestProvider implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         $this->callCount++;
 
         $this->request = $request;
 
-        return $this->responses[$this->callCount - 1] ?? new ProviderResponse(
-            text: json_encode([]),
-            toolCalls: [],
-            usage: new Usage(10, 10),
+        return $this->responses[$this->callCount - 1] ?? new StructuredResponse(
+            steps: new Collection,
+            responseMessages: new Collection,
+            text: '',
+            object: [],
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            toolCalls: [],
+            toolResults: [],
+            usage: new Usage(10, 10),
+            response: [],
         );
     }
 

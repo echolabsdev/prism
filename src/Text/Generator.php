@@ -10,13 +10,10 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class Generator
 {
-    public $messages;
-    public $provider;
-    public $providerConfig;
-    public $maxSteps;
     use BuildsTextRequests, CallsTools;
 
     protected ResponseBuilder $responseBuilder;
@@ -31,7 +28,10 @@ class Generator
         $response = $this->sendProviderRequest();
 
         if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->callTools($response);
+            $toolResults = $this->callTools($this->tools, $response->toolCalls);
+            $message = new ToolResultMessage($toolResults);
+            $this->messages[] = $message;
+            $this->responseBuilder->addResponseMessage($message);
         }
 
         $this->responseBuilder->addStep(new Step(

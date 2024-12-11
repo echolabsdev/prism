@@ -13,10 +13,12 @@ use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
+use Illuminate\Support\Collection;
 
 it('fake responses using the prism fake for text', function (): void {
     $fake = Prism::fake([
@@ -44,12 +46,16 @@ it('fake responses using the prism fake for text', function (): void {
 
 it('fake responses using the prism fake for structured', function (): void {
     $fake = Prism::fake([
-        new ProviderResponse(
-            text: json_encode(['foo' => 'bar']),
-            toolCalls: [],
-            usage: new Usage(42, 42),
+        new StructuredResponse(
+            steps: new Collection,
+            responseMessages: new Collection,
+            text: '',
+            object: [],
             finishReason: FinishReason::Stop,
-            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+            toolCalls: [],
+            toolResults: [],
+            usage: new Usage(10, 10),
+            response: [],
         ),
     ]);
 

@@ -12,7 +12,7 @@ use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use Tests\Fixtures\FixtureResponse;
 
-it('returns structured output', function (): void {
+it('returns structured output with tools', function (): void {
     FixtureResponse::fakeResponseSequence('messages', 'anthropic/structured-with-multiple-tools');
 
     $tools = [
@@ -48,7 +48,7 @@ it('returns structured output', function (): void {
     expect($response->object)->toBeArray();
     expect($response->object)->toBe([
         'weather' => '90° and sunny',
-        'game_time' => '3pm',
+        'game_time' => '3:00 PM',
         'coat_required' => false,
     ]);
 });
