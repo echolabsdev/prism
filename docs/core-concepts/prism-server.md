@@ -23,7 +23,8 @@ First, make sure Prism Server is enabled in your `config/prism.php` file:
 To make your Prism models available through the server, you need to register them. This is typically done in a service provider, such as `AppServiceProvider`:
 
 ```php
-use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\PrismServer;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         PrismServer::register(
             'my-custom-model',
             fn () => Prism::text()
-                ->using('anthropic', 'claude-3-sonnet-20240229')
+                ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
                 ->withSystemPrompt('You are a helpful assistant.')
         );
     }

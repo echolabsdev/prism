@@ -7,7 +7,7 @@ Prism provides a powerful interface for generating text using Large Language Mod
 At its simplest, you can generate text with just a few lines of code:
 
 ```php
-use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
@@ -23,6 +23,9 @@ echo $response->text;
 System prompts help set the behavior and context for the AI. They're particularly useful for maintaining consistent responses or giving the LLM a persona:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-sonnet')
     ->withSystemPrompt('You are an expert mathematician who explains concepts simply.')
@@ -33,6 +36,9 @@ $response = Prism::text()
 You can also use Laravel views for complex system prompts:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-sonnet')
     ->withSystemPrompt(view('prompts.math-tutor'))
@@ -47,6 +53,8 @@ You an also pass a View to the `withPrompt` method.
 For interactive conversations, use message chains to maintain context:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 
@@ -75,6 +83,7 @@ $response = Prism::text()
 Prism supports including images in your messages for visual analysis:
 
 ```php
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 
 // From a local file
@@ -146,6 +155,9 @@ This allows for complete or partial override of the providers configuration. Thi
 The response object provides rich access to the generation results:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-sonnet')
     ->withPrompt('Explain quantum computing.')
@@ -178,13 +190,13 @@ foreach ($response->responseMessages as $message) {
 ### Finish Reasons
 
 ```php
-case Stop;
-case Length;
-case ContentFilter;
-case ToolCalls;
-case Error;
-case Other;
-case Unknown;
+FinishReason::Stop;
+FinishReason::Length;
+FinishReason::ContentFilter;
+FinishReason::ToolCalls;
+FinishReason::Error;
+FinishReason::Other;
+FinishReason::Unknown;
 ```
 
 ## Error Handling
@@ -192,6 +204,8 @@ case Unknown;
 Remember to handle potential errors in your generations:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use Throwable;
 

@@ -7,7 +7,8 @@ Want to make sure your Prism integrations work flawlessly? Let's dive into testi
 First, let's look at how to set up basic response faking:
 
 ```php
-use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -27,7 +28,7 @@ it('can generate text', function () {
 
     // Run your code
     $response = Prism::text()
-        ->using('anthropic', 'claude-3-sonnet')
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
         ->withPrompt('Who are you?')
         ->generate();
 
@@ -41,6 +42,9 @@ it('can generate text', function () {
 When testing conversations or tool usage, you might need to simulate multiple responses:
 
 ```php
+use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\Providers\ProviderResponse;
+
 it('can handle tool calls', function () {
     $responses = [
         new ProviderResponse(
@@ -74,6 +78,11 @@ it('can handle tool calls', function () {
 When testing tools, you'll want to verify both the tool calls and their results. Here's a complete example:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\Providers\ProviderResponse;
+
 it('can use weather tool', function () {
     // Define the expected tool call and response sequence
     $responses = [
@@ -112,7 +121,7 @@ it('can use weather tool', function () {
 
     // Run the actual test
     $response = Prism::text()
-        ->using('anthropic', 'claude-3-sonnet')
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
         ->withPrompt('What\'s the weather in Paris?')
         ->withTools([$weatherTool])
         ->generate();
@@ -139,7 +148,7 @@ it('can use weather tool', function () {
 ## Testing Structured Output
 
 ```php
-use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;

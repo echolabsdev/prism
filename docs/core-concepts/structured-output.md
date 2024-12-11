@@ -7,8 +7,8 @@ Want your AI responses as neat and tidy as a Marie Kondo-approved closet? Struct
 Here's how to get structured data from your AI:
 
 ```php
+use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Facades\Prism;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 
@@ -54,6 +54,7 @@ Different AI providers handle structured output in two main ways:
 Providers may offer additional options for structured output. For example, OpenAI supports a "strict mode" for even tighter schema validation:
 
 ```php
+use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::structured()
@@ -73,6 +74,8 @@ $response = Prism::structured()
 When working with structured responses, you have access to both the structured data and metadata about the generation:
 
 ```php
+use EchoLabs\Prism\Prism;
+
 $response = Prism::structured()
     ->withSchema($schema)
     ->generate();
@@ -125,6 +128,8 @@ See the [Text Generation](./text-generation.md) documentation for details on the
 When working with structured output, it's especially important to handle potential errors:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 
 try {

@@ -7,6 +7,8 @@ Need your AI assistant to check the weather, search a database, or call your API
 Think of tools as special functions that your AI assistant can use when it needs to perform specific tasks. Just like how Laravel's facades provide a clean interface to complex functionality, Prism tools give your AI a clean way to interact with external services and data sources.
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+
 $weatherTool = Tool::as('weather')
     ->for('Get current weather conditions')
     ->withParameter('city', 'The city to get weather for')
@@ -41,6 +43,8 @@ Prism offers multiple ways to define tool parameters, from simple primitives to 
 Perfect for text inputs:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+
 $tool = Tool::as('search')
     ->for('Search for information')
     ->withStringParameter('query', 'The search query')
@@ -54,6 +58,8 @@ $tool = Tool::as('search')
 For integer or floating-point values:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+
 $tool = Tool::as('calculate')
     ->for('Perform calculations')
     ->withNumberParameter('value', 'The number to process')
@@ -67,6 +73,8 @@ $tool = Tool::as('calculate')
 For true/false flags:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+
 $tool = Tool::as('feature_toggle')
     ->for('Toggle a feature')
     ->withBooleanParameter('enabled', 'Whether to enable the feature')
@@ -80,6 +88,8 @@ $tool = Tool::as('feature_toggle')
 For handling lists of items:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+
 $tool = Tool::as('process_tags')
     ->for('Process a list of tags')
     ->withArrayParameter(
@@ -97,6 +107,8 @@ $tool = Tool::as('process_tags')
 When you need to restrict values to a specific set:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+
 $tool = Tool::as('set_status')
     ->for('Set the status')
     ->withEnumParameter(
@@ -114,6 +126,10 @@ $tool = Tool::as('set_status')
 For complex objects without needing to create separate schema instances:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
+use EchoLabs\Prism\Schema\StringSchema;
+use EchoLabs\Prism\Schema\NumberSchema;
+
 $tool = Tool::as('update_user')
     ->for('Update a user profile')
     ->withObjectParameter(
@@ -136,6 +152,7 @@ $tool = Tool::as('update_user')
 For complex, nested data structures, you can use Prism's schema system:
 
 ```php
+use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Schema\NumberSchema;
@@ -213,9 +230,12 @@ class SearchTool extends Tool
 
 You can control how the AI uses tools with the `toolChoice` method:
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Enums\ToolChoice;
 
 $prism = Prism::text()
-    ->using('anthropic', 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
     ->withPrompt('How is the weather in Paris?')
     ->withTools([$weatherTool])
     // Let the AI decide whether to use tools
@@ -234,8 +254,11 @@ $prism = Prism::text()
 When your AI uses tools, you can inspect the results and see how it arrived at its answer:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::text()
-    ->using('anthropic', 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
     ->withPrompt('What is the weather like in Paris?')
     ->withTools([$weatherTool])
     ->generate();

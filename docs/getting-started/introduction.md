@@ -12,6 +12,9 @@ Here's a quick example of how you can generate text using Prism:
 
 ::: code-group
 ```php [Anthropic]
+use EchoLabs\Prism\Prism;
+use EchoLabs\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-sonnet')
     ->withSystemPrompt(view('prompts.system'))
@@ -22,6 +25,9 @@ echo $response->text;
 ```
 
 ```php [Mistral]
+use EchoLabs\Prism\Prism;
+use EchoLabs\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::Mistral, 'mistral-medium')
     ->withSystemPrompt(view('prompts.system'))
@@ -32,6 +38,9 @@ echo $response->text;
 ```
 
 ```php [Ollama]
+use EchoLabs\Prism\Prism;
+use EchoLabs\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::Ollama, 'llama2')
     ->withSystemPrompt(view('prompts.system'))
@@ -42,6 +51,9 @@ echo $response->text;
 ```
 
 ```php [OpenAI]
+use EchoLabs\Prism\Prism;
+use EchoLabs\Enums\Provider;
+
 $response = Prism::text()
     ->using(Provider::OpenAI, 'gpt-4')
     ->withSystemPrompt(view('prompts.system'))

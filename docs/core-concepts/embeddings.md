@@ -7,7 +7,7 @@ Transform your text into powerful vector representations! Embeddings let you add
 Here's how to generate embeddings with just a few lines of code:
 
 ```php
-use EchoLabs\Prism\Facades\Prism;
+use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::embeddings()
@@ -29,6 +29,9 @@ You've got two convenient ways to feed text into the embeddings generator:
 ### Direct Text Input
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
     ->fromInput('Analyze this text')
@@ -40,6 +43,9 @@ $response = Prism::embeddings()
 Need to analyze a larger document? No problem:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
     ->fromFile('/path/to/your/document.txt')
@@ -54,6 +60,9 @@ $response = Prism::embeddings()
 Just like with text generation, you can fine-tune your embeddings requests:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
     ->fromInput('Your text here')
@@ -79,6 +88,8 @@ $tokenCount = $response->usage->tokens;
 Always handle potential errors gracefully:
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 
 try {
