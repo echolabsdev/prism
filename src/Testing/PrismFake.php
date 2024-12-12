@@ -39,7 +39,10 @@ class PrismFake implements Provider
     {
         $this->recorded[] = $request;
 
-        return $this->nextResponse() ?? new ProviderResponse(
+        /** @var ?ProviderResponse */
+        $response = $this->nextResponse();
+
+        return $response ?? new ProviderResponse(
             text: '',
             toolCalls: [],
             usage: new Usage(0, 0),
@@ -63,8 +66,10 @@ class PrismFake implements Provider
     public function structured(StructuredRequest $request): StructuredResponse
     {
         $this->recorded[] = $request;
+        /** @var ?StructuredResponse */
+        $response = $this->nextResponse();
 
-        return $this->nextResponse() ?? new StructuredResponse(
+        return $response ?? new StructuredResponse(
             steps: new Collection,
             responseMessages: new Collection,
             text: '',
@@ -73,7 +78,7 @@ class PrismFake implements Provider
             toolCalls: [],
             toolResults: [],
             usage: new Usage(10, 10),
-            response: [],
+            response: ['id' => '1234', 'model' => 'some-model'],
         );
     }
 

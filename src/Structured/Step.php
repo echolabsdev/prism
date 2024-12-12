@@ -13,7 +13,6 @@ use EchoLabs\Prism\ValueObjects\Usage;
 class Step
 {
     /**
-     * @param  array<mixed>  $object
      * @param  ToolCall[]  $toolCalls
      * @param  ToolResult[]  $toolResults
      * @param  array{id: string, model: string}  $response
