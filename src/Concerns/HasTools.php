@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Concerns;
 
+use EchoLabs\Prism\Tool;
+
 trait HasTools
 {
     /** @var array<int, Tool> */

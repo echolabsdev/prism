@@ -16,7 +16,7 @@ trait CallsTools
 {
     /**
      * @param  Tool[]  $tools
-     * @param  ToolCall[]  $toolCall
+     * @param  ToolCall[]  $toolCalls
      * @return ToolResult[]
      */
     protected function callTools(array $tools, array $toolCalls): array
@@ -46,6 +46,9 @@ trait CallsTools
         );
     }
 
+    /**
+     * @param  Tool[]  $tools
+     */
     protected function locateCalledTool(string $name, array $tools): Tool
     {
         try {

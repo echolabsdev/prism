@@ -26,7 +26,7 @@ class PrismException extends Exception
     public static function multipleToolsFound(string $name, Throwable $previous): self
     {
         return new self(
-            sprintf('Multiple tools with the name %s found', $toolCall->name),
+            sprintf('Multiple tools with the name %s found', $name),
             previous: $previous
         );
     }

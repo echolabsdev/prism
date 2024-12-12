@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Concerns;
 
+use EchoLabs\Prism\Contracts\Message;
+
 trait HasMessages
 {
     /** @var array<int, Message> */

@@ -20,6 +20,7 @@ use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Throwable;
@@ -75,6 +76,9 @@ class Structured
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function buildRequestPayload(Request $request): array
     {
         return array_merge([
@@ -90,6 +94,9 @@ class Structured
         ]));
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function buildProviderResponse(array $data): ProviderResponse
     {
         return new ProviderResponse(
@@ -107,6 +114,9 @@ class Structured
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function extractText(array $data): string
     {
         return array_reduce(data_get($data, 'content', []), function (string $text, array $content): string {
@@ -118,6 +128,10 @@ class Structured
         }, '');
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<int, ToolCall>
+     */
     protected function extractToolCalls(array $data): array
     {
         $toolCalls = array_map(function ($content) {
@@ -145,6 +159,9 @@ class Structured
         return $this->handle($request);
     }
 
+    /**
+     * @param  array<int, ToolResult>  $toolResults
+     */
     protected function addToolResultMessage(Request $request, array $toolResults): Request
     {
         $message = new ToolResultMessage($toolResults);
@@ -153,6 +170,9 @@ class Structured
         return $request->addMessage($message);
     }
 
+    /**
+     * @param  array<int, ToolResult>  $toolResults
+     */
     protected function addResponseStep(Request $request, ProviderResponse $response, array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
