@@ -67,7 +67,7 @@ class Structured
                 'messages' => MessageMap::map($request->messages),
                 'max_tokens' => $request->maxTokens ?? 2048,
             ], array_filter([
-                'system' => $request->systemPrompt,
+                'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
                 'tools' => ToolMap::map($request->tools),
