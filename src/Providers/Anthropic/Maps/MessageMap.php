@@ -25,13 +25,12 @@ class MessageMap
     {
         return array_values(array_map(
             fn (Message $message): array => self::mapMessage($message),
-            array_filter($messages, fn (Message $message): bool => !$message instanceof SystemMessage)
+            array_filter($messages, fn (Message $message): bool => ! $message instanceof SystemMessage)
         ));
     }
-    
+
     /**
      * @param  array<int, Message>  $messages
-     * @param null|string    $systemPrompt
      * @return array<int, mixed>
      */
     public static function mapSystemMessages(array $messages, ?string $systemPrompt): array

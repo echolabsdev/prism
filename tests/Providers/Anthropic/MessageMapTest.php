@@ -28,7 +28,7 @@ it('maps user messages', function (): void {
 it('filters system messages out when calling map', function (): void {
     expect(MessageMap::map([
         new UserMessage('Who are you?'),
-        new SystemMessage('I am Groot.')
+        new SystemMessage('I am Groot.'),
     ]))->toBe([[
         'role' => 'user',
         'content' => [
@@ -159,6 +159,6 @@ it('maps system messages', function (): void {
         [
             'type' => 'text',
             'text' => 'Who are you?',
-        ]
+        ],
     ]);
 });
