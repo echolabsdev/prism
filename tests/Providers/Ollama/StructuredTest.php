@@ -45,8 +45,8 @@ it('returns structured output', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
-    expect($response->object)->toBeArray();
-    expect($response->object)->toBe([
+    expect($response->structured)->toBeArray();
+    expect($response->structured)->toBe([
         'weather' => 'sunny, 90°',
         'game_time' => '3pm',
         'coat_required' => false,

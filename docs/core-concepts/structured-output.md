@@ -30,7 +30,7 @@ $response = Prism::structured()
     ->generate();
 
 // Access your structured data
-$review = $response->object;
+$review = $response->structured;
 echo $review['title'];    // "Inception"
 echo $review['rating'];   // "5 stars"
 echo $review['summary'];  // "A mind-bending..."
@@ -81,7 +81,7 @@ $response = Prism::structured()
     ->generate();
 
 // Access the structured data as a PHP array
-$data = $response->object;
+$data = $response->structured;
 
 // Get the raw response text if needed
 echo $response->text;
@@ -100,11 +100,11 @@ $rawResponse = $response->response;
 > [!TIP]
 > Always validate the structured data before using it in your application:
 ```php
-if ($response->object === null) {
+if ($response->structured === null) {
     // Handle parsing failure
 }
 
-if (!isset($response->object['required_field'])) {
+if (!isset($response->structured['required_field'])) {
     // Handle missing required data
 }
 ```

@@ -47,7 +47,7 @@ class ResponseBuilder
             steps: $this->steps,
             responseMessages: $this->responseMessages,
             text: $finalStep->text,
-            object: $finalStep->finishReason === FinishReason::Stop
+            structured: $finalStep->finishReason === FinishReason::Stop
                 ? $this->decodeObject($finalStep->text)
                 : [],
             finishReason: $finalStep->finishReason,

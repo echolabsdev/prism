@@ -48,8 +48,8 @@ it('returns structured output', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
-    expect($response->object)->toBeArray();
-    expect($response->object)->toBe([
+    expect($response->structured)->toBeArray();
+    expect($response->structured)->toBe([
         'weather' => 'The weather will be 90° and sunny',
         'game_time' => 'The Tigers game is at 3 pm in Detroit',
         'coat_required' => false,
@@ -89,8 +89,8 @@ it('returns structured output using json mode', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
-    expect($response->object)->toBeArray();
-    expect($response->object)->toBe([
+    expect($response->structured)->toBeArray();
+    expect($response->structured)->toBe([
         'weather' => 'The weather will be 90° and sunny',
         'game_time' => 'The tigers game is at 3pm in Detroit',
         'coat_required' => false,

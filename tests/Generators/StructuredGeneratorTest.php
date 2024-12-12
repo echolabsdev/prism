@@ -196,7 +196,7 @@ it('generates a response from the provider', function (): void {
         ->generate();
 
     // Assert response
-    expect($response->object)->toBe(['forecast_summary' => '70° and sunny']);
+    expect($response->structured)->toBe(['forecast_summary' => '70° and sunny']);
     expect($response->finishReason)->toBe(FinishReason::Stop);
     expect($response->toolCalls)->toBeEmpty();
     expect($response->toolResults)->toBeEmpty();
@@ -334,7 +334,7 @@ it('correctly stops using max steps', function (): void {
         ->generate();
 
     // Assert Response
-    expect($response->object)->toBe(['forecast_summary' => 'The weather is 75 and sunny!']);
+    expect($response->structured)->toBe(['forecast_summary' => 'The weather is 75 and sunny!']);
     expect($response->finishReason)->toBe(FinishReason::Stop);
 
     // Assert steps
