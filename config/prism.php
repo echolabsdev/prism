@@ -15,6 +15,8 @@ return [
         'anthropic' => [
             'api_key' => env('ANTHROPIC_API_KEY', ''),
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
+            // Seperate each feature with a comma with no spaces.
+            'beta_features' => ENV('ANTHROPIC_BETA_FEATURES', null),
         ],
         'ollama' => [
             'url' => env('OLLAMA_URL', 'http://localhost:11434/v1'),

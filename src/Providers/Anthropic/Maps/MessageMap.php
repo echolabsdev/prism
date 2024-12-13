@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic\Maps;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -14,6 +15,7 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
 use InvalidArgumentException;
+use UnitEnum;
 
 class MessageMap
 {
@@ -45,10 +47,13 @@ class MessageMap
      */
     protected static function mapSystemMessage(SystemMessage $systemMessage): array
     {
-        return [
+        $cacheType = data_get($systemMessage->providerMeta(Provider::Anthropic), 'cacheType', null);
+
+        return array_filter([
             'role' => 'user',
             'content' => $systemMessage->content,
-        ];
+            'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null,
+        ]);
     }
 
     /**
@@ -86,10 +91,16 @@ class MessageMap
             ];
         }, $message->images());
 
+        $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
+
         return [
             'role' => 'user',
             'content' => [
-                ['type' => 'text', 'text' => $message->text()],
+                array_filter([
+                    'type' => 'text',
+                    'text' => $message->text(),
+                    'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null,
+                ]),
                 ...$imageParts,
             ],
 
@@ -101,32 +112,30 @@ class MessageMap
      */
     protected static function mapAssistantMessage(AssistantMessage $message): array
     {
-        if ($message->toolCalls) {
-            $content = [];
+        $content = [];
 
-            if ($message->content !== '' && $message->content !== '0') {
-                $content[] = [
-                    'type' => 'text',
-                    'text' => $message->content,
-                ];
-            }
+        if ($message->content !== '' && $message->content !== '0') {
+            $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
 
-            $toolCalls = array_map(fn (ToolCall $toolCall): array => [
+            $content[] = array_filter([
+                'type' => 'text',
+                'text' => $message->content,
+                'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null,
+            ]);
+        }
+
+        $toolCalls = $message->toolCalls
+            ? array_map(fn (ToolCall $toolCall): array => [
                 'type' => 'tool_use',
                 'id' => $toolCall->id,
                 'name' => $toolCall->name,
                 'input' => $toolCall->arguments(),
-            ], $message->toolCalls);
-
-            return [
-                'role' => 'assistant',
-                'content' => array_merge($content, $toolCalls),
-            ];
-        }
+            ], $message->toolCalls)
+            : [];
 
         return [
             'role' => 'assistant',
-            'content' => $message->content,
+            'content' => array_merge($content, $toolCalls),
         ];
     }
 }

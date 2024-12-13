@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -73,7 +75,12 @@ it('maps assistant message', function (): void {
         new AssistantMessage('I am Nyx'),
     ]))->toContain([
         'role' => 'assistant',
-        'content' => 'I am Nyx',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'I am Nyx',
+            ],
+        ],
     ]);
 });
 
@@ -143,3 +150,41 @@ it('maps system messages', function (): void {
         'content' => 'Who are you?',
     ]]);
 });
+
+it('sets the cache type on a UserMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
+    expect(MessageMap::map([
+        (new UserMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => 'ethemeral'],
+            ],
+        ],
+    ]]);
+})->with([
+    'ethemeral',
+    AnthropicCacheType::ethemeral,
+]);
+
+it('sets the cache type on an AssistantMessage if cacheType providerMeta is set on message using an enum', function (mixed $cacheType): void {
+    expect(MessageMap::map([
+        (new AssistantMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
+    ]))->toBe([[
+        'role' => 'assistant',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => AnthropicCacheType::ethemeral->name],
+            ],
+        ],
+    ]]);
+})->with([
+    'ethemeral',
+    AnthropicCacheType::ethemeral,
+]);
+
+it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message using an enum', function (): void {})->todo('This test will need adding when the multiple system prompts PR gets merged.');
