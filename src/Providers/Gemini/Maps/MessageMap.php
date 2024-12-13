@@ -21,9 +21,9 @@ class MessageMap
      */
     public function __construct(
         protected array $messages,
-        protected string $systemPrompt
+        protected ?string $systemPrompt = null
     ) {
-        if ($systemPrompt !== '' && $systemPrompt !== '0') {
+        if ($systemPrompt !== null && $systemPrompt !== '' && $systemPrompt !== '0') {
             $this->contents['system_instruction'] = [
                 'parts' => [
                     [

@@ -47,7 +47,7 @@ class Text
                 data_get($data, 'usageMetadata.promptTokenCount'),
                 data_get($data, 'usageMetadata.candidatesTokenCount'),
             ),
-            finishReason: data_get($data, 'candidates.0.finishReason', ''),
+            finishReason: FinishReasonMap::map(data_get($data, 'candidates.0.finishReason')),
             response: ['avgLogprobs' => data_get($data, 'candidates.0.avgLogprobs'), 'model' => data_get($data, 'modelVersion')]
         );
     }
@@ -56,18 +56,25 @@ class Text
     {
         $endpoint = sprintf('%s:generateContent', $request->model);
 
-        $payload = array_merge(
-            (new MessageMap($request->messages, $request->systemPrompt))(),
-            [
-                'generationConfig' => array_filter([
-                    'temperature' => $request->temperature,
-                    'topP' => $request->topP,
-                    'maxOutputTokens' => $request->maxTokens,
-                ]),
-                'safetySettings' => data_get($request->providerMeta, 'safetySettings', null),
-            ]
-        );
+        $payload = (new MessageMap($request->messages, $request->systemPrompt))();
 
+        $generationConfig = array_filter([
+            'temperature' => $request->temperature,
+            'topP' => $request->topP,
+            'maxOutputTokens' => $request->maxTokens,
+        ]);
+        
+        if (!empty($generationConfig)) {
+            $payload['generationConfig'] = $generationConfig;
+        }
+
+        $safetySettings = data_get($request->providerMeta, 'safetySettings');
+        if (!empty($safetySettings)) {
+            $payload['safetySettings'] = $safetySettings;
+        }
+
+
+        dd($payload);   
         return $this->client->post($endpoint.'?key='.$this->apiKey, $payload);
     }
 }
