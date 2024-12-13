@@ -27,9 +27,9 @@ class MessageMap
             $this->contents['system_instruction'] = [
                 'parts' => [
                     [
-                        'text' => $systemPrompt
-                    ]
-                ]
+                        'text' => $systemPrompt,
+                    ],
+                ],
             ];
         }
     }
@@ -40,7 +40,7 @@ class MessageMap
     public function __invoke(): array
     {
         $this->contents['contents'] = [];
-        
+
         foreach ($this->messages as $message) {
             $this->mapMessage($message);
         }
@@ -63,9 +63,9 @@ class MessageMap
         $this->contents['system_instruction'] = [
             'parts' => [
                 [
-                    'text' => $message->content
-                ]
-            ]
+                    'text' => $message->content,
+                ],
+            ],
         ];
     }
 
@@ -74,8 +74,8 @@ class MessageMap
         $imageParts = array_map(fn (Image $image): array => [
             'inline_data' => [
                 'mime_type' => $image->mimeType,
-                'data' => $this->getImageData($image)
-            ]
+                'data' => $this->getImageData($image),
+            ],
         ], $message->images());
 
         $this->contents['contents'][] = [
@@ -92,8 +92,8 @@ class MessageMap
         $this->contents['contents'][] = [
             'role' => 'model',
             'parts' => [
-                ['text' => $message->content]
-            ]
+                ['text' => $message->content],
+            ],
         ];
     }
 
@@ -105,4 +105,4 @@ class MessageMap
 
         return $image->image;
     }
-} 
+}

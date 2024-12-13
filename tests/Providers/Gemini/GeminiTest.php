@@ -17,17 +17,17 @@ it('makes correct request to Gemini API', function (): void {
                 [
                     'content' => [
                         'parts' => [
-                            ['text' => 'Test response']
-                        ]
+                            ['text' => 'Test response'],
+                        ],
                     ],
-                    'finishReason' => 'STOP'
-                ]
+                    'finishReason' => 'STOP',
+                ],
             ],
             'usageMetadata' => [
                 'promptTokenCount' => 10,
                 'candidatesTokenCount' => 20,
-            ]
-        ])
+            ],
+        ]),
     ]);
 
     $provider = new Gemini(
@@ -42,10 +42,8 @@ it('makes correct request to Gemini API', function (): void {
         maxTokens: 100,
     ));
 
-    Http::assertSent(function (ClientRequest $request) {
-        return $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=test-key'
-            && $request->method() === 'POST';
-    });
+    Http::assertSent(fn(ClientRequest $request): bool => $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=test-key'
+        && $request->method() === 'POST');
 
     expect($response->text)->toBe('Test response')
         ->and($response->usage->promptTokens)->toBe(10)
@@ -59,17 +57,17 @@ it('makes request with system instructions', function (): void {
                 [
                     'content' => [
                         'parts' => [
-                            ['text' => 'Meow! Test response']
-                        ]
+                            ['text' => 'Meow! Test response'],
+                        ],
                     ],
-                    'finishReason' => 'STOP'
-                ]
+                    'finishReason' => 'STOP',
+                ],
             ],
             'usageMetadata' => [
                 'promptTokenCount' => 10,
                 'candidatesTokenCount' => 20,
-            ]
-        ])
+            ],
+        ]),
     ]);
 
     $provider = new Gemini(
@@ -85,8 +83,9 @@ it('makes request with system instructions', function (): void {
         maxTokens: 100,
     ));
 
-    Http::assertSent(function (ClientRequest $request) {
+    Http::assertSent(function (ClientRequest $request): bool {
         $data = json_decode($request->body(), true);
+
         return $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=test-key'
             && $request->method() === 'POST'
             && isset($data['system_instruction'])
@@ -105,17 +104,17 @@ it('makes request with image', function (): void {
                 [
                     'content' => [
                         'parts' => [
-                            ['text' => 'This is a cat image']
-                        ]
+                            ['text' => 'This is a cat image'],
+                        ],
                     ],
-                    'finishReason' => 'STOP'
-                ]
+                    'finishReason' => 'STOP',
+                ],
             ],
             'usageMetadata' => [
                 'promptTokenCount' => 10,
                 'candidatesTokenCount' => 20,
-            ]
-        ])
+            ],
+        ]),
     ]);
 
     $provider = new Gemini(
@@ -127,15 +126,16 @@ it('makes request with image', function (): void {
         model: 'gemini-1.5-pro-vision',
         messages: [
             new UserMessage('What is in this image?', [
-                Image::fromPath('tests/Fixtures/test-image.png')
-            ])
+                Image::fromPath('tests/Fixtures/test-image.png'),
+            ]),
         ],
         temperature: 0.7,
         maxTokens: 100,
     ));
 
-    Http::assertSent(function (ClientRequest $request) {
+    Http::assertSent(function (ClientRequest $request): bool {
         $data = json_decode($request->body(), true);
+
         return $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-vision:generateContent?key=test-key'
             && $request->method() === 'POST'
             && isset($data['contents'][0]['parts'][1]['inline_data'])
@@ -154,17 +154,17 @@ it('makes request with all configuration options', function (): void {
                 [
                     'content' => [
                         'parts' => [
-                            ['text' => 'Test response']
-                        ]
+                            ['text' => 'Test response'],
+                        ],
                     ],
-                    'finishReason' => 'STOP'
-                ]
+                    'finishReason' => 'STOP',
+                ],
             ],
             'usageMetadata' => [
                 'promptTokenCount' => 10,
                 'candidatesTokenCount' => 20,
-            ]
-        ])
+            ],
+        ]),
     ]);
 
     $provider = new Gemini(
@@ -183,8 +183,9 @@ it('makes request with all configuration options', function (): void {
         candidateCount: 1,
     ));
 
-    Http::assertSent(function (ClientRequest $request) {
+    Http::assertSent(function (ClientRequest $request): bool {
         $data = json_decode($request->body(), true);
+
         return $request->url() === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=test-key'
             && $request->method() === 'POST'
             && isset($data['generationConfig'])
@@ -201,4 +202,4 @@ it('makes request with all configuration options', function (): void {
     expect($response->text)->toBe('Test response')
         ->and($response->usage->promptTokens)->toBe(10)
         ->and($response->usage->completionTokens)->toBe(20);
-}); 
+});

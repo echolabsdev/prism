@@ -7,8 +7,8 @@ namespace EchoLabs\Prism\Providers\Gemini;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Text;
+use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use Illuminate\Http\Client\PendingRequest;
@@ -54,4 +54,4 @@ class Gemini implements Provider
             ->retry(...$retry)
             ->baseUrl($this->url);
     }
-} 
+}

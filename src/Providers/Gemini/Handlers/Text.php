@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Gemini\Handlers;
 
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Throwable;
-use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
 
 class Text
 {
@@ -48,19 +48,14 @@ class Text
                 data_get($data, 'usageMetadata.candidatesTokenCount'),
             ),
             finishReason: data_get($data, 'candidates.0.finishReason', ''),
-            response: array_merge(
-                [
-                    'avgLogprobs' => data_get($data, 'candidates.0.avgLogprobs'),
-                    'model' => data_get($data, 'modelVersion'),
-                ]
-            )
+            response: ['avgLogprobs' => data_get($data, 'candidates.0.avgLogprobs'), 'model' => data_get($data, 'modelVersion')]
         );
     }
 
     protected function sendRequest(Request $request): Response
     {
         $endpoint = sprintf('%s:generateContent', $request->model);
-        
+
         $payload = array_merge(
             (new MessageMap($request->messages, $request->systemPrompt))(),
             [
@@ -72,7 +67,7 @@ class Text
                 'safetySettings' => data_get($request->providerMeta, 'safetySettings', null),
             ]
         );
-        
-        return $this->client->post($endpoint . '?key=' . $this->apiKey, $payload);
+
+        return $this->client->post($endpoint.'?key='.$this->apiKey, $payload);
     }
-} 
+}
