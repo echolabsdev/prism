@@ -12,4 +12,5 @@ enum Provider: string
     case Mistral = 'mistral';
     case Groq = 'groq';
     case XAI = 'xai';
+    case Gemini = 'gemini';
 }
