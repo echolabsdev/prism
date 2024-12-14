@@ -50,7 +50,7 @@ class Text
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'candidates.0.finishReason')),
             response: [
-                'avgLogprobs' => data_get($data, 'candidates.0.avgLogprobs'),
+                'id' => data_get($data, 'id'),
                 'model' => data_get($data, 'modelVersion'),
             ]
         );

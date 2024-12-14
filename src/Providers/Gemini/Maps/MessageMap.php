@@ -100,7 +100,10 @@ class MessageMap
     protected function getImageData(Image $image): string
     {
         if ($image->isUrl()) {
-            return base64_encode(file_get_contents($image->image));
+            /** @var string $response */
+            $response = file_get_contents($image->image);
+
+            return base64_encode($response);
         }
 
         return $image->image;

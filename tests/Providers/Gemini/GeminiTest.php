@@ -33,7 +33,6 @@ describe('Text generation for Gemini', function (): void {
             ->and($response->usage->promptTokens)->toBe(4)
             ->and($response->usage->completionTokens)->toBe(57)
             ->and($response->response)->toBe([
-                'avgLogprobs' => -0.12800796408402293,
                 'model' => 'gemini-1.5-flash',
             ])
             ->and($response->finishReason)->toBe(FinishReason::Stop);
@@ -52,7 +51,6 @@ describe('Text generation for Gemini', function (): void {
             ->and($response->usage->promptTokens)->toBe(17)
             ->and($response->usage->completionTokens)->toBe(14)
             ->and($response->response)->toBe([
-                'avgLogprobs' => -0.050380042621067593,
                 'model' => 'gemini-1.5-flash',
             ])
             ->and($response->finishReason)->toBe(FinishReason::Stop);
@@ -80,7 +78,6 @@ describe('Image support with Gemini', function (): void {
             ->and($response->usage->promptTokens)->toBe(263)
             ->and($response->usage->completionTokens)->toBe(35)
             ->and($response->response)->toBe([
-                'avgLogprobs' => -0.2275218963623,
                 'model' => 'gemini-1.5-flash',
             ])
             ->and($response->finishReason)->toBe(FinishReason::Stop);
