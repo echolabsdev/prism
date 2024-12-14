@@ -33,6 +33,7 @@ describe('Text generation for Gemini', function (): void {
             ->and($response->usage->promptTokens)->toBe(4)
             ->and($response->usage->completionTokens)->toBe(57)
             ->and($response->response)->toBe([
+                'id' => null,
                 'model' => 'gemini-1.5-flash',
             ])
             ->and($response->finishReason)->toBe(FinishReason::Stop);
@@ -51,6 +52,7 @@ describe('Text generation for Gemini', function (): void {
             ->and($response->usage->promptTokens)->toBe(17)
             ->and($response->usage->completionTokens)->toBe(14)
             ->and($response->response)->toBe([
+                'id' => null,
                 'model' => 'gemini-1.5-flash',
             ])
             ->and($response->finishReason)->toBe(FinishReason::Stop);
@@ -78,6 +80,7 @@ describe('Image support with Gemini', function (): void {
             ->and($response->usage->promptTokens)->toBe(263)
             ->and($response->usage->completionTokens)->toBe(35)
             ->and($response->response)->toBe([
+                'id' => null,
                 'model' => 'gemini-1.5-flash',
             ])
             ->and($response->finishReason)->toBe(FinishReason::Stop);
