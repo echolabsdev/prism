@@ -20,4 +20,4 @@ class FinishReasonMap
             default => FinishReason::Other,
         };
     }
-} 
+}

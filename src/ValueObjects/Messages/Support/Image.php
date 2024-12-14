@@ -33,9 +33,9 @@ class Image
         );
     }
 
-    public static function fromUrl(string $url): self
+    public static function fromUrl(string $url, ?string $mimeType = null): self
     {
-        return new self($url);
+        return new self($url, $mimeType);
     }
 
     public static function fromBase64(string $image, string $mimeType): self

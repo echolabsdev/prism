@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Gemini;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
+use EchoLabs\Prism\Providers\Gemini\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Text;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
@@ -41,7 +42,12 @@ class Gemini implements Provider
     #[\Override]
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
-        throw new \Exception(sprintf('%s does not support embeddings', class_basename($this)));
+        $handler = new Embeddings($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
     }
 
     /**
@@ -51,6 +57,9 @@ class Gemini implements Provider
     protected function client(array $options = [], array $retry = []): PendingRequest
     {
         return Http::withOptions($options)
+            ->withHeaders([
+                'x-goog-api-key' => $this->apiKey,
+            ])
             ->retry(...$retry)
             ->baseUrl($this->url);
     }

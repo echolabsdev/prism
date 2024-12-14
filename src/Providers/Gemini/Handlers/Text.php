@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Gemini\Handlers;
 
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\Request;
@@ -44,17 +45,20 @@ class Text
             text: data_get($data, 'candidates.0.content.parts.0.text') ?? '',
             toolCalls: [],
             usage: new Usage(
-                data_get($data, 'usageMetadata.promptTokenCount'),
-                data_get($data, 'usageMetadata.candidatesTokenCount'),
+                data_get($data, 'usageMetadata.promptTokenCount', 0),
+                data_get($data, 'usageMetadata.candidatesTokenCount', 0)
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'candidates.0.finishReason')),
-            response: ['avgLogprobs' => data_get($data, 'candidates.0.avgLogprobs'), 'model' => data_get($data, 'modelVersion')]
+            response: [
+                'avgLogprobs' => data_get($data, 'candidates.0.avgLogprobs'),
+                'model' => data_get($data, 'modelVersion'),
+            ]
         );
     }
 
     protected function sendRequest(Request $request): Response
     {
-        $endpoint = sprintf('%s:generateContent', $request->model);
+        $endpoint = "{$request->model}:generateContent";
 
         $payload = (new MessageMap($request->messages, $request->systemPrompt))();
 
@@ -63,18 +67,16 @@ class Text
             'topP' => $request->topP,
             'maxOutputTokens' => $request->maxTokens,
         ]);
-        
-        if (!empty($generationConfig)) {
+
+        if ($generationConfig !== []) {
             $payload['generationConfig'] = $generationConfig;
         }
 
         $safetySettings = data_get($request->providerMeta, 'safetySettings');
-        if (!empty($safetySettings)) {
+        if (! empty($safetySettings)) {
             $payload['safetySettings'] = $safetySettings;
         }
 
-
-        dd($payload);   
-        return $this->client->post($endpoint.'?key='.$this->apiKey, $payload);
+        return $this->client->post($endpoint, $payload);
     }
 }

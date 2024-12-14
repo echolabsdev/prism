@@ -4,19 +4,19 @@
       "content": {
         "parts": [
           {
-            "text": "I am Prism, an AI assistant created by echolabs. I am here to help you with any questions or tasks you may have."
+            "text": "I am Prism, a helpful AI assistant created by echo labs."
           }
         ],
         "role": "model"
       },
       "finishReason": "STOP",
-      "avgLogprobs": -0.12800796408402293
+      "avgLogprobs": -0.050380042621067593
     }
   ],
   "usageMetadata": {
-    "promptTokenCount": 12,
-    "candidatesTokenCount": 27,
-    "totalTokenCount": 39
+    "promptTokenCount": 17,
+    "candidatesTokenCount": 14,
+    "totalTokenCount": 31
   },
-  "modelVersion": "gemini-pro"
-} 
+  "modelVersion": "gemini-1.5-flash"
+}
