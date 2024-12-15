@@ -16,7 +16,7 @@ class Response
     /**
      * @param  Collection<int, Step>  $steps
      * @param  Collection<int, Message>  $responseMessages
-     * @param  array<mixed>  $object
+     * @param  array<mixed>  $structured
      * @param  ToolCall[]  $toolCalls
      * @param  ToolResult[]  $toolResults
      * @param  array{id: string, model: string}  $response
@@ -25,7 +25,7 @@ class Response
         public readonly Collection $steps,
         public readonly Collection $responseMessages,
         public readonly string $text,
-        public readonly ?array $object,
+        public readonly ?array $structured,
         public readonly FinishReason $finishReason,
         public readonly array $toolCalls,
         public readonly array $toolResults,
