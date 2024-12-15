@@ -8,6 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Gemini\Gemini;
 use EchoLabs\Prism\Providers\Groq\Groq;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
@@ -153,6 +154,17 @@ class PrismManager
     protected function createXaiProvider(array $config): XAI
     {
         return new XAI(
+            url: $config['url'],
+            apiKey: $config['api_key'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createGeminiProvider(array $config): Gemini
+    {
+        return new Gemini(
             url: $config['url'],
             apiKey: $config['api_key'],
         );

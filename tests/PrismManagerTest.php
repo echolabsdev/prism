@@ -8,6 +8,7 @@ use EchoLabs\Prism\Contracts\Provider as ContractsProvider;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Gemini\Gemini;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
@@ -48,6 +49,13 @@ it('can resolve XAI', function (): void {
 
     expect($manager->resolve(Provider::XAI))->toBeInstanceOf(XAI::class);
     expect($manager->resolve('xai'))->toBeInstanceOf(XAI::class);
+});
+
+it('can resolve Gemini', function (): void {
+    $manager = new PrismManager($this->app);
+
+    expect($manager->resolve(Provider::Gemini))->toBeInstanceOf(Gemini::class);
+    expect($manager->resolve('gemini'))->toBeInstanceOf(Gemini::class);
 });
 
 it('allows for custom provider configuration', function (): void {

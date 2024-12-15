@@ -231,6 +231,14 @@ export default {
           image: Supported,
           tools: Supported,
         },
+        {
+          name: "Gemini",
+          text: Supported,
+          structured: Planned,
+          embeddings: Supported,
+          image: Supported,
+          tools: Planned,
+        },
       ],
     };
   },
