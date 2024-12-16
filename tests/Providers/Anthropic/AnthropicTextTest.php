@@ -8,6 +8,7 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -27,6 +28,8 @@ it('can generate text with a prompt', function (): void {
 
     expect($response->usage->promptTokens)->toBe(11);
     expect($response->usage->completionTokens)->toBe(55);
+    expect($response->usage->cacheWriteInputTokens)->toBeNull();
+    expect($response->usage->cacheReadInputTokens)->toBeNull();
     expect($response->response['id'])->toBe('msg_01X2Qk7LtNEh4HB9xpYU57XU');
     expect($response->response['model'])->toBe('claude-3-5-sonnet-20240620');
     expect($response->text)->toBe(
@@ -158,4 +161,21 @@ it('handles specific tool choice', function (): void {
         ->generate();
 
     expect($response->toolCalls[0]->name)->toBe('weather');
+});
+
+it('can calculate cache usage correctly', function (): void {
+    config()->set('prism.providers.anthropic.beta_features', 'prompt-caching-2024-07-31');
+
+    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/calculate-cache-usage');
+
+    $response = Prism::text()
+        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->withMessages([
+            (new SystemMessage('Old context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
+            (new UserMessage('New context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral'])
+        ])
+        ->generate();
+
+    expect($response->usage->cacheWriteInputTokens)->toBe(200);
+    expect($response->usage->cacheReadInputTokens)->ToBe(100);
 });

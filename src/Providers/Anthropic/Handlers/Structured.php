@@ -47,8 +47,10 @@ class Structured
             text: $this->extractText($data),
             toolCalls: $this->extractToolCalls($data),
             usage: new Usage(
-                data_get($data, 'usage.input_tokens'),
-                data_get($data, 'usage.output_tokens'),
+                promptTokens: data_get($data, 'usage.input_tokens'),
+                completionTokens: data_get($data, 'usage.output_tokens'),
+                cacheWriteInputTokens: data_get($data, 'usage.cache_creation_input_tokens', null),
+                cacheReadInputTokens: data_get($data, 'usage.cache_read_input_tokens', null)
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'stop_reason', '')),
             response: [
