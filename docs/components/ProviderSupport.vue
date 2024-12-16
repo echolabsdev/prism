@@ -185,10 +185,10 @@ export default {
         },
         {
           name: "Gemini",
-          text: Planned,
+          text: Supported,
           structured: Planned,
-          embeddings: Planned,
-          image: Planned,
+          embeddings: Supported,
+          image: Supported,
           tools: Planned,
         },
         {
@@ -230,14 +230,6 @@ export default {
           embeddings: Unsupported,
           image: Supported,
           tools: Supported,
-        },
-        {
-          name: "Gemini",
-          text: Supported,
-          structured: Planned,
-          embeddings: Supported,
-          image: Supported,
-          tools: Planned,
         },
       ],
     };
