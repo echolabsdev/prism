@@ -53,9 +53,9 @@ it('sets the cache typeif cacheType providerMeta is set on tool', function (mixe
             ],
             'required' => ['query'],
         ],
-        'cache_control' => ['type' => 'ethemeral'],
+        'cache_control' => ['type' => 'ephemeral'],
     ]]);
 })->with([
-    'ethemeral',
-    AnthropicCacheType::ethemeral,
+    'ephemeral',
+    AnthropicCacheType::ephemeral,
 ]);

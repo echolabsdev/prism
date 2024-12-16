@@ -160,13 +160,13 @@ it('sets the cache type on a UserMessage if cacheType providerMeta is set on mes
             [
                 'type' => 'text',
                 'text' => 'Who are you?',
-                'cache_control' => ['type' => 'ethemeral'],
+                'cache_control' => ['type' => 'ephemeral'],
             ],
         ],
     ]]);
 })->with([
-    'ethemeral',
-    AnthropicCacheType::ethemeral,
+    'ephemeral',
+    AnthropicCacheType::ephemeral,
 ]);
 
 it('sets the cache type on an AssistantMessage if cacheType providerMeta is set on message using an enum', function (mixed $cacheType): void {
@@ -178,13 +178,13 @@ it('sets the cache type on an AssistantMessage if cacheType providerMeta is set 
             [
                 'type' => 'text',
                 'text' => 'Who are you?',
-                'cache_control' => ['type' => AnthropicCacheType::ethemeral->name],
+                'cache_control' => ['type' => AnthropicCacheType::ephemeral->name],
             ],
         ],
     ]]);
 })->with([
-    'ethemeral',
-    AnthropicCacheType::ethemeral,
+    'ephemeral',
+    AnthropicCacheType::ephemeral,
 ]);
 
 it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message using an enum', function (): void {})->todo('This test will need adding when the multiple system prompts PR gets merged.');

@@ -172,7 +172,7 @@ it('can calculate cache usage correctly', function (): void {
         ->using('anthropic', 'claude-3-5-sonnet-20240620')
         ->withMessages([
             (new SystemMessage('Old context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
-            (new UserMessage('New context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral'])
+            (new UserMessage('New context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
         ])
         ->generate();
 

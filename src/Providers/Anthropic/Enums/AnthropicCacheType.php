@@ -4,5 +4,5 @@ namespace EchoLabs\Prism\Providers\Anthropic\Enums;
 
 enum AnthropicCacheType
 {
-    case ethemeral;
+    case ephemeral;
 }
