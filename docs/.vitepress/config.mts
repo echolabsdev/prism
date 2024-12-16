@@ -138,6 +138,10 @@ export default defineConfig({
                 link: "/providers/groq",
               },
               {
+                text: "Gemini",
+                link: "/providers/gemini",
+              },
+              {
                 text: "Mistral",
                 link: "/providers/mistral",
               },
