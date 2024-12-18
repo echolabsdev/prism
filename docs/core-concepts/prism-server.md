@@ -14,8 +14,10 @@ First, make sure Prism Server is enabled in your `config/prism.php` file:
 
 ```php
 'prism_server' => [
+    // The middleware that will be applied to the Prism Server routes.
+    'middleware' => [],
     'enabled' => env('PRISM_SERVER_ENABLED', true),
-],
+]
 ```
 
 ### 2. Register Your Prisms
@@ -106,7 +108,6 @@ You can add middleware to the Prism Server routes by setting the `middleware` op
 
 ```php
 'prism_server' => [
-    'middleware' => ['web'],
-    // ...
+    'middleware' => ['api'],
 ],
 ```
