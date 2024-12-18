@@ -19,6 +19,7 @@ use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -107,10 +108,10 @@ class Structured
                 data_get($data, 'usage.output_tokens'),
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'stop_reason', '')),
-            response: [
-                'id' => data_get($data, 'id'),
-                'model' => data_get($data, 'model'),
-            ]
+            meta: new Meta(
+                data_get($data, 'id'),
+                data_get($data, 'model'),
+            ),
         );
     }
 
@@ -181,7 +182,7 @@ class Structured
             toolCalls: $response->toolCalls,
             toolResults: $toolResults,
             usage: $response->usage,
-            response: $response->response,
+            meta: $response->meta,
             messages: $request->messages,
         ));
     }

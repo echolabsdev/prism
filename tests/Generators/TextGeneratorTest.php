@@ -14,6 +14,7 @@ use EchoLabs\Prism\Text\Generator;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Contracts\Foundation\Application;
@@ -160,10 +161,8 @@ it('generates a response from the provider', function (): void {
     expect($response->finishReason)->toBe(FinishReason::Stop);
     expect($response->toolCalls)->toBeEmpty();
     expect($response->toolResults)->toBeEmpty();
-    expect($response->response)->toBe([
-        'id' => '123',
-        'model' => 'claude-3-5-sonnet-20240620',
-    ]);
+    expect($response->meta->id)->toBe('123');
+    expect($response->meta->model)->toBe('claude-3-5-sonnet-20240620');
     expect($response->usage)->toBeInstanceOf(Usage::class);
 
     // Assert response messages
@@ -182,10 +181,8 @@ it('generates a response from the provider', function (): void {
     expect($textResult->usage)->toBeInstanceOf(Usage::class);
     expect($textResult->usage->promptTokens)->toBe(10);
     expect($textResult->usage->completionTokens)->toBe(10);
-    expect($textResult->response)->toBeArray();
-    expect($textResult->response)->toHaveCount(2);
-    expect($textResult->response['id'])->toBe('123');
-    expect($textResult->response['model'])->toBe('claude-3-5-sonnet-20240620');
+    expect($textResult->meta->id)->toBe('123');
+    expect($textResult->meta->model)->toBe('claude-3-5-sonnet-20240620');
     expect($textResult->messages)->toBeArray();
     expect($textResult->messages)->toHaveCount(2);
     expect($textResult->messages[0])->toBeInstanceOf(UserMessage::class);
@@ -211,7 +208,7 @@ it('generates a response from the driver with tools and max steps', function ():
         ],
         usage: new Usage(10, 10),
         finishReason: FinishReason::ToolCalls,
-        response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+        meta: new Meta(id: '123', model: 'claude-3-5-sonnet-20240620'),
     ));
 
     resolve(PrismManager::class)->extend('test', fn (): \Tests\TestDoubles\TestProvider => $provider);
@@ -266,14 +263,14 @@ it('correctly stops using max steps', function (): void {
             ],
             usage: new Usage(10, 10),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            meta: new Meta(id: '123', model: 'claude-3-5-sonnet-20240620'),
         ),
         new ProviderResponse(
             text: 'The weather is 75 and sunny!',
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            meta: new Meta(id: '123', model: 'claude-3-5-sonnet-20240620'),
         ),
     ]);
 
@@ -327,7 +324,7 @@ it('allows for custom provider configuration', function (): void {
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            meta: new Meta(id: '123', model: 'claude-3-5-sonnet-20240620'),
         ),
     ]);
 

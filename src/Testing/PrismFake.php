@@ -47,7 +47,7 @@ class PrismFake implements Provider
             toolCalls: [],
             usage: new Usage(0, 0),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake', 'model' => 'fake']
+            meta: ['id' => 'fake', 'model' => 'fake']
         );
     }
 
@@ -78,7 +78,7 @@ class PrismFake implements Provider
             toolCalls: [],
             toolResults: [],
             usage: new Usage(10, 10),
-            response: ['id' => '1234', 'model' => 'some-model'],
+            meta: ['id' => '1234', 'model' => 'some-model'],
         );
     }
 

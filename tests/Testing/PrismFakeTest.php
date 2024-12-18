@@ -16,6 +16,7 @@ use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use Illuminate\Support\Collection;
@@ -27,7 +28,10 @@ it('fake responses using the prism fake for text', function (): void {
             toolCalls: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+            meta: new Meta(
+                id: 'cpl_1234',
+                model: 'claude-3-sonnet',
+            )
         ),
     ]);
 
@@ -55,7 +59,10 @@ it('fake responses using the prism fake for structured', function (): void {
             toolCalls: [],
             toolResults: [],
             usage: new Usage(10, 10),
-            response: [],
+            meta: new Meta(
+                id: 'cpl_1234',
+                model: 'claude-3-sonnet',
+            ),
         ),
     ]);
 
@@ -114,7 +121,10 @@ it("throws an exception when it can't runs out of responses", function (): void 
             toolCalls: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+            meta: new Meta(
+                id: 'cpl_1234',
+                model: 'claude-3-sonnet',
+            ),
         ),
     ]);
 
@@ -136,7 +146,10 @@ it('asserts provider config', function (): void {
             toolCalls: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'cpl_1234', 'model' => 'claude-3-sonnet'],
+            meta: new Meta(
+                id: 'cpl_1234',
+                model: 'claude-3-sonnet',
+            ),
         ),
     ]);
 

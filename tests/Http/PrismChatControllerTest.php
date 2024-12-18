@@ -8,6 +8,7 @@ use EchoLabs\Prism\Text\Generator;
 use EchoLabs\Prism\Text\Response;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -33,7 +34,10 @@ it('handles chat requests successfully', function (): void {
         toolCalls: [],
         toolResults: [],
         usage: new Usage(10, 10),
-        response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
+        meta: new Meta(
+            id: 'cmp_asdf123',
+            model: 'gpt-4',
+        ),
         responseMessages: collect([
             new AssistantMessage("I'm Nyx!"),
         ])
@@ -100,7 +104,10 @@ it('handles streaming requests', function (): void {
         toolCalls: [],
         toolResults: [],
         usage: new Usage(10, 10),
-        response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
+        meta: new Meta(
+            id: 'cmp_asdf123',
+            model: 'gpt-4',
+        ),
         responseMessages: collect([
             new AssistantMessage("I'm Nyx!"),
         ])
@@ -132,7 +139,7 @@ it('handles streaming requests', function (): void {
     Carbon::setTestNow($now);
 
     expect(json_decode($data, true))->toBe([
-        'id' => $textResponse->response['id'],
+        'id' => $textResponse->meta->id,
         'object' => 'chat.completion.chunk',
         'created' => $now->timestamp,
         'model' => 'gpt-4',

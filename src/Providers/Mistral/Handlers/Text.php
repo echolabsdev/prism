@@ -11,6 +11,7 @@ use EchoLabs\Prism\Providers\Mistral\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\Mistral\Maps\ToolMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -49,10 +50,10 @@ class Text
                 data_get($data, 'usage.completion_tokens'),
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
-            response: [
-                'id' => data_get($data, 'id'),
-                'model' => data_get($data, 'model'),
-            ]
+            meta: new Meta(
+                id: data_get($data, 'id'),
+                model: data_get($data, 'model'),
+            ),
         );
     }
 

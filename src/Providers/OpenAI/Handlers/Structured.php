@@ -23,6 +23,7 @@ use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -146,10 +147,10 @@ class Structured
                 data_get($data, 'usage.completion_tokens')
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
-            response: [
-                'id' => (string) data_get($data, 'id'),
-                'model' => (string) data_get($data, 'model'),
-            ]
+            meta: new Meta(
+                id: data_get($data, 'id'),
+                model: data_get($data, 'model'),
+            ),
         );
     }
 
@@ -187,7 +188,7 @@ class Structured
             toolCalls: $response->toolCalls,
             toolResults: $toolResults,
             usage: $response->usage,
-            response: $response->response,
+            meta: $response->meta,
             messages: $request->messages,
         ));
     }

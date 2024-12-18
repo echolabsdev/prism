@@ -13,6 +13,7 @@ use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
@@ -43,7 +44,7 @@ class TestProvider implements Provider
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            meta: new Meta(id: '123', model: 'claude-3-5-sonnet-20240620'),
         );
     }
 
@@ -63,7 +64,7 @@ class TestProvider implements Provider
             toolCalls: [],
             toolResults: [],
             usage: new Usage(10, 10),
-            response: [],
+            meta: new Meta(id: '123', model: 'claude-3-5-sonnet-20240620'),
         );
     }
 

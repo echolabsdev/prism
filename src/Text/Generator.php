@@ -40,7 +40,7 @@ class Generator
             toolCalls: $response->toolCalls,
             toolResults: $toolResults ?? [],
             usage: $response->usage,
-            response: $response->response,
+            meta: $response->meta,
             messages: $this->messages,
         ));
 

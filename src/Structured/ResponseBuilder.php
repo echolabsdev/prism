@@ -54,7 +54,7 @@ class ResponseBuilder
             toolCalls: $finalStep->toolCalls,
             toolResults: $finalStep->toolResults,
             usage: $this->calculateTotalUsage(),
-            response: $finalStep->response,
+            meta: $finalStep->meta,
         );
     }
 
