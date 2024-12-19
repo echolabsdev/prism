@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\ValueObjects\Messages;
 
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Text;
 
 class UserMessage implements Message
 {
+    use HasProviderMeta;
+
     /**
      * @param  array<int, Text|Image>  $additionalContent
      */

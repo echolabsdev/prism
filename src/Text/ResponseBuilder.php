@@ -56,12 +56,18 @@ class ResponseBuilder
     protected function calculateTotalUsage(): Usage
     {
         return new Usage(
-            $this
+            promptTokens: $this
                 ->steps
                 ->sum(fn (Step $result): int => $result->usage->promptTokens),
-            $this
+            completionTokens: $this
                 ->steps
-                ->sum(fn (Step $result): int => $result->usage->completionTokens)
+                ->sum(fn (Step $result): int => $result->usage->completionTokens),
+            cacheWriteInputTokens: $this->steps->contains(fn (Step $result): bool => $result->usage->cacheWriteInputTokens !== null)
+                ? $this->steps->sum(fn (Step $result): int => $result->usage->cacheWriteInputTokens ?? 0)
+                : null,
+            cacheReadInputTokens: $this->steps->contains(fn (Step $result): bool => $result->usage->cacheReadInputTokens !== null)
+                ? $this->steps->sum(fn (Step $result): int => $result->usage->cacheReadInputTokens ?? 0)
+                : null,
         );
     }
 }
