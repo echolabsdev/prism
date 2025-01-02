@@ -21,7 +21,7 @@ use RuntimeException;
 class PrismManager
 {
     /** @var array<string, Closure> */
-    protected $customCreators = [];
+    protected array $customCreators = [];
 
     public function __construct(
         protected Application $app
