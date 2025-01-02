@@ -118,7 +118,7 @@ class PrismFake implements Provider
     {
         $actualCount = count($this->recorded ?? []);
 
-        PHPUnit::assertEquals($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
+        PHPUnit::assertSame($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
     }
 
     protected function nextProviderResponse(): ?ProviderResponse
