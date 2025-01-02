@@ -63,7 +63,7 @@ class PrismException extends Exception
     public static function structuredDecodingError(string $responseText): self
     {
         return new self(sprintf(
-            'Structred object could not be decoded. Received: %s',
+            'Structured object could not be decoded. Received: %s',
             $responseText
         ));
     }

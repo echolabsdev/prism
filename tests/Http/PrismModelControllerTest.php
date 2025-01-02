@@ -26,7 +26,7 @@ it('it returns prisms', function (): void {
     ]);
 });
 
-it('handles when there are no registred prism', function (): void {
+it('handles when there are no registered prism', function (): void {
     /** @var TestResponse */
     $response = $this->getJson('/prism/openai/v1/models');
 
