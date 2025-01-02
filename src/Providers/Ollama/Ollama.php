@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Http;
 class Ollama implements Provider
 {
     public function __construct(
-        public readonly string $apiKey,
+        #[\SensitiveParameter] public readonly string $apiKey,
         public readonly string $url,
     ) {}
 

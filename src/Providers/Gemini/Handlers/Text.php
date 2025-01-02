@@ -18,7 +18,7 @@ class Text
 {
     public function __construct(
         protected PendingRequest $client,
-        protected string $apiKey,
+        #[\SensitiveParameter] protected string $apiKey,
     ) {}
 
     public function handle(Request $request): ProviderResponse

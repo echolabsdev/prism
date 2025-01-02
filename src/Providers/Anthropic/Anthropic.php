@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Http;
 class Anthropic implements Provider
 {
     public function __construct(
-        public readonly string $apiKey,
+        #[\SensitiveParameter] public readonly string $apiKey,
         public readonly string $apiVersion,
     ) {}
 
