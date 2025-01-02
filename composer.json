@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "php": "^8.3|^8.4",
+    "php": "^8.3",
     "laravel/framework": "^11.0"
   },
   "config": {
