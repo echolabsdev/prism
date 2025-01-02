@@ -21,7 +21,7 @@ class ToolCall
     public function arguments(): array
     {
         if (is_string($this->arguments) && json_validate($this->arguments)) {
-            /** @var string */
+            /** @var string $arguments */
             $arguments = $this->arguments;
 
             return json_decode(
@@ -31,7 +31,7 @@ class ToolCall
             );
         }
 
-        /** @var array<string, mixed> */
+        /** @var array<string, mixed> $arguments */
         $arguments = $this->arguments;
 
         return $arguments;

@@ -127,7 +127,7 @@ class PrismFake implements Provider
             return null;
         }
 
-        /** @var ProviderResponse[] */
+        /** @var ProviderResponse[] $responses */
         $responses = $this->responses;
         $sequence = $this->responseSequence;
 
@@ -146,7 +146,7 @@ class PrismFake implements Provider
             return null;
         }
 
-        /** @var EmbeddingResponse[] */
+        /** @var EmbeddingResponse[] $responses */
         $responses = $this->responses;
         $sequence = $this->responseSequence;
 
