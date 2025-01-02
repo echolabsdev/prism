@@ -31,7 +31,7 @@ class Text
 
         $data = $response->json();
 
-        if (data_get($data, 'error') || ! $data) {
+        if (! $data || data_get($data, 'error')) {
             throw PrismException::providerResponseError(vsprintf(
                 'Gemini Error: [%s] %s',
                 [

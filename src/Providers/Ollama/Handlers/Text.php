@@ -30,7 +30,7 @@ class Text
 
         $data = $response->json();
 
-        if (data_get($data, 'error') || ! $data) {
+        if (! $data || data_get($data, 'error')) {
             throw PrismException::providerResponseError(vsprintf(
                 'Ollama Error:  [%s] %s',
                 [
