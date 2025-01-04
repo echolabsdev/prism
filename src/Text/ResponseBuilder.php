@@ -38,7 +38,7 @@ class ResponseBuilder
 
     public function toResponse(): Response
     {
-        /** @var Step */
+        /** @var Step $finalStep */
         $finalStep = $this->steps->last();
 
         return new Response(

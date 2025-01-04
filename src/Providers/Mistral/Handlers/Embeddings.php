@@ -26,7 +26,7 @@ class Embeddings
 
         $data = $response->json();
 
-        if (data_get($data, 'object') === 'error' || ! $data) {
+        if (! $data || data_get($data, 'object') === 'error') {
             throw PrismException::providerResponseError(vsprintf(
                 'Mistral Error:  [%s] %s',
                 [

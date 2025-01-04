@@ -18,7 +18,7 @@ class Text
 {
     public function __construct(
         protected PendingRequest $client,
-        protected string $apiKey,
+        #[\SensitiveParameter] protected string $apiKey,
     ) {}
 
     public function handle(Request $request): ProviderResponse
@@ -31,7 +31,7 @@ class Text
 
         $data = $response->json();
 
-        if (data_get($data, 'error') || ! $data) {
+        if (! $data || data_get($data, 'error')) {
             throw PrismException::providerResponseError(vsprintf(
                 'Gemini Error: [%s] %s',
                 [
