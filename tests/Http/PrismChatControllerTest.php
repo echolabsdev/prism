@@ -4,7 +4,7 @@ namespace Tests\Http;
 
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Text\Generator;
+use EchoLabs\Prism\Text\PendingRequest;
 use EchoLabs\Prism\Text\Response;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -19,7 +19,7 @@ beforeEach(function (): void {
 });
 
 it('handles chat requests successfully', function (): void {
-    $generator = Mockery::mock(Generator::class);
+    $generator = Mockery::mock(PendingRequest::class);
 
     $generator->expects('withMessages')
         ->withArgs(fn ($messages): bool => $messages[0] instanceof UserMessage
@@ -86,7 +86,7 @@ it('handles chat requests successfully', function (): void {
 });
 
 it('handles streaming requests', function (): void {
-    $generator = Mockery::mock(Generator::class);
+    $generator = Mockery::mock(PendingRequest::class);
 
     $generator->expects('withMessages')
         ->withArgs(fn ($messages): bool => $messages[0] instanceof UserMessage

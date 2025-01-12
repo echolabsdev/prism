@@ -10,7 +10,7 @@ use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Generator as StructuredGenerator;
 use EchoLabs\Prism\Testing\PrismFake;
-use EchoLabs\Prism\Text\Generator as TextGenerator;
+use EchoLabs\Prism\Text\PendingRequest;
 
 class Prism
 {
@@ -38,9 +38,9 @@ class Prism
         return $fake;
     }
 
-    public static function text(): TextGenerator
+    public static function text(): PendingRequest
     {
-        return new TextGenerator;
+        return new PendingRequest;
     }
 
     public static function structured(): StructuredGenerator

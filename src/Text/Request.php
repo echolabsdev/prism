@@ -23,6 +23,7 @@ class Request
         public readonly ?string $systemPrompt,
         public readonly ?string $prompt,
         public readonly array $messages,
+        public readonly int $maxSteps,
         public readonly ?int $maxTokens,
         public readonly int|float|null $temperature,
         public readonly int|float|null $topP,
