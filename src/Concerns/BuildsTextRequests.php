@@ -189,6 +189,7 @@ trait BuildsTextRequests
             messages: $this->messages,
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
+            maxSteps: $this->maxSteps,
             topP: $this->topP,
             tools: $this->tools,
             clientOptions: $this->clientOptions,
