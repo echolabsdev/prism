@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Concerns\CallsTools;
+use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class Generator
 {
@@ -30,6 +32,7 @@ class Generator
 
         if ($response->finishReason === FinishReason::ToolCalls) {
             $toolResults = $this->callTools($request->tools, $response->toolCalls);
+            $this->messages[] = new ToolResultMessage($toolResults);
         }
 
         $this->responseBuilder->addStep(new Step(

@@ -281,9 +281,8 @@ it('generates a response from the driver with tools and without max steps', func
     expect($step->messages[2])->toBeInstanceOf(ToolResultMessage::class);
 
     // Assert response messages
-    expect($response->responseMessages)->toHaveCount(2);
+    expect($response->responseMessages)->toHaveCount(1);
     expect($response->responseMessages[0])->toBeInstanceOf(AssistantMessage::class);
-    expect($response->responseMessages[1])->toBeInstanceOf(ToolResultMessage::class);
 });
 
 it('correctly stops using max steps', function (): void {
@@ -344,10 +343,9 @@ it('correctly stops using max steps', function (): void {
     expect($response->steps[1]->toolCalls)->toBeEmpty();
 
     // Assert response messages
-    expect($response->responseMessages)->toHaveCount(3);
+    expect($response->responseMessages)->toHaveCount(2);
     expect($response->responseMessages[0])->toBeInstanceOf(AssistantMessage::class);
-    expect($response->responseMessages[1])->toBeInstanceOf(ToolResultMessage::class);
-    expect($response->responseMessages[2])->toBeInstanceOf(AssistantMessage::class);
+    expect($response->responseMessages[1])->toBeInstanceOf(AssistantMessage::class);
 });
 
 it('throws and exception if you send prompt and messages', function (): void {

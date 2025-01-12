@@ -15,7 +15,7 @@ use Tests\TestDoubles\TestProvider;
 beforeEach(function (): void {
     $this->provider = $provider = new TestProvider;
 
-    resolve('prism-manager')->extend('test-provider', fn($config): \Tests\TestDoubles\TestProvider => $provider);
+    resolve('prism-manager')->extend('test-provider', fn ($config): \Tests\TestDoubles\TestProvider => $provider);
 });
 
 test('it can generate basic text response', function (): void {
@@ -114,6 +114,52 @@ test('it continues generating until max steps or stop', function (): void {
         ->toBe('Final response')
         ->and($response->steps)
         ->toHaveCount(2);
+});
+
+test('it continues generating until max steps', function (): void {
+    // First response triggers tool call
+    $toolCall = new ToolCall(
+        id: '123',
+        name: 'test-tool',
+        arguments: ['input' => 'test'],
+    );
+
+    $this->provider->withResponseChain([
+        new ProviderResponse(
+            text: 'First response',
+            toolCalls: [$toolCall],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::ToolCalls,
+            response: ['id' => '123', 'model' => 'test-model'],
+        ),
+        new ProviderResponse(
+            text: 'Final response',
+            toolCalls: [],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::Stop,
+            response: ['id' => '123', 'model' => 'test-model'],
+        ),
+    ]);
+
+    $tool = Tool::as('test-tool')
+        ->for('A test tool')
+        ->withStringParameter('input', 'Test input')
+        ->using(fn (string $input): string => "Tool response: {$input}");
+
+    $request = (new PendingRequest)
+        ->using('test-provider', 'test-model')
+        ->withTools([$tool])
+        ->withMaxSteps(1)
+        ->withPrompt('Use the test tool multiple times');
+
+    $response = $request->generate();
+
+    expect($this->provider->callCount)
+        ->toBe(1)
+        ->and($response->text)
+        ->toBe('First response')
+        ->and($response->steps)
+        ->toHaveCount(1);
 });
 
 test('it accumulates response messages', function (): void {

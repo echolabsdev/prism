@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Concerns\BuildsTextRequests;
-use EchoLabs\Prism\Concerns\HandlesToolCalls;
+use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use InvalidArgumentException;
 
 class Generator
 {
-    use BuildsTextRequests, HandlesToolCalls;
+    use BuildsTextRequests, CallsTools;
 
     protected ?Schema $schema = null;
 
@@ -31,7 +32,8 @@ class Generator
         $response = $this->sendProviderRequest();
 
         if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->handleToolCalls($response);
+            $toolResults = $this->callTools($this->structuredRequest()->tools, $response->toolCalls);
+            $this->messages[] = new ToolResultMessage($toolResults);
         }
 
         $this->responseBuilder->addStep(new Step(
