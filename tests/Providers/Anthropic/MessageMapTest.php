@@ -215,7 +215,7 @@ it('sets the cache type on a UserMessage image if cacheType providerMeta is set 
     ]]);
 });
 
-it('sets the cache type on an AssistantMessage if cacheType providerMeta is set on message using an enum', function (mixed $cacheType): void {
+it('sets the cache type on an AssistantMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
     expect(MessageMap::map([
         (new AssistantMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
     ]))->toBe([[
@@ -233,7 +233,7 @@ it('sets the cache type on an AssistantMessage if cacheType providerMeta is set 
     AnthropicCacheType::ephemeral,
 ]);
 
-it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message using an enum', function (mixed $cacheType): void {
+it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
     expect(MessageMap::mapSystemMessages([
         (new SystemMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
     ], null))->toBe([
