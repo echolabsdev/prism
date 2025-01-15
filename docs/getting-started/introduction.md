@@ -26,7 +26,7 @@ echo $response->text;
 
 ```php [Mistral]
 use EchoLabs\Prism\Prism;
-use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
     ->using(Provider::Mistral, 'mistral-medium')
@@ -39,7 +39,7 @@ echo $response->text;
 
 ```php [Ollama]
 use EchoLabs\Prism\Prism;
-use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
     ->using(Provider::Ollama, 'llama2')
@@ -52,7 +52,7 @@ echo $response->text;
 
 ```php [OpenAI]
 use EchoLabs\Prism\Prism;
-use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
     ->using(Provider::OpenAI, 'gpt-4')
