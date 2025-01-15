@@ -8,6 +8,7 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
@@ -71,6 +72,40 @@ it('maps user messages with images from base64', function (): void {
         ->toContain(base64_encode(file_get_contents('tests/Fixtures/test-image.png')));
     expect(data_get($mappedMessage, '0.content.1.source.media_type'))
         ->toBe('image/png');
+});
+
+it('maps user messages with documents from path', function (): void {
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Here is the document', [
+            Document::fromPath('tests/Fixtures/test-pdf.pdf', 'application/pdf'),
+        ]),
+    ]);
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('document');
+    expect(data_get($mappedMessage, '0.content.1.source.type'))
+        ->toBe('base64');
+    expect(data_get($mappedMessage, '0.content.1.source.data'))
+        ->toContain(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')));
+    expect(data_get($mappedMessage, '0.content.1.source.media_type'))
+        ->toBe('application/pdf');
+});
+
+it('maps user messages with documents from base64', function (): void {
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Here is the document', [
+            Document::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')), 'application/pdf'),
+        ]),
+    ]);
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('document');
+    expect(data_get($mappedMessage, '0.content.1.source.type'))
+        ->toBe('base64');
+    expect(data_get($mappedMessage, '0.content.1.source.data'))
+        ->toContain(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')));
+    expect(data_get($mappedMessage, '0.content.1.source.media_type'))
+        ->toBe('application/pdf');
 });
 
 it('does not maps user messages with images from url', function (): void {
@@ -208,6 +243,33 @@ it('sets the cache type on a UserMessage image if cacheType providerMeta is set 
                     'type' => 'base64',
                     'media_type' => 'image/png',
                     'data' => base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                ],
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+        ],
+    ]]);
+});
+
+it('sets the cache type on a UserMessage document if cacheType providerMeta is set on message', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'Who are you?',
+            additionalContent: [Document::fromPath('tests/Fixtures/test-pdf.pdf')]
+        ))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => 'application/pdf',
+                    'data' => base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')),
                 ],
                 'cache_control' => ['type' => 'ephemeral'],
             ],

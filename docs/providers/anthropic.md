@@ -14,10 +14,11 @@ Anthropic's prompt caching feature allows you to drastically reduce latency and 
 We support Anthropic prompt caching on:
 
 - System Messages (text only)
-- User Messages (Text and Image)
+- User Messages (Text, Image and PDF (pdf only))
+- Assistant Messages (text only)
 - Tools
 
-The API for enable prompt caching is the same for all, enabled via the `withProviderMeta()` method. Where a UserMessage contains both text and an image, both will be cached.
+The API for enabling prompt caching is the same for all, enabled via the `withProviderMeta()` method. Where a UserMessage contains both text and an image or document, both will be cached.
 
 ```php
 use EchoLabs\Enums\Provider;
@@ -54,6 +55,31 @@ use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 Note that you must use the `withMessages()` method in order to enable prompt caching, rather than `withPrompt()` or `withSystemPrompt()`.
 
 Please ensure you read Anthropic's [prompt caching documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching), which covers some important information on e.g. minimum cacheable tokens and message order consistency.
+
+### PDF Support
+
+Prism supports Anthropic PDF processing on UserMessages via the `$additionalContent` parameter:
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+
+Prism::text()
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
+    ->withMessages([
+        new UserMessage('Here is the document from base64', [
+            Document::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')), 'application/pdf'),
+        ]),
+        new UserMessage('Here is the document from a local path', [
+            Document::fromPath('tests/Fixtures/test-pdf.pdf', 'application/pdf'),
+        ]),
+    ])
+    ->generate();
+
+```
+Anthropic use vision to process PDFs, and consequently there are some limitations detailed in their [feature documentation](https://docs.anthropic.com/en/docs/build-with-claude/pdf-support).
+
 
 ## Considerations
 ### Message Order
