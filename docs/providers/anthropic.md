@@ -27,7 +27,12 @@ While Anthropic models don't have native JSON mode or structured output like som
 ## Limitations
 ### Messages
 
-Does not support the `SystemMessage` message type, we automatically convert `SystemMessage` to `UserMessage`.
+Most providers' API include system messages in the messages array with a "system" role. Anthropic does not support the system role, and instead has a "system" property, separate from messages.
+
+Therefore, for Anthropic we:
+* Filter all `SystemMessage`s out, omitting them from messages.
+* Always submit the prompt defined with `->withSystemPrompt()` at the top of the system prompts array.
+* Move all `SystemMessage`s to the system prompts array in the order they were declared.
 
 ### Images
 
