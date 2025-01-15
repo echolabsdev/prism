@@ -188,6 +188,33 @@ it('sets the cache type on a UserMessage if cacheType providerMeta is set on mes
     AnthropicCacheType::ephemeral,
 ]);
 
+it('sets the cache type on a UserMessage image if cacheType providerMeta is set on message', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'Who are you?',
+            additionalContent: [Image::fromPath('tests/Fixtures/test-image.png')]
+        ))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+            [
+                'type' => 'image',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => 'image/png',
+                    'data' => base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                ],
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+        ],
+    ]]);
+});
+
 it('sets the cache type on an AssistantMessage if cacheType providerMeta is set on message using an enum', function (mixed $cacheType): void {
     expect(MessageMap::map([
         (new AssistantMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),

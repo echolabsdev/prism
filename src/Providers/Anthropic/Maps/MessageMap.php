@@ -94,22 +94,8 @@ class MessageMap
      */
     protected static function mapUserMessage(UserMessage $message): array
     {
-        $imageParts = array_map(function (Image $image): array {
-            if ($image->isUrl()) {
-                throw new InvalidArgumentException('URL image type is not supported by Anthropic');
-            }
-
-            return [
-                'type' => 'image',
-                'source' => [
-                    'type' => 'base64',
-                    'media_type' => $image->mimeType,
-                    'data' => $image->image,
-                ],
-            ];
-        }, $message->images());
-
         $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
+        $cache_control = $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null;
 
         return [
             'role' => 'user',
@@ -117,11 +103,10 @@ class MessageMap
                 array_filter([
                     'type' => 'text',
                     'text' => $message->text(),
-                    'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null,
+                    'cache_control' => $cache_control,
                 ]),
-                ...$imageParts,
+                ...self::mapImageParts($message->images(), $cache_control),
             ],
-
         ];
     }
 
@@ -155,5 +140,29 @@ class MessageMap
             'role' => 'assistant',
             'content' => array_merge($content, $toolCalls),
         ];
+    }
+
+    /**
+     * @param  Image[]  $parts
+     * @param  array<string, mixed>|null  $cache_control
+     * @return array<string, mixed>
+     */
+    protected static function mapImageParts(array $parts, ?array $cache_control = null): array
+    {
+        return array_map(function (Image $image) use ($cache_control): array {
+            if ($image->isUrl()) {
+                throw new InvalidArgumentException('URL image type is not supported by Anthropic');
+            }
+
+            return array_filter([
+                'type' => 'image',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => $image->mimeType,
+                    'data' => $image->image,
+                ],
+                'cache_control' => $cache_control,
+            ]);
+        }, $parts);
     }
 }
