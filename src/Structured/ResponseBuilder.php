@@ -51,8 +51,6 @@ class ResponseBuilder
                 ? $this->decodeObject($finalStep->text)
                 : [],
             finishReason: $finalStep->finishReason,
-            toolCalls: $finalStep->toolCalls,
-            toolResults: $finalStep->toolResults,
             usage: $this->calculateTotalUsage(),
             response: $finalStep->response,
         );

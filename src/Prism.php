@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism;
 
 use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Embeddings\Generator as EmbeddingsGenerator;
+use EchoLabs\Prism\Embeddings\PendingRequest as PendingEmbeddingRequest;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\ProviderResponse;
-use EchoLabs\Prism\Structured\Generator as StructuredGenerator;
+use EchoLabs\Prism\Structured\PendingRequest as PendingStructuredRequest;
 use EchoLabs\Prism\Testing\PrismFake;
-use EchoLabs\Prism\Text\Generator as TextGenerator;
+use EchoLabs\Prism\Text\PendingRequest as PendingTextRequest;
 
 class Prism
 {
@@ -38,18 +38,18 @@ class Prism
         return $fake;
     }
 
-    public static function text(): TextGenerator
+    public static function text(): PendingTextRequest
     {
-        return new TextGenerator;
+        return new PendingTextRequest;
     }
 
-    public static function structured(): StructuredGenerator
+    public static function structured(): PendingStructuredRequest
     {
-        return new StructuredGenerator;
+        return new PendingStructuredRequest;
     }
 
-    public static function embeddings(): \EchoLabs\Prism\Embeddings\Generator
+    public static function embeddings(): PendingEmbeddingRequest
     {
-        return new EmbeddingsGenerator;
+        return new PendingEmbeddingRequest;
     }
 }

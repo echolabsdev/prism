@@ -4,7 +4,7 @@ namespace EchoLabs\Prism\Http\Controllers;
 
 use EchoLabs\Prism\Exceptions\PrismServerException;
 use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Text\Generator;
+use EchoLabs\Prism\Text\PendingRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -40,7 +40,7 @@ class PrismChatController
         }
     }
 
-    protected function stream(Generator $generator): Response
+    protected function stream(PendingRequest $generator): Response
     {
         return response()->stream(function () use ($generator): void {
             $response = $generator->generate();
@@ -79,7 +79,7 @@ class PrismChatController
         ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-    protected function chat(Generator $generator): Response
+    protected function chat(PendingRequest $generator): Response
     {
         $response = $generator->generate();
 
@@ -131,7 +131,7 @@ class PrismChatController
             ->toArray();
     }
 
-    protected function resolvePrism(string $model): Generator
+    protected function resolvePrism(string $model): PendingRequest
     {
         try {
             $prism = PrismServer::prisms()

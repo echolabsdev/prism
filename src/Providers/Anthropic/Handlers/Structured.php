@@ -7,12 +7,9 @@ namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
-use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
-use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -45,7 +42,7 @@ class Structured
 
         return new ProviderResponse(
             text: $this->extractText($data),
-            toolCalls: $this->extractToolCalls($data),
+            toolCalls: [],
             usage: new Usage(
                 data_get($data, 'usage.input_tokens'),
                 data_get($data, 'usage.output_tokens'),
@@ -70,8 +67,6 @@ class Structured
                 'system' => $request->systemPrompt,
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
-                'tools' => ToolMap::map($request->tools),
-                'tool_choice' => ToolChoiceMap::map($request->toolChoice),
             ]))
         );
     }
@@ -88,25 +83,6 @@ class Structured
 
             return $text;
         }, '');
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return ToolCall[]
-     */
-    protected function extractToolCalls(array $data): array
-    {
-        $toolCalls = array_map(function ($content) {
-            if (data_get($content, 'type') === 'tool_use') {
-                return new ToolCall(
-                    id: data_get($content, 'id'),
-                    name: data_get($content, 'name'),
-                    arguments: data_get($content, 'input')
-                );
-            }
-        }, data_get($data, 'content', []));
-
-        return array_values(array_filter($toolCalls));
     }
 
     protected function appendMessageForJsonMode(Request $request): Request

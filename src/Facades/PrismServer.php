@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Facades;
 
 use Closure;
-use EchoLabs\Prism\Text\Generator;
+use EchoLabs\Prism\Text\PendingRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static self register(string $name, Closure():Generator|callable():Generator $prism)
- * @method static Collection<int, array{name: string, prism: Closure():Generator|callable():Generator}> prisms()
+ * @method static self register(string $name, Closure():PendingRequest|callable():PendingRequest $prism)
+ * @method static Collection<int, array{name: string, prism: Closure():PendingRequest|callable():PendingRequest}> prisms()
  */
 class PrismServer extends Facade
 {

@@ -15,18 +15,18 @@ class PrismException extends Exception
         return new self('You can only use `prompt` or `messages`');
     }
 
-    public static function toolNotFound(ToolCall $toolCall, Throwable $previous): self
+    public static function toolNotFound(string $name, Throwable $previous): self
     {
         return new self(
-            sprintf('Tool (%s) not found', $toolCall->name),
+            sprintf('Tool (%s) not found', $name),
             previous: $previous
         );
     }
 
-    public static function multipleToolsFound(ToolCall $toolCall, Throwable $previous): self
+    public static function multipleToolsFound(string $name, Throwable $previous): self
     {
         return new self(
-            sprintf('Multiple tools with the name %s found', $toolCall->name),
+            sprintf('Multiple tools with the name %s found', $name),
             previous: $previous
         );
     }

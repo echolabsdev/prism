@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\Enums;
 
 enum StructuredMode
 {
-    case Structured;
+    case Auto;
     case Json;
+    case Structured;
 }

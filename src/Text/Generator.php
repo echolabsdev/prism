@@ -4,30 +4,35 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Text;
 
-use EchoLabs\Prism\Concerns\BuildsTextRequests;
-use EchoLabs\Prism\Concerns\HandlesToolCalls;
+use EchoLabs\Prism\Concerns\CallsTools;
+use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class Generator
 {
-    use BuildsTextRequests, HandlesToolCalls;
+    use CallsTools;
+
+    /** @var Message[] */
+    protected array $messages = [];
 
     protected ResponseBuilder $responseBuilder;
 
-    public function __construct()
+    public function __construct(protected Provider $provider)
     {
         $this->responseBuilder = new ResponseBuilder;
     }
 
-    public function generate(): Response
+    public function generate(Request $request): Response
     {
-        $response = $this->sendProviderRequest();
+        $response = $this->sendProviderRequest($request);
 
         if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->handleToolCalls($response);
+            $toolResults = $this->callTools($request->tools, $response->toolCalls);
+            $this->messages[] = new ToolResultMessage($toolResults);
         }
 
         $this->responseBuilder->addStep(new Step(
@@ -40,18 +45,16 @@ class Generator
             messages: $this->messages,
         ));
 
-        if ($this->shouldContinue($response)) {
-            return $this->generate();
+        if ($this->shouldContinue($request->maxSteps, $response)) {
+            return $this->generate($request);
         }
 
         return $this->responseBuilder->toResponse();
     }
 
-    protected function sendProviderRequest(): ProviderResponse
+    protected function sendProviderRequest(Request $request): ProviderResponse
     {
-        $response = resolve(PrismManager::class)
-            ->resolve($this->provider, $this->providerConfig)
-            ->text($this->textRequest());
+        $response = $this->provider->text($request);
 
         $responseMessage = new AssistantMessage(
             $response->text,
@@ -64,9 +67,9 @@ class Generator
         return $response;
     }
 
-    protected function shouldContinue(ProviderResponse $response): bool
+    protected function shouldContinue(int $maxSteps, ProviderResponse $response): bool
     {
-        return $this->responseBuilder->steps->count() < $this->maxSteps
+        return $this->responseBuilder->steps->count() < $maxSteps
             && $response->finishReason !== FinishReason::Stop;
     }
 }
