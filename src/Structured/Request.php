@@ -8,8 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
@@ -17,7 +16,6 @@ class Request
 {
     /**
      * @param  array<int, Message>  $messages
-     * @param  array<int, Tool>  $tools
      * @param  array<string, mixed>  $clientOptions
      * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $clientRetry
      * @param  array<string, mixed>  $providerMeta
@@ -30,12 +28,11 @@ class Request
         public readonly ?int $maxTokens,
         public readonly int|float|null $temperature,
         public readonly int|float|null $topP,
-        public readonly array $tools,
         public readonly array $clientOptions,
-        public readonly string|ToolChoice|null $toolChoice,
         public readonly array $clientRetry,
         public readonly Schema $schema,
         public readonly array $providerMeta,
+        public readonly StructuredMode $mode,
     ) {}
 
     public function addMessage(UserMessage|SystemMessage $message): self
@@ -50,12 +47,11 @@ class Request
             maxTokens: $this->maxTokens,
             temperature: $this->temperature,
             topP: $this->topP,
-            tools: $this->tools,
             clientOptions: $this->clientOptions,
             clientRetry: $this->clientRetry,
-            toolChoice: $this->toolChoice,
             schema: $this->schema,
             providerMeta: $this->providerMeta,
+            mode: $this->mode,
         );
     }
 
@@ -63,6 +59,6 @@ class Request
     {
         $providerMeta = data_get($this->providerMeta, $provider->value, []);
 
-        return data_get($providerMeta, $valuePath, null);
+        return data_get($providerMeta, $valuePath, $providerMeta);
     }
 }

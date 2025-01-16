@@ -8,8 +8,6 @@ trait ConfiguresModels
 {
     protected ?int $maxTokens = null;
 
-    protected int $maxSteps = 1;
-
     protected int|float|null $temperature = null;
 
     protected int|float|null $topP = null;
@@ -31,13 +29,6 @@ trait ConfiguresModels
     public function usingTopP(int|float $topP): self
     {
         $this->topP = $topP;
-
-        return $this;
-    }
-
-    public function withMaxSteps(int $steps): self
-    {
-        $this->maxSteps = $steps;
 
         return $this;
     }

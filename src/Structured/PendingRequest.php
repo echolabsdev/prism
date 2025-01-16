@@ -2,29 +2,27 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Text;
+namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Concerns\ConfiguresClient;
-use EchoLabs\Prism\Concerns\ConfiguresGeneration;
 use EchoLabs\Prism\Concerns\ConfiguresModels;
 use EchoLabs\Prism\Concerns\ConfiguresProviders;
-use EchoLabs\Prism\Concerns\ConfiguresTools;
+use EchoLabs\Prism\Concerns\ConfiguresStructuredOutput;
 use EchoLabs\Prism\Concerns\HasMessages;
 use EchoLabs\Prism\Concerns\HasPrompts;
-use EchoLabs\Prism\Concerns\HasTools;
+use EchoLabs\Prism\Concerns\HasSchema;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 class PendingRequest
 {
     use ConfiguresClient;
-    use ConfiguresGeneration;
     use ConfiguresModels;
     use ConfiguresProviders;
-    use ConfiguresTools;
+    use ConfiguresStructuredOutput;
     use HasMessages;
     use HasPrompts;
-    use HasTools;
+    use HasSchema;
 
     public function generate(): Response
     {
@@ -41,6 +39,10 @@ class PendingRequest
             $this->messages[] = new UserMessage($this->prompt);
         }
 
+        if (!$this->schema instanceof \EchoLabs\Prism\Contracts\Schema) {
+            throw new PrismException('A schema is required for structured output');
+        }
+
         return new Request(
             model: $this->model,
             systemPrompt: $this->systemPrompt,
@@ -48,13 +50,12 @@ class PendingRequest
             messages: $this->messages,
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
-            maxSteps: $this->maxSteps,
             topP: $this->topP,
-            tools: $this->tools,
             clientOptions: $this->clientOptions,
             clientRetry: $this->clientRetry,
-            toolChoice: $this->toolChoice,
             providerMeta: $this->providerMeta,
+            schema: $this->schema,
+            mode: $this->structuredMode,
         );
     }
 }

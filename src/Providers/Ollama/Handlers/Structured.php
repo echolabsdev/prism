@@ -7,11 +7,9 @@ namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
-use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -44,7 +42,7 @@ class Structured
 
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', []) ?? []),
+            toolCalls: [],
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
@@ -68,22 +66,8 @@ class Structured
             ], array_filter([
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
-                'tools' => ToolMap::map($request->tools),
             ]))
         );
-    }
-
-    /**
-     * @param  array<int, array<string, mixed>>  $toolCalls
-     * @return array<int, ToolCall>
-     */
-    protected function mapToolCalls(array $toolCalls): array
-    {
-        return array_map(fn (array $toolCall): ToolCall => new ToolCall(
-            id: data_get($toolCall, 'id'),
-            name: data_get($toolCall, 'function.name'),
-            arguments: data_get($toolCall, 'function.arguments'),
-        ), $toolCalls);
     }
 
     protected function appendMessageForJsonMode(Request $request): Request

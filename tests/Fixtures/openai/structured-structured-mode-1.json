@@ -1,0 +1,35 @@
+{
+  "id": "chatcmpl-AqRJvJHfl40Mvrt6w2KN3ToEbGipT",
+  "object": "chat.completion",
+  "created": 1737061439,
+  "model": "gpt-4o-2024-08-06",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"weather\":\"Cloudy with occasional rain showers in the evening.\",\"game_time\":\"The Tigers are playing at 7:00 PM.\",\"coat_required\":true}",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 94,
+    "completion_tokens": 33,
+    "total_tokens": 127,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_50cad350e4"
+}
