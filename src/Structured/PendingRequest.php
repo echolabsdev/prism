@@ -39,7 +39,7 @@ class PendingRequest
             $this->messages[] = new UserMessage($this->prompt);
         }
 
-        if (!$this->schema instanceof \EchoLabs\Prism\Contracts\Schema) {
+        if (! $this->schema instanceof \EchoLabs\Prism\Contracts\Schema) {
             throw new PrismException('A schema is required for structured output');
         }
 
