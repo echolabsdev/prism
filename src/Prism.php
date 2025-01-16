@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism;
 
 use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Embeddings\Generator as EmbeddingsGenerator;
+use EchoLabs\Prism\Embeddings\PendingRequest as PendingEmbeddingRequest;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\PendingRequest as PendingStructuredRequest;
@@ -48,8 +48,8 @@ class Prism
         return new PendingStructuredRequest;
     }
 
-    public static function embeddings(): \EchoLabs\Prism\Embeddings\Generator
+    public static function embeddings(): PendingEmbeddingRequest
     {
-        return new EmbeddingsGenerator;
+        return new PendingEmbeddingRequest;
     }
 }
