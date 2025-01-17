@@ -30,9 +30,22 @@ class Generator
     {
         $response = $this->sendProviderRequest($request);
 
+        $responseMessage = new AssistantMessage(
+            $response->text,
+            $response->toolCalls
+        );
+
+        $this->responseBuilder->addResponseMessage($responseMessage);
+        $this->messages[] = $responseMessage;
+
+        $request = $request->addMessage($responseMessage);
+
         if ($response->finishReason === FinishReason::ToolCalls) {
             $toolResults = $this->callTools($request->tools, $response->toolCalls);
-            $this->messages[] = new ToolResultMessage($toolResults);
+            $message = new ToolResultMessage($toolResults);
+            $this->messages[] = $message;
+
+            $request = $request->addMessage($message);
         }
 
         $this->responseBuilder->addStep(new Step(
@@ -54,17 +67,7 @@ class Generator
 
     protected function sendProviderRequest(Request $request): ProviderResponse
     {
-        $response = $this->provider->text($request);
-
-        $responseMessage = new AssistantMessage(
-            $response->text,
-            $response->toolCalls
-        );
-
-        $this->responseBuilder->addResponseMessage($responseMessage);
-        $this->messages[] = $responseMessage;
-
-        return $response;
+        return $this->provider->text($request);
     }
 
     protected function shouldContinue(int $maxSteps, ProviderResponse $response): bool

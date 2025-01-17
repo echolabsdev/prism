@@ -33,4 +33,25 @@ class Request
         public readonly string|ToolChoice|null $toolChoice,
         public readonly array $providerMeta,
     ) {}
+
+    public function addMessage(Message $message): self
+    {
+        $messages = array_merge($this->messages, [$message]);
+
+        return new self(
+            systemPrompt: $this->systemPrompt,
+            model: $this->model,
+            prompt: $this->prompt,
+            messages: $messages,
+            maxSteps: $this->maxSteps,
+            maxTokens: $this->maxTokens,
+            temperature: $this->temperature,
+            topP: $this->topP,
+            tools: $this->tools,
+            clientOptions: $this->clientOptions,
+            clientRetry: $this->clientRetry,
+            toolChoice: $this->toolChoice,
+            providerMeta: $this->providerMeta,
+        );
+    }
 }
