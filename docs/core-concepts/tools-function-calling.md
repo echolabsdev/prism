@@ -11,7 +11,7 @@ use EchoLabs\Prism\Facades\Tool;
 
 $weatherTool = Tool::as('weather')
     ->for('Get current weather conditions')
-    ->withParameter('city', 'The city to get weather for')
+    ->withStringParameter('city', 'The city to get weather for')
     ->using(function (string $city): string {
         // Your weather API logic here
         return "The weather in {$city} is sunny and 72°F.";
@@ -27,7 +27,7 @@ use EchoLabs\Prism\Facades\Tool;
 
 $searchTool = Tool::as('search')
     ->for('Search for current information')
-    ->withParameter('query', 'The search query')
+    ->withStringParameter('query', 'The search query')
     ->using(function (string $query): string {
         // Your search implementation
         return "Search results for: {$query}";
@@ -266,7 +266,18 @@ $response = Prism::text()
 // Get the final answer
 echo $response->text;
 
+// ->text is empty for tool calls
+
 // Inspect tool usage
+
+if ($response->toolResults) {
+    foreach ($response->toolResults as $toolResult) {
+        echo "Tool: " . $toolResult->toolName . "\n";
+        echo "Result: " . $toolResult->result . "\n";
+    }
+}
+
+
 foreach ($response->steps as $step) {
     if ($step->toolCalls) {
         foreach ($step->toolCalls as $toolCall) {
