@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic\Maps;
 
+use BackedEnum;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
@@ -15,7 +16,6 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use Exception;
 use InvalidArgumentException;
-use UnitEnum;
 
 class MessageMap
 {
@@ -70,7 +70,7 @@ class MessageMap
         return array_filter([
             'type' => 'text',
             'text' => $systemMessage->content,
-            'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->value : $cacheType] : null,
+            'cache_control' => $cacheType ? ['type' => $cacheType instanceof BackedEnum ? $cacheType->value : $cacheType] : null,
         ]);
     }
 
@@ -95,7 +95,7 @@ class MessageMap
     protected static function mapUserMessage(UserMessage $message): array
     {
         $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
-        $cache_control = $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->value : $cacheType] : null;
+        $cache_control = $cacheType ? ['type' => $cacheType instanceof BackedEnum ? $cacheType->value : $cacheType] : null;
 
         return [
             'role' => 'user',
@@ -123,7 +123,7 @@ class MessageMap
             $content[] = array_filter([
                 'type' => 'text',
                 'text' => $message->content,
-                'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->value : $cacheType] : null,
+                'cache_control' => $cacheType ? ['type' => $cacheType instanceof BackedEnum ? $cacheType->value : $cacheType] : null,
             ]);
         }
 
