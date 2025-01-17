@@ -162,7 +162,7 @@ export default {
         {
           name: "Amazon Bedrock",
           text: Planned,
-          structured: Planned,
+          structured: Unsupported,
           embeddings: Planned,
           image: Planned,
           tools: Planned,
@@ -194,7 +194,7 @@ export default {
         {
           name: "Groq",
           text: Supported,
-          structured: Planned,
+          structured: Unsupported,
           embeddings: Planned,
           image: Supported,
           tools: Supported,
@@ -226,7 +226,7 @@ export default {
         {
           name: "xAI",
           text: Supported,
-          structured: Planned,
+          structured: Unsupported,
           embeddings: Unsupported,
           image: Supported,
           tools: Supported,
