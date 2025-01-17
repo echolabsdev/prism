@@ -24,11 +24,10 @@ class Structured
         try {
             $request = $this->appendMessageForJsonMode($request);
             $response = $this->sendRequest($request);
+            $data = $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
-
-        $data = $response->json();
 
         if (! $data || data_get($data, 'error')) {
             throw PrismException::providerResponseError(vsprintf(
@@ -63,6 +62,7 @@ class Structured
                 'model' => $request->model,
                 'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
                 'max_tokens' => $request->maxTokens ?? 2048,
+                'format' => ['type' => 'json_object'],
             ], array_filter([
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
