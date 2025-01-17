@@ -9,5 +9,4 @@ enum StructuredMode
     case Auto;
     case Json;
     case Structured;
-    case Unsupported;
 }

@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\OpenAI\Support;
 
-use EchoLabs\Prism\Enums\StructuredMode as StructuredModeEnum;
+use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
 
 class StructuredModeResolver
 {
-    public static function forModel(string $model): StructuredModeEnum
+    public static function forModel(string $model): StructuredMode
     {
         if (self::unsupported($model)) {
             throw new PrismException(sprintf('Structured output is not supported for %s', $model));
         }
 
         if (self::supportsStructuredMode($model)) {
-            return StructuredModeEnum::Structured;
+            return StructuredMode::Structured;
         }
 
-        return StructuredModeEnum::Json;
+        return StructuredMode::Json;
     }
 
     protected static function supportsStructuredMode(string $model): bool
