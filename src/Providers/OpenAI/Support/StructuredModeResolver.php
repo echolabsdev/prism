@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\OpenAI\Support;
 
 use EchoLabs\Prism\Enums\StructuredMode as StructuredModeEnum;
+use EchoLabs\Prism\Exceptions\PrismException;
 
 class StructuredModeResolver
 {
     public static function forModel(string $model): StructuredModeEnum
     {
+        if (self::unsupported($model)) {
+            throw new PrismException(sprintf('Structured output is not supported for %s', $model));
+        }
+
         if (self::supportsStructuredMode($model)) {
             return StructuredModeEnum::Structured;
         }
@@ -35,5 +40,14 @@ class StructuredModeResolver
         }
 
         return $model === 'gpt-3.5-turbo';
+    }
+
+    protected static function unsupported(string $model): bool
+    {
+        return in_array($model, [
+            'o1',
+            'o1-mini',
+            'o1-preview',
+        ]);
     }
 }

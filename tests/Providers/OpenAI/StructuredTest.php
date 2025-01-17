@@ -181,3 +181,28 @@ it('throws an exception when there is a refusal', function (): void {
         return true;
     });
 });
+
+it('throws an exception for o1 models', function (string $model): void {
+    $this->expectException(PrismException::class);
+    $this->expectExceptionMessage(sprintf('Structured output is not supported for %s', $model));
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('game_time', 'The tigers game time'),
+            new BooleanSchema('coat_required', 'whether a coat is required'),
+        ],
+    );
+
+    Prism::structured()
+        ->using(Provider::OpenAI, $model)
+        ->withSchema($schema)
+        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->generate();
+})->with([
+    'o1',
+    'o1-mini',
+    'o1-preview',
+]);
