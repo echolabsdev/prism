@@ -210,7 +210,7 @@ export default {
         {
           name: "Ollama",
           text: Supported,
-          structured: Adapted,
+          structured: Supported,
           embeddings: Supported,
           image: Supported,
           tools: Supported,
