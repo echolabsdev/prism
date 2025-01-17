@@ -6,12 +6,14 @@ namespace EchoLabs\Prism\Embeddings;
 
 use EchoLabs\Prism\Concerns\ConfiguresClient;
 use EchoLabs\Prism\Concerns\ConfiguresProviders;
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Exceptions\PrismException;
 
 class PendingRequest
 {
     use ConfiguresClient;
     use ConfiguresProviders;
+    use HasProviderMeta;
 
     protected string $input = '';
 

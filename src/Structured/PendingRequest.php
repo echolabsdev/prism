@@ -10,6 +10,7 @@ use EchoLabs\Prism\Concerns\ConfiguresProviders;
 use EchoLabs\Prism\Concerns\ConfiguresStructuredOutput;
 use EchoLabs\Prism\Concerns\HasMessages;
 use EchoLabs\Prism\Concerns\HasPrompts;
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Concerns\HasSchema;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -22,6 +23,7 @@ class PendingRequest
     use ConfiguresStructuredOutput;
     use HasMessages;
     use HasPrompts;
+    use HasProviderMeta;
     use HasSchema;
 
     public function generate(): Response

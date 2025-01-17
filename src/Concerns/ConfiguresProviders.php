@@ -16,9 +16,6 @@ trait ConfiguresProviders
 
     protected string $model;
 
-    /** @var array<string, array<string, mixed>> */
-    protected $providerMeta = [];
-
     public function using(string|ProviderEnum $provider, string $model): self
     {
         $this->providerKey = is_string($provider) ? $provider : $provider->value;
@@ -33,18 +30,6 @@ trait ConfiguresProviders
     public function provider(): Provider
     {
         return $this->provider;
-    }
-
-    /**
-     * @param  array<string, mixed>  $meta
-     */
-    public function withProviderMeta(string|ProviderEnum $provider, array $meta): self
-    {
-        $key = is_string($provider) ? $provider : $provider->value;
-
-        $this->providerMeta[$key] = $meta;
-
-        return $this;
     }
 
     /**
