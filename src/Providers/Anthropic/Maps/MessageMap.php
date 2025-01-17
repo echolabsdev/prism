@@ -70,7 +70,7 @@ class MessageMap
         return array_filter([
             'type' => 'text',
             'text' => $systemMessage->content,
-            'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null,
+            'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->value : $cacheType] : null,
         ]);
     }
 
@@ -95,7 +95,7 @@ class MessageMap
     protected static function mapUserMessage(UserMessage $message): array
     {
         $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
-        $cache_control = $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null;
+        $cache_control = $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->value : $cacheType] : null;
 
         return [
             'role' => 'user',
@@ -123,7 +123,7 @@ class MessageMap
             $content[] = array_filter([
                 'type' => 'text',
                 'text' => $message->content,
-                'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->name : $cacheType] : null,
+                'cache_control' => $cacheType ? ['type' => $cacheType instanceof UnitEnum ? $cacheType->value : $cacheType] : null,
             ]);
         }
 

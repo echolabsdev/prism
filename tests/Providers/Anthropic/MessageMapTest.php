@@ -185,7 +185,7 @@ it('sets the cache type on a UserMessage if cacheType providerMeta is set on mes
     ]]);
 })->with([
     'ephemeral',
-    AnthropicCacheType::ephemeral,
+    AnthropicCacheType::Ephemeral,
 ]);
 
 it('sets the cache type on a UserMessage image if cacheType providerMeta is set on message', function (): void {
@@ -224,13 +224,13 @@ it('sets the cache type on an AssistantMessage if cacheType providerMeta is set 
             [
                 'type' => 'text',
                 'text' => 'Who are you?',
-                'cache_control' => ['type' => AnthropicCacheType::ephemeral->name],
+                'cache_control' => ['type' => AnthropicCacheType::Ephemeral->value],
             ],
         ],
     ]]);
 })->with([
     'ephemeral',
-    AnthropicCacheType::ephemeral,
+    AnthropicCacheType::Ephemeral,
 ]);
 
 it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
@@ -240,10 +240,10 @@ it('sets the cache type on a SystemMessage if cacheType providerMeta is set on m
         [
             'type' => 'text',
             'text' => 'Who are you?',
-            'cache_control' => ['type' => AnthropicCacheType::ephemeral->name],
+            'cache_control' => ['type' => AnthropicCacheType::Ephemeral->value],
         ],
     ]);
 })->with([
     'ephemeral',
-    AnthropicCacheType::ephemeral,
+    AnthropicCacheType::Ephemeral,
 ]);

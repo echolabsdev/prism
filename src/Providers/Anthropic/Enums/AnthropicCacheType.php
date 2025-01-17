@@ -2,7 +2,7 @@
 
 namespace EchoLabs\Prism\Providers\Anthropic\Enums;
 
-enum AnthropicCacheType
+enum AnthropicCacheType: string
 {
-    case ephemeral;
+    case Ephemeral = 'ephemeral';
 }
