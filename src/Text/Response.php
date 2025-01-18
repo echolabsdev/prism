@@ -18,6 +18,7 @@ class Response
      * @param  Collection<int, Message>  $responseMessages
      * @param  ToolCall[]  $toolCalls
      * @param  ToolResult[]  $toolResults
+     * @param  Collection<int, Message>  $messages
      * @param  array{id: string, model: string}  $response
      */
     public function __construct(
@@ -29,5 +30,6 @@ class Response
         public readonly array $toolResults,
         public readonly Usage $usage,
         public readonly array $response,
+        public readonly Collection $messages,
     ) {}
 }

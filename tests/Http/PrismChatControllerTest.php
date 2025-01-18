@@ -36,7 +36,8 @@ it('handles chat requests successfully', function (): void {
         response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
         responseMessages: collect([
             new AssistantMessage("I'm Nyx!"),
-        ])
+        ]),
+        messages: collect(),
     );
 
     $generator->expects('generate')
@@ -103,7 +104,8 @@ it('handles streaming requests', function (): void {
         response: ['id' => 'cmp_asdf123', 'model' => 'gpt-4'],
         responseMessages: collect([
             new AssistantMessage("I'm Nyx!"),
-        ])
+        ]),
+        messages: collect(),
     );
 
     $generator->expects('generate')

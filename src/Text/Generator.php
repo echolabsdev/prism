@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
@@ -15,9 +14,6 @@ use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 class Generator
 {
     use CallsTools;
-
-    /** @var Message[] */
-    protected array $messages = [];
 
     protected ResponseBuilder $responseBuilder;
 
@@ -36,14 +32,12 @@ class Generator
         );
 
         $this->responseBuilder->addResponseMessage($responseMessage);
-        $this->messages[] = $responseMessage;
 
         $request = $request->addMessage($responseMessage);
 
         if ($response->finishReason === FinishReason::ToolCalls) {
             $toolResults = $this->callTools($request->tools, $response->toolCalls);
             $message = new ToolResultMessage($toolResults);
-            $this->messages[] = $message;
 
             $request = $request->addMessage($message);
         }
@@ -55,7 +49,7 @@ class Generator
             toolResults: $toolResults ?? [],
             usage: $response->usage,
             response: $response->response,
-            messages: $this->messages,
+            messages: $request->messages,
         ));
 
         if ($this->shouldContinue($request->maxSteps, $response)) {
