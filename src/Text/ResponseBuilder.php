@@ -50,6 +50,7 @@ class ResponseBuilder
             toolResults: $finalStep->toolResults,
             usage: $this->calculateTotalUsage(),
             response: $finalStep->response,
+            messages: collect($finalStep->messages),
         );
     }
 

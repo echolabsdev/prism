@@ -8,6 +8,8 @@ use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\PendingRequest;
 use EchoLabs\Prism\Text\Response;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Tests\TestDoubles\TestProvider;
@@ -218,4 +220,87 @@ test('it throws when using both prompt and messages', function (): void {
 
     expect(fn (): \EchoLabs\Prism\Text\Request => $pendingRequest->toRequest())
         ->toThrow(\EchoLabs\Prism\Exceptions\PrismException::class, 'You can only use `prompt` or `messages`');
+});
+
+test('it correctly builds message chain with tools', function (): void {
+    // First response triggers tool call
+    $toolCall = new ToolCall(
+        id: '123',
+        name: 'test-tool',
+        arguments: ['input' => 'test'],
+    );
+
+    $this->provider->withResponseChain([
+        // First response with tool call
+        new ProviderResponse(
+            text: 'First response',
+            toolCalls: [$toolCall],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::ToolCalls,
+            response: ['id' => '123', 'model' => 'test-model'],
+        ),
+        // Second response that continues the conversation
+        new ProviderResponse(
+            text: 'Final response',
+            toolCalls: [],
+            usage: new Usage(10, 10),
+            finishReason: FinishReason::Stop,
+            response: ['id' => '123', 'model' => 'test-model'],
+        ),
+    ]);
+
+    $tool = Tool::as('test-tool')
+        ->for('A test tool')
+        ->withStringParameter('input', 'Test input')
+        ->using(fn (string $input): string => "Tool response: {$input}");
+
+    $request = (new PendingRequest)
+        ->using('test-provider', 'test-model')
+        ->withTools([$tool])
+        ->withMaxSteps(2)
+        ->withPrompt('Use the test tool and continue the conversation');
+
+    $response = $request->generate();
+
+    // Test that we get both responses in the steps
+    expect($response->steps)
+        ->toHaveCount(2)
+        ->and($response->steps[0]->text)
+        ->toBe('First response')
+        ->and($response->steps[1]->text)
+        ->toBe('Final response');
+
+    // Test the complete message chain
+    // Test response messages
+    expect($response->responseMessages)->toHaveCount(2);
+
+    /** @var AssistantMessage */
+    $firstMessage = $response->responseMessages[0];
+    expect($firstMessage)
+        ->toBeInstanceOf(AssistantMessage::class)
+        ->and($firstMessage->content)->toBe('First response')
+        ->and($firstMessage->toolCalls)->toHaveCount(1)
+        ->and($firstMessage->toolCalls[0]->name)->toBe('test-tool');
+
+    /** @var AssistantMessage */
+    $secondMessage = $response->responseMessages[1];
+    expect($secondMessage)
+        ->toBeInstanceOf(AssistantMessage::class)
+        ->and($secondMessage->content)->toBe('Final response')
+        ->and($secondMessage->toolCalls)->toBeEmpty();
+
+    // Test that tool results were captured
+    expect($response->steps[0]->toolResults)
+        ->toHaveCount(1)
+        ->and($response->steps[0]->toolResults[0]->result)
+        ->toBe('Tool response: test');
+
+    expect($response->messages->toArray())
+        ->toHaveCount(4)
+        ->sequence(
+            fn ($message) => $message->toBeInstanceOf(UserMessage::class),
+            fn ($message) => $message->toBeInstanceOf(AssistantMessage::class),
+            fn ($message) => $message->toBeInstanceOf(ToolResultMessage::class),
+            fn ($message) => $message->toBeInstanceOf(AssistantMessage::class),
+        );
 });
