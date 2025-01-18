@@ -111,17 +111,28 @@ if (!isset($response->structured['required_field'])) {
 
 ## Common Settings
 
-Structured output supports all the same options as text generation, including:
-- Temperature control
-- Maximum tokens
-- Message history
-- Tools and function calling
-- System prompts
-- withClientOptions
-- withClientRetry
-- usingProviderConfig
+Structured output supports several configuration options to fine-tune your generations:
 
-See the [Text Generation](./text-generation.md) documentation for details on these common settings.
+### Model Configuration
+- `maxTokens` - Set the maximum number of tokens to generate
+- `temperature` - Control output randomness (provider-dependent)
+- `topP` - Alternative to temperature for controlling randomness (provider-dependent)
+
+### Input Methods
+- `withPrompt` - Single prompt for generation
+- `withMessages` - Message history for more context
+- `withSystemPrompt` - System-level instructions
+
+### Request Configuration 
+- `withClientOptions` - Set HTTP client options (e.g., timeouts)
+- `withClientRetry` - Configure automatic retries on failures
+- `usingProviderConfig` - Override provider configuration
+- `withProviderMeta` - Set provider-specific options
+
+> [!NOTE]
+> Unlike text generation, structured output does not support tools/function calling. For those features, use the text generation API instead.
+
+See the [Text Generation](./text-generation.md) documentation for comparison with standard text generation capabilities.
 
 ## Error Handling
 
