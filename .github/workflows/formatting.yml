@@ -27,6 +27,11 @@ jobs:
       - name: Install composer dependencies
         uses: ramsey/composer-install@v3
 
+      - name: Install aspell
+        run: |
+          apt-get update
+          apt-get install -y aspell
+
       - name: Run Pint
         run: |
           vendor/bin/pint
