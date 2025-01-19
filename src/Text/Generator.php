@@ -7,9 +7,9 @@ namespace EchoLabs\Prism\Text;
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 class Generator
 {
@@ -48,7 +48,7 @@ class Generator
             toolCalls: $response->toolCalls,
             toolResults: $toolResults ?? [],
             usage: $response->usage,
-            response: $response->response,
+            responseMeta: $response->responseMeta,
             messages: $request->messages,
         ));
 

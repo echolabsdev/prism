@@ -49,7 +49,7 @@ class ResponseBuilder
             toolCalls: $finalStep->toolCalls,
             toolResults: $finalStep->toolResults,
             usage: $this->calculateTotalUsage(),
-            response: $finalStep->response,
+            responseMeta: $finalStep->responseMeta,
             messages: collect($finalStep->messages),
         );
     }

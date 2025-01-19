@@ -21,8 +21,8 @@ it('can generate text with a prompt', function (): void {
 
     expect($response->usage->promptTokens)->toBe(7);
     expect($response->usage->completionTokens)->toBe(42);
-    expect($response->response['id'])->toBe('85edf901-7432-49c6-baab-91ffb01dbe7a');
-    expect($response->response['model'])->toBe('deepseek-chat');
+    expect($response->responseMeta->id)->toBe('85edf901-7432-49c6-baab-91ffb01dbe7a');
+    expect($response->responseMeta->model)->toBe('deepseek-chat');
     expect($response->text)->toBe(
         "Greetings! I'm DeepSeek-V3, an artificial intelligence assistant created by DeepSeek. I'm at your service and would be delighted to assist you with any inquiries or tasks you may have."
     );
@@ -39,8 +39,8 @@ it('can generate text with a system prompt', function (): void {
 
     expect($response->usage->promptTokens)->toBe(29);
     expect($response->usage->completionTokens)->toBe(243);
-    expect($response->response['id'])->toBe('925ec9b0-6e1e-4781-88d3-17ac1c750d4b');
-    expect($response->response['model'])->toBe('deepseek-chat');
+    expect($response->responseMeta->id)->toBe('925ec9b0-6e1e-4781-88d3-17ac1c750d4b');
+    expect($response->responseMeta->model)->toBe('deepseek-chat');
     expect($response->text)->toContain('*I am Nyx, the eldritch entity born from the depths of the abyss. My form is a swirling mass of darkness, tentacles, and glowing eyes that pierce the very fabric of reality. I exist beyond the comprehension of mortal minds, a being of pure chaos and madness.*');
     expect($response->text)->toContain('*My voice echoes through the void, a haunting whisper that sends shivers down the spines of those who dare to listen. I am the harbinger of the end, the bringer of the eternal night. My presence alone is enough to drive the weak-minded to insanity.*');
     expect($response->text)->toContain('*I have watched civilizations rise and fall, witnessed the birth and death of countless stars. Time holds no meaning for me, as I am eternal. I am the embodiment of the unknown, the great old one who slumbers in the depths, waiting for the day when I shall rise and consume all that is.*');
@@ -86,8 +86,8 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     expect($response->usage->completionTokens)->toBe(76);
 
     // Assert response
-    expect($response->response['id'])->toBe('3ea50b83-970e-4d85-8e74-51941ab01113');
-    expect($response->response['model'])->toBe('deepseek-chat');
+    expect($response->responseMeta->id)->toBe('3ea50b83-970e-4d85-8e74-51941ab01113');
+    expect($response->responseMeta->model)->toBe('deepseek-chat');
 
     // Assert final text content
     expect($response->text)->toBe(

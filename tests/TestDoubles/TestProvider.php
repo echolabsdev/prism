@@ -8,10 +8,11 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 class TestProvider implements Provider
@@ -41,7 +42,7 @@ class TestProvider implements Provider
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620')
         );
     }
 
@@ -57,7 +58,7 @@ class TestProvider implements Provider
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'claude-3-5-sonnet-20240620']
+            responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620')
         );
     }
 

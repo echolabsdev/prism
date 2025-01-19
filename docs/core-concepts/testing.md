@@ -10,6 +10,7 @@ First, let's look at how to set up basic response faking:
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 
@@ -20,7 +21,7 @@ it('can generate text', function () {
         toolCalls: [],
         usage: new Usage(10, 20),
         finishReason: FinishReason::Stop,
-        response: ['id' => 'fake-1', 'model' => 'fake-model']
+        responseMeta: new ResponseMeta('fake-1', 'fake-model')
     );
 
     // Set up the fake
@@ -43,6 +44,7 @@ When testing conversations or tool usage, you might need to simulate multiple re
 
 ```php
 use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Providers\ProviderResponse;
 
 it('can handle tool calls', function () {
@@ -58,14 +60,14 @@ it('can handle tool calls', function () {
             ],
             usage: new Usage(15, 25),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => 'fake-1', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-1', 'fake-model')
         ),
         new ProviderResponse(
             text: 'Here are the latest news...',
             toolCalls: [],
             usage: new Usage(20, 30),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake-2', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-2', 'fake-model')
         ),
     ];
 
@@ -81,6 +83,7 @@ When testing tools, you'll want to verify both the tool calls and their results.
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Providers\ProviderResponse;
 
 it('can use weather tool', function () {
@@ -98,7 +101,7 @@ it('can use weather tool', function () {
             ],
             usage: new Usage(15, 25),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => 'fake-1', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-1', 'fake-model')
         ),
         // Second response: AI uses the tool result to form a response
         new ProviderResponse(
@@ -106,7 +109,7 @@ it('can use weather tool', function () {
             toolCalls: [],
             usage: new Usage(20, 30),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake-2', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-2', 'fake-model')
         ),
     ];
 
@@ -150,6 +153,7 @@ it('can use weather tool', function () {
 ```php
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Schema\ObjectSchema;
@@ -174,7 +178,7 @@ it('can generate structured response', function () {
         toolCalls: [],
         usage: new Usage(10, 20),
         finishReason: FinishReason::Stop,
-        response: ['id' => 'fake-1', 'model' => 'fake-model']
+        responseMeta: new ResponseMeta('fake-1', 'fake-model')
     );
 
     $fake = Prism::fake([$fakeResponse]);

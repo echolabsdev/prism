@@ -6,13 +6,13 @@ namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 class Step
 {
     /**
      * @param  array<mixed>  $object
-     * @param  array{id: string, model: string}  $response
      * @param  Message[]  $messages
      */
     public function __construct(
@@ -20,7 +20,7 @@ class Step
         public readonly ?array $object,
         public readonly FinishReason $finishReason,
         public readonly Usage $usage,
-        public readonly array $response,
+        public readonly ResponseMeta $responseMeta,
         public readonly array $messages,
     ) {}
 }

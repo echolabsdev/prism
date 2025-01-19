@@ -7,8 +7,9 @@ namespace EchoLabs\Prism\Providers\Gemini\Handlers;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -49,10 +50,10 @@ class Text
                 data_get($data, 'usageMetadata.candidatesTokenCount', 0)
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'candidates.0.finishReason')),
-            response: [
-                'id' => data_get($data, 'id'),
-                'model' => data_get($data, 'modelVersion'),
-            ]
+            responseMeta: new ResponseMeta(
+                id: data_get($data, 'id', ''),
+                model: data_get($data, 'modelVersion'),
+            )
         );
     }
 

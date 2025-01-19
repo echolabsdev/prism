@@ -10,9 +10,9 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Structured;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Text;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 

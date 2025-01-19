@@ -9,7 +9,10 @@ use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\PendingRequest;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\Structured\Response;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use Illuminate\Support\Facades\App;
 
 beforeEach(function (): void {
@@ -109,17 +112,17 @@ test('it generates and delegates to generator', function (): void {
         ->withPrompt('Test prompt');
 
     $provider->shouldReceive('structured')->once()->andReturn(
-        new \EchoLabs\Prism\Providers\ProviderResponse(
+        new ProviderResponse(
             text: json_encode(['test', 'description']),
             toolCalls: [],
             usage: new \EchoLabs\Prism\ValueObjects\Usage(1, 1),
             finishReason: \EchoLabs\Prism\Enums\FinishReason::Stop,
-            response: ['id' => 'test', 'model' => 'test']
+            responseMeta: new ResponseMeta('test', 'test'),
         )
     );
 
     $response = $request->generate();
 
     expect($response)
-        ->toBeInstanceOf(\EchoLabs\Prism\Structured\Response::class);
+        ->toBeInstanceOf(Response::class);
 });

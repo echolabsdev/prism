@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\XAI\Handlers;
 
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Providers\XAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -49,10 +50,10 @@ class Text
                 data_get($data, 'usage.completion_tokens'),
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
-            response: [
-                'id' => data_get($data, 'id'),
-                'model' => data_get($data, 'model'),
-            ]
+            responseMeta: new ResponseMeta(
+                id: data_get($data, 'id'),
+                model: data_get($data, 'model'),
+            )
         );
     }
 

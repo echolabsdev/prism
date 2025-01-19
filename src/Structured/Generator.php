@@ -7,8 +7,8 @@ namespace EchoLabs\Prism\Structured;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 class Generator
 {
@@ -31,7 +31,7 @@ class Generator
             object: $this->decodeObject($response->text),
             finishReason: $response->finishReason,
             usage: $response->usage,
-            response: $response->response,
+            responseMeta: $response->responseMeta,
             messages: $this->messages,
         ));
 
