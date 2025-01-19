@@ -8,6 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\DeepSeek\DeepSeek;
 use EchoLabs\Prism\Providers\Gemini\Gemini;
 use EchoLabs\Prism\Providers\Groq\Groq;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
@@ -118,6 +119,16 @@ class PrismManager
         return new Anthropic(
             $config['api_key'],
             $config['version'],
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createDeepseekProvider(array $config): DeepSeek
+    {
+        return new DeepSeek(
+            apiKey: $config['api_key'] ?? '',
         );
     }
 

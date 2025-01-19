@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Enums;
 enum Provider: string
 {
     case Anthropic = 'anthropic';
+    case DeepSeek = 'deepseek';
     case Ollama = 'ollama';
     case OpenAI = 'openai';
     case Mistral = 'mistral';
