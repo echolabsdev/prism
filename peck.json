@@ -1,0 +1,19 @@
+{
+  "preset": "laravel",
+  "ignore": {
+    "words": [
+      "php",
+      "embeddings",
+      "xai",
+      "fn",
+      "groq",
+      "args",
+      "deepseek",
+      "ollama",
+      "anthropic",
+      "openai",
+      "unresolveable"
+    ],
+    "paths": []
+  }
+}
