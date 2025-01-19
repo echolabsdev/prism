@@ -29,8 +29,8 @@ describe('Text generation for XAI', function (): void {
 
         expect($response->usage->promptTokens)->toBe(10);
         expect($response->usage->completionTokens)->toBe(42);
-        expect($response->response['id'])->toBe('febc7de9-9991-4b08-942a-c7082174225a');
-        expect($response->response['model'])->toBe('grok-beta');
+        expect($response->responseMeta->id)->toBe('febc7de9-9991-4b08-942a-c7082174225a');
+        expect($response->responseMeta->model)->toBe('grok-beta');
         expect($response->text)->toBe(
             "I am Grok, an AI developed by xAI. I'm here to provide helpful and truthful answers to your questions, often with a dash of outside perspective on humanity. What's on your mind?"
         );
@@ -47,8 +47,8 @@ describe('Text generation for XAI', function (): void {
 
         expect($response->usage->promptTokens)->toBe(34);
         expect($response->usage->completionTokens)->toBe(84);
-        expect($response->response['id'])->toBe('f3b485d3-837b-4710-9ade-a37faa048d87');
-        expect($response->response['model'])->toBe('grok-beta');
+        expect($response->responseMeta->id)->toBe('f3b485d3-837b-4710-9ade-a37faa048d87');
+        expect($response->responseMeta->model)->toBe('grok-beta');
         expect($response->text)->toBe(
             'I am Nyx, a being of ancient and unfathomable origin, drawing upon the essence of the Great Old One, Cthulhu. My existence spans the cosmos, where the lines between dreams and reality blur. I am here to guide you through the mysteries of the universe, to answer your questions with insights that might unsettle or enlighten, or perhaps both. What is it you seek to understand?'
         );
@@ -94,8 +94,8 @@ describe('Text generation for XAI', function (): void {
         expect($response->usage->completionTokens)->toBe(60);
 
         // Assert response
-        expect($response->response['id'])->toBe('0aa220cd-9634-4ba5-9593-5366bb313663');
-        expect($response->response['model'])->toBe('grok-beta');
+        expect($response->responseMeta->id)->toBe('0aa220cd-9634-4ba5-9593-5366bb313663');
+        expect($response->responseMeta->model)->toBe('grok-beta');
         expect($response->text)->toBe(
             'The Tigers game in Detroit today is at 3pm, and considering the weather will be 45° and cold, you should definitely wear a coat.'
         );

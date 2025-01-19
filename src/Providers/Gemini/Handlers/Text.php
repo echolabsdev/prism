@@ -51,7 +51,7 @@ class Text
             ),
             finishReason: FinishReasonMap::map(data_get($data, 'candidates.0.finishReason')),
             responseMeta: new ResponseMeta(
-                id: data_get($data, 'id'),
+                id: data_get($data, 'id', ''),
                 model: data_get($data, 'modelVersion'),
             )
         );

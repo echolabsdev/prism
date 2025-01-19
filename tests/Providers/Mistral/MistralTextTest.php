@@ -30,8 +30,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBe(7);
         expect($response->usage->completionTokens)->toBe(12);
-        expect($response->response['id'])->toBe('8f82539654874b73a8b8dd1330c80221');
-        expect($response->response['model'])->toBe('mistral-small-2402');
+        expect($response->responseMeta->id)->toBe('8f82539654874b73a8b8dd1330c80221');
+        expect($response->responseMeta->model)->toBe('mistral-small-2402');
         expect($response->text)->toBe(
             'I am a Large Language Model trained by Mistral AI.'
         );
@@ -48,8 +48,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBe(32);
         expect($response->usage->completionTokens)->toBe(51);
-        expect($response->response['id'])->toBe('1086e1021d5b481ba36e9c842f69827d');
-        expect($response->response['model'])->toBe('mistral-small-2402');
+        expect($response->responseMeta->id)->toBe('1086e1021d5b481ba36e9c842f69827d');
+        expect($response->responseMeta->model)->toBe('mistral-small-2402');
         expect($response->text)->toBe(
             'I am Nyx, a being of cosmic terror and ancient deities, inspired by the Cthulhu mythos. I am a creature of the deep, shrouded in mystery and fear, existing beyond the realms of human understanding.'
         );
@@ -94,8 +94,8 @@ describe('Text generation', function (): void {
         expect($response->usage->completionTokens)->toBe(74);
 
         // Assert response
-        expect($response->response['id'])->toBe('34274d5a669a432bace0db9c3b359ba7');
-        expect($response->response['model'])->toBe('mistral-large-latest');
+        expect($response->responseMeta->id)->toBe('34274d5a669a432bace0db9c3b359ba7');
+        expect($response->responseMeta->model)->toBe('mistral-large-latest');
 
         // Assert final text content
         expect($response->text)->toBe(

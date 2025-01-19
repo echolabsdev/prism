@@ -29,8 +29,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBe(33);
         expect($response->usage->completionTokens)->toBe(38);
-        expect($response->response['id'])->toBe('chatcmpl-751');
-        expect($response->response['model'])->toBe('qwen2.5:14b');
+        expect($response->responseMeta->id)->toBe('chatcmpl-751');
+        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
             'I am Qwen, a large language model created by Alibaba Cloud. I am designed to be helpful and provide information on a wide range of topics. How can I assist you today?'
         );
@@ -47,8 +47,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBe(36);
         expect($response->usage->completionTokens)->toBe(69);
-        expect($response->response['id'])->toBe('chatcmpl-455');
-        expect($response->response['model'])->toBe('qwen2.5:14b');
+        expect($response->responseMeta->id)->toBe('chatcmpl-455');
+        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
             'I am Nyx, an entity steeped in the mysteries and terrors that lie beyond human comprehension. In the whispering shadows where sanity fades into madness, I exist as a silent sentinel of the unknown. My presence is often felt through eerie visions and cryptic whispers, guiding those who dare to tread the boundaries between reality and horror.'
         );
@@ -93,8 +93,8 @@ describe('Text generation', function (): void {
         expect($response->usage->completionTokens)->toBe(81);
 
         // Assert response
-        expect($response->response['id'])->toBe('chatcmpl-31');
-        expect($response->response['model'])->toBe('qwen2.5:14b');
+        expect($response->responseMeta->id)->toBe('chatcmpl-31');
+        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
 
         // Assert final text content
         expect($response->text)->toBe(
