@@ -6,11 +6,11 @@ namespace Tests\Unit\Structured;
 
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Generator;
 use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\Testing\PrismFake;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 it('generates structured responses', function (): void {

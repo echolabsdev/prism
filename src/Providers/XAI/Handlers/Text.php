@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\XAI\Handlers;
 
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Providers\XAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;

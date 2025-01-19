@@ -7,10 +7,10 @@ namespace EchoLabs\Prism;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\PendingRequest as PendingEmbeddingRequest;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\PendingRequest as PendingStructuredRequest;
 use EchoLabs\Prism\Testing\PrismFake;
 use EchoLabs\Prism\Text\PendingRequest as PendingTextRequest;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 class Prism
 {

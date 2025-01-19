@@ -109,7 +109,7 @@ test('it generates and delegates to generator', function (): void {
         ->withPrompt('Test prompt');
 
     $provider->shouldReceive('structured')->once()->andReturn(
-        new \EchoLabs\Prism\Providers\ProviderResponse(
+        new \EchoLabs\Prism\ValueObjects\ProviderResponse(
             text: json_encode(['test', 'description']),
             toolCalls: [],
             usage: new \EchoLabs\Prism\ValueObjects\Usage(1, 1),

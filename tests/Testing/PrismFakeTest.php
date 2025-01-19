@@ -9,12 +9,12 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 

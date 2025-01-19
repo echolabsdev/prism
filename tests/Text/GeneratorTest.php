@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Text\PendingRequest;
 use EchoLabs\Prism\Text\Response;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Tests\TestDoubles\TestProvider;

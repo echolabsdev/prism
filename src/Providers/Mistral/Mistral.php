@@ -9,9 +9,9 @@ use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Providers\Mistral\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Mistral\Handlers\Text;
-use EchoLabs\Prism\Providers\ProviderResponse;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 

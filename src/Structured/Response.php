@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
@@ -15,7 +16,6 @@ class Response
      * @param  Collection<int, Step>  $steps
      * @param  Collection<int, Message>  $responseMessages
      * @param  array<mixed>  $structured
-     * @param  array{id: string, model: string}  $response
      */
     public function __construct(
         public readonly Collection $steps,
@@ -24,6 +24,6 @@ class Response
         public readonly ?array $structured,
         public readonly FinishReason $finishReason,
         public readonly Usage $usage,
-        public readonly array $response,
+        public readonly ResponseMeta $responseMeta,
     ) {}
 }

@@ -52,7 +52,7 @@ class ResponseBuilder
                 : [],
             finishReason: $finalStep->finishReason,
             usage: $this->calculateTotalUsage(),
-            response: $finalStep->response,
+            responseMeta: $finalStep->responseMeta,
         );
     }
 
