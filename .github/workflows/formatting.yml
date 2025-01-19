@@ -29,8 +29,8 @@ jobs:
 
       - name: Install aspell
         run: |
-          apt-get update
-          apt-get install -y aspell
+          sudo apt-get update
+          sudo apt-get install -y aspell
 
       - name: Run Pint
         run: |
