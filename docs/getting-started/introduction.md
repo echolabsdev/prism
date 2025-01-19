@@ -77,6 +77,7 @@ Prism draws significant inspiration from the [Vercel AI SDK](https://sdk.vercel.
 We currently offer first-party support for these leading AI providers:
 
 - [Anthropic](https://anthropic.com)
+- [DeepSeek]('https://deepseek.com')
 - [Groq](https://groq.com)
 - [Mistral](https://mistral.ai)
 - [Ollama](https://ollama.com)

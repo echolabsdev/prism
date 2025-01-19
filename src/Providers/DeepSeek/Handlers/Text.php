@@ -25,18 +25,16 @@ class Text
     {
         try {
             $response = $this->sendRequest($request);
+            $data = $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
 
-        $data = $response->json();
-
-        if (! $data || data_get($data, 'error')) {
+        if (! $data) {
             throw PrismException::providerResponseError(vsprintf(
-                'DeepSeek Error:  [%s] %s',
+                'DeepSeek Error: %s',
                 [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
+                    (string) $response->getBody(),
                 ]
             ));
         }

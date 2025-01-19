@@ -184,6 +184,14 @@ export default {
           tools: Planned,
         },
         {
+          name: "DeepSeek",
+          text: Supported,
+          structured: Planned,
+          embeddings: Unsupported,
+          image: Unsupported,
+          tools: Supported,
+        },
+        {
           name: "Gemini",
           text: Supported,
           structured: Planned,
