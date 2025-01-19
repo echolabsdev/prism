@@ -134,6 +134,10 @@ export default defineConfig({
                 link: "/providers/anthropic",
               },
               {
+                text: "DeepSeek",
+                link: "/providers/deepseek",
+              },
+              {
                 text: "Groq",
                 link: "/providers/groq",
               },
