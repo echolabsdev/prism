@@ -20,6 +20,7 @@ class Anthropic implements Provider
     public function __construct(
         #[\SensitiveParameter] public readonly string $apiKey,
         public readonly string $apiVersion,
+        public readonly ?string $betaFeatures = null
     ) {}
 
     #[\Override]
@@ -56,10 +57,11 @@ class Anthropic implements Provider
      */
     protected function client(array $options = [], array $retry = []): PendingRequest
     {
-        return Http::withHeaders([
+        return Http::withHeaders(array_filter([
             'x-api-key' => $this->apiKey,
             'anthropic-version' => $this->apiVersion,
-        ])
+            'anthropic-beta' => $this->betaFeatures,
+        ]))
             ->withOptions($options)
             ->retry(...$retry)
             ->baseUrl('https://api.anthropic.com/v1');

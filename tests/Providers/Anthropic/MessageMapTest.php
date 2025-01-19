@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -17,6 +19,18 @@ use InvalidArgumentException;
 it('maps user messages', function (): void {
     expect(MessageMap::map([
         new UserMessage('Who are you?'),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            ['type' => 'text', 'text' => 'Who are you?'],
+        ],
+    ]]);
+});
+
+it('filters system messages out when calling map', function (): void {
+    expect(MessageMap::map([
+        new UserMessage('Who are you?'),
+        new SystemMessage('I am Groot.'),
     ]))->toBe([[
         'role' => 'user',
         'content' => [
@@ -73,7 +87,12 @@ it('maps assistant message', function (): void {
         new AssistantMessage('I am Nyx'),
     ]))->toContain([
         'role' => 'assistant',
-        'content' => 'I am Nyx',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'I am Nyx',
+            ],
+        ],
     ]);
 });
 
@@ -136,10 +155,95 @@ it('maps tool result messages', function (): void {
 });
 
 it('maps system messages', function (): void {
+    expect(MessageMap::mapSystemMessages(
+        [new SystemMessage('Who are you?'), new UserMessage('I am rocket.')],
+        'I am Thanos. Me first.'
+    ))->toBe([
+        [
+            'type' => 'text',
+            'text' => 'I am Thanos. Me first.',
+        ],
+        [
+            'type' => 'text',
+            'text' => 'Who are you?',
+        ],
+    ]);
+});
+
+it('sets the cache type on a UserMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
     expect(MessageMap::map([
-        new SystemMessage('Who are you?'),
+        (new UserMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
     ]))->toBe([[
         'role' => 'user',
-        'content' => 'Who are you?',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+        ],
+    ]]);
+})->with([
+    'ephemeral',
+    AnthropicCacheType::Ephemeral,
+]);
+
+it('sets the cache type on a UserMessage image if cacheType providerMeta is set on message', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'Who are you?',
+            additionalContent: [Image::fromPath('tests/Fixtures/test-image.png')]
+        ))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+            [
+                'type' => 'image',
+                'source' => [
+                    'type' => 'base64',
+                    'media_type' => 'image/png',
+                    'data' => base64_encode(file_get_contents('tests/Fixtures/test-image.png')),
+                ],
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+        ],
     ]]);
 });
+
+it('sets the cache type on an AssistantMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
+    expect(MessageMap::map([
+        (new AssistantMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
+    ]))->toBe([[
+        'role' => 'assistant',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'Who are you?',
+                'cache_control' => ['type' => AnthropicCacheType::Ephemeral->value],
+            ],
+        ],
+    ]]);
+})->with([
+    'ephemeral',
+    AnthropicCacheType::Ephemeral,
+]);
+
+it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
+    expect(MessageMap::mapSystemMessages([
+        (new SystemMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
+    ], null))->toBe([
+        [
+            'type' => 'text',
+            'text' => 'Who are you?',
+            'cache_control' => ['type' => AnthropicCacheType::Ephemeral->value],
+        ],
+    ]);
+})->with([
+    'ephemeral',
+    AnthropicCacheType::Ephemeral,
+]);
