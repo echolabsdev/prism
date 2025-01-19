@@ -67,4 +67,13 @@ class PrismException extends Exception
             $responseText
         ));
     }
+
+    public static function unsupportedProviderAction(string $method, string $provider): self
+    {
+        return new self(sprintf(
+            '%s is not supported by %s',
+            ucfirst($method),
+            $provider,
+        ));
+    }
 }

@@ -8,6 +8,7 @@ use EchoLabs\Prism\Contracts\Provider as ContractsProvider;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\DeepSeek\DeepSeek;
 use EchoLabs\Prism\Providers\Gemini\Gemini;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
@@ -56,6 +57,13 @@ it('can resolve Gemini', function (): void {
 
     expect($manager->resolve(Provider::Gemini))->toBeInstanceOf(Gemini::class);
     expect($manager->resolve('gemini'))->toBeInstanceOf(Gemini::class);
+});
+
+it('can resolve DeepSeek', function (): void {
+    $manager = new PrismManager($this->app);
+
+    expect($manager->resolve(Provider::DeepSeek))->toBeInstanceOf(DeepSeek::class);
+    expect($manager->resolve('deepseek'))->toBeInstanceOf(DeepSeek::class);
 });
 
 it('allows for custom provider configuration', function (): void {
