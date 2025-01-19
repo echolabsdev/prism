@@ -13,6 +13,7 @@ use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use PHPUnit\Framework\Assert as PHPUnit;
@@ -42,7 +43,7 @@ class PrismFake implements Provider
             toolCalls: [],
             usage: new Usage(0, 0),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake', 'model' => 'fake']
+            responseMeta: new ResponseMeta('fake', 'fake')
         );
     }
 
@@ -67,7 +68,7 @@ class PrismFake implements Provider
             toolCalls: [],
             usage: new Usage(0, 0),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake', 'model' => 'fake']
+            responseMeta: new ResponseMeta('fake', 'fake')
         );
     }
 

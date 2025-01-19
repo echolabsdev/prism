@@ -11,6 +11,7 @@ use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\Testing\PrismFake;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 it('generates structured responses', function (): void {
@@ -21,7 +22,7 @@ it('generates structured responses', function (): void {
             toolCalls: [],
             usage: new Usage(10, 20),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake-1', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
         ),
     ]);
 
@@ -77,7 +78,7 @@ it('handles invalid JSON responses', function (): void {
             toolCalls: [],
             usage: new Usage(5, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake-2', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
         ),
     ]);
 
@@ -121,7 +122,7 @@ it('tracks provider responses properly', function (): void {
             toolCalls: [],
             usage: new Usage(5, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => 'fake-3', 'model' => 'fake-model']
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
         ),
     ]);
 

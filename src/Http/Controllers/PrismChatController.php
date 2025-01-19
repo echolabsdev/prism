@@ -46,10 +46,10 @@ class PrismChatController
             $response = $generator->generate();
 
             $chunk = [
-                'id' => $response->response['id'],
+                'id' => $response->responseMeta->id,
                 'object' => 'chat.completion.chunk',
                 'created' => now()->timestamp,
-                'model' => $response->response['model'],
+                'model' => $response->responseMeta->model,
                 'choices' => [[
                     'delta' => [
                         'role' => 'assistant',
@@ -84,10 +84,10 @@ class PrismChatController
         $response = $generator->generate();
 
         $data = [
-            'id' => $response->response['id'],
+            'id' => $response->responseMeta->id,
             'object' => 'chat.completion',
             'created' => now()->timestamp,
-            'model' => $response->response['model'],
+            'model' => $response->responseMeta->model,
             'usage' => [
                 'prompt_tokens' => $response->usage->promptTokens,
                 'completion_tokens' => $response->usage->completionTokens,

@@ -10,6 +10,7 @@ use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Tests\TestDoubles\TestProvider;
@@ -53,7 +54,7 @@ test('it can handle tool calls', function (): void {
             toolCalls: [$toolCall],
             usage: new Usage(10, 10),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         )
     );
 
@@ -86,14 +87,14 @@ test('it continues generating until max steps or stop', function (): void {
             toolCalls: [$toolCall],
             usage: new Usage(10, 10),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
         new ProviderResponse(
             text: 'Final response',
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
     ]);
 
@@ -132,14 +133,14 @@ test('it continues generating until max steps', function (): void {
             toolCalls: [$toolCall],
             usage: new Usage(10, 10),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
         new ProviderResponse(
             text: 'Final response',
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
     ]);
 
@@ -184,14 +185,14 @@ test('it stops at max steps even without stop finish reason', function (): void 
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Length,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
         new ProviderResponse(
             text: 'Response 2',
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Length,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
     ]);
 
@@ -237,7 +238,7 @@ test('it correctly builds message chain with tools', function (): void {
             toolCalls: [$toolCall],
             usage: new Usage(10, 10),
             finishReason: FinishReason::ToolCalls,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
         // Second response that continues the conversation
         new ProviderResponse(
@@ -245,7 +246,7 @@ test('it correctly builds message chain with tools', function (): void {
             toolCalls: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            response: ['id' => '123', 'model' => 'test-model'],
+            responseMeta: new ResponseMeta('123', 'test-model'),
         ),
     ]);
 
