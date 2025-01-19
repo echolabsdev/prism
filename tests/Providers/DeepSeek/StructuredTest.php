@@ -10,7 +10,7 @@ use EchoLabs\Prism\Schema\StringSchema;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
-    FixtureResponse::recordResponses('v1/chat/completions', 'deepseek/structured');
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'deepseek/structured');
 
     $schema = new ObjectSchema(
         'output',
