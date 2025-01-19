@@ -186,7 +186,7 @@ export default {
         {
           name: "DeepSeek",
           text: Supported,
-          structured: Planned,
+          structured: Supported,
           embeddings: Unsupported,
           image: Unsupported,
           tools: Supported,

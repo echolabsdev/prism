@@ -10,10 +10,6 @@
 ## Provider-specific options
 
 ## Limitations
-### Structured Ouput
-
-Does not support structured output.
-
 ### Embeddings
 
 Does not support embeddings.

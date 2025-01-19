@@ -9,6 +9,7 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\DeepSeek\Handlers\Structured;
 use EchoLabs\Prism\Providers\DeepSeek\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
@@ -36,7 +37,12 @@ class DeepSeek implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        throw PrismException::unsupportedProviderAction(__FUNCTION__, class_basename($this));
+        $handler = new Structured($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
     }
 
     #[\Override]
