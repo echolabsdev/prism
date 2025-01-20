@@ -228,7 +228,7 @@ class SearchTool extends Tool
 
 ## Tool Choice Options
 
-You can control how the AI uses tools with the `toolChoice` method:
+You can control how the AI uses tools with the `withToolChoice` method:
 ```php
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
@@ -239,11 +239,11 @@ $prism = Prism::text()
     ->withPrompt('How is the weather in Paris?')
     ->withTools([$weatherTool])
     // Let the AI decide whether to use tools
-    ->toolChoice(ToolChoice::Auto)
+    ->withToolChoice(ToolChoice::Auto)
     // Force the AI to use a tool
-    ->toolChoice(ToolChoice::Any)
+    ->withToolChoice(ToolChoice::Any)
     // Force the AI to use a specific tool
-    ->toolChoice('weather');
+    ->withToolChoice('weather');
 ```
 
 > [!WARNING]
