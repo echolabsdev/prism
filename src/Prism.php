@@ -8,6 +8,7 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\PendingRequest as PendingEmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
+use EchoLabs\Prism\Stream\PendingRequest as PendingStreamRequest;
 use EchoLabs\Prism\Structured\PendingRequest as PendingStructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Testing\PrismFake;
@@ -43,6 +44,11 @@ class Prism
     public static function text(): PendingTextRequest
     {
         return new PendingTextRequest;
+    }
+
+    public static function stream(): PendingStreamRequest
+    {
+        return new PendingStreamRequest;
     }
 
     public static function structured(): PendingStructuredRequest

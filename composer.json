@@ -39,7 +39,8 @@
     "mockery/mockery": "^1.6",
     "symplify/rule-doc-generator-contracts": "^11.2",
     "phpstan/phpdoc-parser": "^1.24",
-    "peckphp/peck": "^0.1.1"
+    "peckphp/peck": "^0.1.1",
+    "spatie/laravel-ray": "^1.39"
   },
   "autoload-dev": {
     "psr-4": {
