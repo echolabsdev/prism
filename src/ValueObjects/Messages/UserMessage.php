@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\ValueObjects\Messages;
 
 use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Text;
 
@@ -14,7 +15,7 @@ class UserMessage implements Message
     use HasProviderMeta;
 
     /**
-     * @param  array<int, Text|Image>  $additionalContent
+     * @param  array<int, Text|Image|Document>  $additionalContent
      */
     public function __construct(
         protected readonly string $content,
@@ -41,6 +42,18 @@ class UserMessage implements Message
     {
         return collect($this->additionalContent)
             ->where(fn ($part): bool => $part instanceof Image)
+            ->toArray();
+    }
+
+    /**
+     * Note: Prism currently only supports Documents with Anthropic.
+     *
+     * @return Document[]
+     */
+    public function documents(): array
+    {
+        return collect($this->additionalContent)
+            ->where(fn ($part): bool => $part instanceof Document)
             ->toArray();
     }
 }
