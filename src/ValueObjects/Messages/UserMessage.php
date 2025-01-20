@@ -47,7 +47,7 @@ class UserMessage implements Message
 
     /**
      * Note: Prism currently only supports Documents with Anthropic.
-     * 
+     *
      * @return Document[]
      */
     public function documents(): array
