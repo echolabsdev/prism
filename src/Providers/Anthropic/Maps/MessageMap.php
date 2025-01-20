@@ -175,16 +175,14 @@ class MessageMap
      */
     protected static function mapDocumentParts(array $parts, ?array $cache_control = null): array
     {
-        return array_map(function (Document $document) use ($cache_control): array {
-            return array_filter([
-                'type' => 'document',
-                'source' => [
-                    'type' => 'base64',
-                    'media_type' => $document->mimeType,
-                    'data' => $document->document,
-                ],
-                'cache_control' => $cache_control,
-            ]);
-        }, $parts);
+        return array_map(fn(Document $document): array => array_filter([
+            'type' => 'document',
+            'source' => [
+                'type' => 'base64',
+                'media_type' => $document->mimeType,
+                'data' => $document->document,
+            ],
+            'cache_control' => $cache_control,
+        ]), $parts);
     }
 }

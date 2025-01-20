@@ -77,7 +77,7 @@ it('maps user messages with images from base64', function (): void {
 it('maps user messages with documents from path', function (): void {
     $mappedMessage = MessageMap::map([
         new UserMessage('Here is the document', [
-            Document::fromPath('tests/Fixtures/test-pdf.pdf', 'application/pdf'),
+            Document::fromPath('tests/Fixtures/test-pdf.pdf'),
         ]),
     ]);
 
