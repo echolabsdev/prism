@@ -175,7 +175,7 @@ class MessageMap
      */
     protected static function mapDocumentParts(array $parts, ?array $cache_control = null): array
     {
-        return array_map(fn(Document $document): array => array_filter([
+        return array_map(fn (Document $document): array => array_filter([
             'type' => 'document',
             'source' => [
                 'type' => 'base64',
