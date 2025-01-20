@@ -9,11 +9,14 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Embeddings;
+use EchoLabs\Prism\Providers\OpenAI\Handlers\Stream;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Structured;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Text;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -51,6 +54,17 @@ class OpenAI implements Provider
     public function embeddings(EmbeddingsRequest $request): EmbeddingsResponse
     {
         $handler = new Embeddings($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
+    }
+
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        $handler = new Stream($this->client(
             $request->clientOptions,
             $request->clientRetry
         ));
