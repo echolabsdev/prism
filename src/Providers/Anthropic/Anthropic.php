@@ -7,11 +7,14 @@ namespace EchoLabs\Prism\Providers\Anthropic;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
+use EchoLabs\Prism\Providers\Anthropic\Handlers\Stream;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Structured;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -49,6 +52,20 @@ class Anthropic implements Provider
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
         throw new \Exception(sprintf('%s does not support embeddings', class_basename($this)));
+    }
+
+    /**
+     * @return Generator<ProviderResponse>
+     */
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        $handler = new Stream($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
     }
 
     /**

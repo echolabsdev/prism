@@ -23,7 +23,7 @@ it('can generate text with a prompt', function (): void {
         ->generate();
 
     foreach ($response as $chunk) {
-        // ray('chunk', $chunk);
+        ray('chunk', $chunk);
     }
 
     dd('response end');
