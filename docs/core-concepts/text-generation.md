@@ -217,6 +217,6 @@ try {
 } catch (PrismException $e) {
     Log::error('Text generation failed:', ['error' => $e->getMessage()]);
 } catch (Throwable $e) {
-    Log::error('Generic error:', ['error' => $e->getMessage]);
+    Log::error('Generic error:', ['error' => $e->getMessage()]);
 }
 ```
