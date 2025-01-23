@@ -41,4 +41,19 @@ trait ConfiguresProviders
 
         return $this;
     }
+
+    public function getModel(): string
+    {
+        return $this->model;
+    }
+
+    public function getProviderKey(): string
+    {
+        return $this->providerKey;
+    }
+
+    public function getProviderEnum(): ProviderEnum
+    {
+        return ProviderEnum::from($this->providerKey);
+    }
 }
