@@ -74,7 +74,12 @@ abstract class AnthropicHandlerAbstract
     protected function handleResponseErrors(): void
     {
         if ($this->httpResponse->getStatusCode() === 429) {
-            $this->rateLimitException();
+            throw PrismRateLimitedException::make(
+                rateLimits: array_values($this->processRateLimits()),
+                retryAfter: $this->httpResponse->hasHeader('retry-after')
+                    ? (int) $this->httpResponse->getHeader('retry-after')[0]
+                    : null
+            );
         }
 
         $data = $this->httpResponse->json();
@@ -90,7 +95,10 @@ abstract class AnthropicHandlerAbstract
         }
     }
 
-    protected function rateLimitException(): void
+    /**
+     * @return ProviderRateLimit[]
+     */
+    protected function processRateLimits(): array
     {
         $rate_limits = [];
 
@@ -106,7 +114,7 @@ abstract class AnthropicHandlerAbstract
             $rate_limits[$limit_name][$field_name] = $headerValues[0];
         }
 
-        $rate_limits = Arr::map($rate_limits, function ($fields, $limit_name): ProviderRateLimit {
+        return array_values(Arr::map($rate_limits, function ($fields, $limit_name): ProviderRateLimit {
             $resets_at = data_get($fields, 'reset');
 
             return new ProviderRateLimit(
@@ -119,13 +127,6 @@ abstract class AnthropicHandlerAbstract
                     : null,
                 resetsAt: data_get($fields, 'reset') ? new Carbon($resets_at) : null
             );
-        });
-
-        throw PrismRateLimitedException::make(
-            rateLimits: array_values($rate_limits),
-            retryAfter: $this->httpResponse->hasHeader('retry-after')
-                ? (int) $this->httpResponse->getHeader('retry-after')[0]
-                : null
-        );
+        }));
     }
 }

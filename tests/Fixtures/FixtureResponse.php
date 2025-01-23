@@ -48,7 +48,7 @@ class FixtureResponse
         });
     }
 
-    public static function fakeResponseSequence(string $requestPath, string $name): void
+    public static function fakeResponseSequence(string $requestPath, string $name, array $headers = []): void
     {
         $responses = collect(scandir(dirname(static::filePath($name))))
             ->filter(function (string $file) use ($name): int|false {
@@ -61,7 +61,7 @@ class FixtureResponse
             ->map(fn ($filePath) => Http::response(
                 file_get_contents($filePath),
                 200,
-                []
+                $headers
             ));
 
         Http::fake([

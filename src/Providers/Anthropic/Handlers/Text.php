@@ -65,6 +65,7 @@ class Text extends AnthropicHandlerAbstract
             responseMeta: new ResponseMeta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
+                rateLimits: $this->processRateLimits()
             )
         );
     }
