@@ -126,3 +126,13 @@ test('it generates and delegates to generator', function (): void {
     expect($response)
         ->toBeInstanceOf(Response::class);
 });
+
+test('you can run toRequest multiple times', function (): void {
+    $request = $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withSchema(new StringSchema('test', 'test description'))
+        ->withPrompt('Hello AI');
+
+    $request->toRequest();
+    $request->toRequest();
+})->throwsNoExceptions();

@@ -227,3 +227,12 @@ test('it generates response', function (): void {
 
     expect($response->text)->toBe("I'm nyx!");
 });
+
+test('you can run toRequest multiple times', function (): void {
+    $request = $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withPrompt('Hello AI');
+
+    $request->toRequest();
+    $request->toRequest();
+})->throwsNoExceptions();
