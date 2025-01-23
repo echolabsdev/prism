@@ -43,9 +43,8 @@ test('it allows you to get the model and provider', function (): void {
     $request = $this->pendingRequest
         ->using(Provider::OpenAI, 'gpt-4');
 
-    expect($request->getModel())->toBe('gpt-4');
-    expect($request->getProviderKey())->toBe('openai');
-    expect($request->getProviderEnum())->toBe(Provider::OpenAI);
+    expect($request->model())->toBe('gpt-4');
+    expect($request->providerKey())->toBe('openai');
 });
 
 test('it configures the client options', function (): void {
