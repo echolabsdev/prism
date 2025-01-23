@@ -57,5 +57,9 @@ it('sets the correct data on the RateLimitException', function (): void {
         expect($e->rateLimits[0]->limit)->toEqual(1000);
         expect($e->rateLimits[0]->remaining)->toEqual(500);
         expect($e->rateLimits[0]->resetsAt)->toEqual($requests_reset);
+
+        expect($e->rateLimits[1]->name)->toEqual('input-tokens');
+        expect($e->rateLimits[1]->limit)->toEqual(80000);
+        expect($e->rateLimits[1]->remaining)->toEqual(0);
     }
 });

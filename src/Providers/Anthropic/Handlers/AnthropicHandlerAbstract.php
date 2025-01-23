@@ -119,13 +119,13 @@ abstract class AnthropicHandlerAbstract
 
             return new ProviderRateLimit(
                 name: $limit_name,
-                limit: data_get($fields, 'limit')
+                limit: data_get($fields, 'limit') !== null
                     ? (int) data_get($fields, 'limit')
                     : null,
-                remaining: data_get($fields, 'remaining')
+                remaining: data_get($fields, 'remaining') !== null
                     ? (int) data_get($fields, 'remaining')
                     : null,
-                resetsAt: data_get($fields, 'reset') ? new Carbon($resets_at) : null
+                resetsAt: data_get($fields, 'reset') !== null ? new Carbon($resets_at) : null
             );
         }));
     }
