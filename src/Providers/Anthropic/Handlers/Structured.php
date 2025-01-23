@@ -83,9 +83,11 @@ class Structured extends AnthropicHandlerAbstract
     protected function appendMessageForJsonMode(): PrismRequest
     {
         return $this->request->addMessage(new UserMessage(sprintf(
-            "Respond with ONLY JSON that matches the following schema: \n %s",
-            json_encode($this->request->schema->toArray(), JSON_PRETTY_PRINT)
+            "Respond with ONLY JSON that matches the following schema: \n %s %s",
+            json_encode($this->request->schema->toArray(), JSON_PRETTY_PRINT),
+            ($this->request->providerMeta(Provider::Anthropic)['citations'] ?? false)
+                ? "\n\n Return the JSON as a single text block with a single set of citations."
+                : ''
         )));
-
     }
 }
