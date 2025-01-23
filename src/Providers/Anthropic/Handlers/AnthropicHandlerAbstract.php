@@ -6,9 +6,14 @@ namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
+use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Throwable;
 
 abstract class AnthropicHandlerAbstract
@@ -35,17 +40,7 @@ abstract class AnthropicHandlerAbstract
             throw PrismException::providerRequestError($this->request->model, $e); // @phpstan-ignore property.notFound
         }
 
-        $data = $this->httpResponse->json();
-
-        if (data_get($data, 'type') === 'error') {
-            throw PrismException::providerResponseError(vsprintf(
-                'Anthropic Error: [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message'),
-                ]
-            ));
-        }
+        $this->handleResponseErrors();
 
         return $this->buildProviderResponse();
     }
@@ -74,5 +69,63 @@ abstract class AnthropicHandlerAbstract
 
             return $text;
         }, '');
+    }
+
+    protected function handleResponseErrors(): void
+    {
+        if ($this->httpResponse->getStatusCode() === 429) {
+            $this->rateLimitException();
+        }
+
+        $data = $this->httpResponse->json();
+
+        if (data_get($data, 'type') === 'error') {
+            throw PrismException::providerResponseError(vsprintf(
+                'Anthropic Error: [%s] %s',
+                [
+                    data_get($data, 'error.type', 'unknown'),
+                    data_get($data, 'error.message'),
+                ]
+            ));
+        }
+    }
+
+    protected function rateLimitException(): void
+    {
+        $rate_limits = [];
+
+        foreach ($this->httpResponse->getHeaders() as $headerName => $headerValues) {
+            if (Str::startsWith($headerName, 'anthropic-ratelimit-') === false) {
+                continue;
+            }
+
+            $limit_name = Str::of($headerName)->after('anthropic-ratelimit-')->beforeLast('-')->toString();
+
+            $field_name = Str::of($headerName)->afterLast('-')->toString();
+
+            $rate_limits[$limit_name][$field_name] = $headerValues[0];
+        }
+
+        $rate_limits = Arr::map($rate_limits, function ($fields, $limit_name): ProviderRateLimit {
+            $resets_at = data_get($fields, 'reset');
+
+            return new ProviderRateLimit(
+                name: $limit_name,
+                limit: data_get($fields, 'limit')
+                    ? (int) data_get($fields, 'limit')
+                    : null,
+                remaining: data_get($fields, 'remaining')
+                    ? (int) data_get($fields, 'remaining')
+                    : null,
+                resetsAt: data_get($fields, 'reset') ? new Carbon($resets_at) : null
+            );
+        });
+
+        throw PrismRateLimitedException::make(
+            rateLimits: array_values($rate_limits),
+            retryAfter: $this->httpResponse->hasHeader('retry-after')
+                ? (int) $this->httpResponse->getHeader('retry-after')[0]
+                : null
+        );
     }
 }
