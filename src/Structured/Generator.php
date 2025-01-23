@@ -26,6 +26,8 @@ class Generator
     {
         $response = $this->sendProviderRequest($request);
 
+        $this->messages = $request->messages;
+
         $this->responseBuilder->addStep(new Step(
             text: $response->text,
             object: $this->decodeObject($response->text),

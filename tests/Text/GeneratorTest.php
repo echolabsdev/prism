@@ -7,6 +7,7 @@ use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Text\PendingRequest;
 use EchoLabs\Prism\Text\Response;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
@@ -304,4 +305,29 @@ test('it correctly builds message chain with tools', function (): void {
             fn ($message) => $message->toBeInstanceOf(ToolResultMessage::class),
             fn ($message) => $message->toBeInstanceOf(AssistantMessage::class),
         );
+});
+
+test('it adds the system message and user message to first step', function (): void {
+    $request = (new PendingRequest)
+        ->using('test-provider', 'test-model')
+        ->withSystemPrompt('System Prompt')
+        ->withPrompt('User Prompt');
+
+    $response = $request->generate();
+
+    expect($response)->toBeInstanceOf(Response::class);
+
+    /** @var SystemMessage */
+    $system_message = $response->steps[0]->messages[0];
+
+    expect($system_message)->toBeInstanceOf(SystemMessage::class)
+        ->and($system_message->content)
+        ->toBe('System Prompt');
+
+    /** @var UserMessage */
+    $user_message = $response->steps[0]->messages[1];
+
+    expect($user_message)->toBeInstanceOf(UserMessage::class)
+        ->and($user_message->text())
+        ->toBe('User Prompt');
 });

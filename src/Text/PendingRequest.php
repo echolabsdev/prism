@@ -14,6 +14,7 @@ use EchoLabs\Prism\Concerns\HasPrompts;
 use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Concerns\HasTools;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 class PendingRequest
@@ -40,6 +41,10 @@ class PendingRequest
         }
 
         $messages = $this->messages;
+
+        if ($this->systemPrompt) {
+            $messages[] = new SystemMessage($this->systemPrompt);
+        }
 
         if ($this->prompt) {
             $messages[] = new UserMessage($this->prompt);
