@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Embeddings;
 
 use Closure;
+use EchoLabs\Prism\Contracts\PrismRequest;
 
-class Request
+class Request implements PrismRequest
 {
     /**
      * @param  array<string, mixed>  $clientOptions

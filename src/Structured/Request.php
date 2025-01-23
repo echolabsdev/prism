@@ -6,13 +6,14 @@ namespace EchoLabs\Prism\Structured;
 
 use Closure;
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
-class Request
+class Request implements PrismRequest
 {
     /**
      * @param  array<int, Message>  $messages

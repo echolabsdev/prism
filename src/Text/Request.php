@@ -6,10 +6,11 @@ namespace EchoLabs\Prism\Text;
 
 use Closure;
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 
-class Request
+class Request implements PrismRequest
 {
     /**
      * @param  array<int, Message>  $messages

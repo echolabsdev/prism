@@ -4,43 +4,53 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
-use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
-use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
-use Throwable;
 
-class Text
+/**
+ * @template TRequest of TextRequest
+ */
+class Text extends AnthropicHandlerAbstract
 {
-    public function __construct(protected PendingRequest $client) {}
-
-    public function handle(Request $request): ProviderResponse
+    /**
+     * @param  TextRequest  $request
+     * @return array<string, mixed>
+     */
+    #[\Override]
+    public static function buildHttpRequestPayload(PrismRequest $request): array
     {
-        try {
-            $response = $this->sendRequest($request);
-            $data = $response->json();
-
-        } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+        if (! $request instanceof TextRequest) {
+            throw new \InvalidArgumentException('Request must be an instance of '.TextRequest::class);
         }
 
-        if (data_get($data, 'type') === 'error') {
-            throw PrismException::providerResponseError(vsprintf(
-                'Anthropic Error: [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message'),
-                ]
-            ));
-        }
+        return array_merge([
+            'model' => $request->model,
+            'messages' => MessageMap::map($request->messages),
+            'max_tokens' => $request->maxTokens ?? 2048,
+        ], array_filter([
+            'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
+            'temperature' => $request->temperature,
+            'top_p' => $request->topP,
+            'tools' => ToolMap::map($request->tools),
+            'tool_choice' => ToolChoiceMap::map($request->toolChoice),
+        ]));
+    }
+
+    #[\Override]
+    protected function prepareRequest(): void {}
+
+    #[\Override]
+    protected function buildProviderResponse(): ProviderResponse
+    {
+        $data = $this->httpResponse->json();
 
         return new ProviderResponse(
             text: $this->extractText($data),
@@ -57,38 +67,6 @@ class Text
                 model: data_get($data, 'model'),
             )
         );
-    }
-
-    public function sendRequest(Request $request): Response
-    {
-        return $this->client->post(
-            'messages',
-            array_merge([
-                'model' => $request->model,
-                'messages' => MessageMap::map($request->messages),
-                'max_tokens' => $request->maxTokens ?? 2048,
-            ], array_filter([
-                'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
-                'temperature' => $request->temperature,
-                'top_p' => $request->topP,
-                'tools' => ToolMap::map($request->tools),
-                'tool_choice' => ToolChoiceMap::map($request->toolChoice),
-            ]))
-        );
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function extractText(array $data): string
-    {
-        return array_reduce(data_get($data, 'content', []), function (string $text, array $content): string {
-            if (data_get($content, 'type') === 'text') {
-                $text .= data_get($content, 'text');
-            }
-
-            return $text;
-        }, '');
     }
 
     /**
