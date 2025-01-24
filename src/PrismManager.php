@@ -86,6 +86,7 @@ class PrismManager
             apiKey: $config['api_key'] ?? '',
             url: $config['url'],
             organization: $config['organization'] ?? null,
+            project: $config['project'] ?? null,
         );
     }
 

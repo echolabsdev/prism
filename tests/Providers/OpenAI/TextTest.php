@@ -154,6 +154,32 @@ it('does not send the api key header', function (): void {
     Http::assertSent(fn (Request $request): bool => empty($request->header('Authorization')));
 });
 
+it('sends the project header when set', function (): void {
+    config()->set('prism.providers.openai.project', 'echolabs');
+
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
+
+    Prism::text()
+        ->using('openai', 'gpt-4')
+        ->withPrompt('Who are you?')
+        ->generate();
+
+    Http::assertSent(fn (Request $request): bool => $request->header('OpenAI-Project')[0] === 'echolabs');
+});
+
+it('does not send the project header if one is not given', function (): void {
+    config()->offsetUnset('prism.providers.openai.project');
+
+    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-a-prompt');
+
+    Prism::text()
+        ->using('openai', 'gpt-4')
+        ->withPrompt('Who are you?')
+        ->generate();
+
+    Http::assertSent(fn (Request $request): bool => empty($request->header('OpenAI-Project')));
+});
+
 it('handles specific tool choice', function (): void {
     FixtureResponse::fakeResponseSequence('v1/chat/completions', 'openai/generate-text-with-required-tool-call');
 
