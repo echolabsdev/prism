@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\Contracts\PrismRequest;
-use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
+use Illuminate\Http\Client\PendingRequest;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\ValueObjects\Usage;
-use Illuminate\Http\Client\PendingRequest;
+use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 
 class Structured extends AnthropicHandlerAbstract
 {
@@ -89,5 +90,6 @@ class Structured extends AnthropicHandlerAbstract
                 ? "\n\n Return the JSON as a single text block with a single set of citations."
                 : ''
         )));
+
     }
 }
