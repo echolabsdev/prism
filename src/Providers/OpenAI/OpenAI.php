@@ -23,6 +23,7 @@ class OpenAI implements Provider
         #[\SensitiveParameter] public readonly string $apiKey,
         public readonly string $url,
         public readonly ?string $organization,
+        public readonly ?string $project,
     ) {}
 
     #[\Override]
@@ -67,6 +68,7 @@ class OpenAI implements Provider
         return Http::withHeaders(array_filter([
             'Authorization' => $this->apiKey !== '' && $this->apiKey !== '0' ? sprintf('Bearer %s', $this->apiKey) : null,
             'OpenAI-Organization' => $this->organization,
+            'OpenAI-Project' => $this->project,
         ]))
             ->withOptions($options)
             ->retry(...$retry)

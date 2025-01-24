@@ -11,6 +11,7 @@ return [
             'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
             'api_key' => env('OPENAI_API_KEY', ''),
             'organization' => env('OPENAI_ORGANIZATION', null),
+            'project' => env('OPENAI_PROJECT', null),
         ],
         'anthropic' => [
             'api_key' => env('ANTHROPIC_API_KEY', ''),
