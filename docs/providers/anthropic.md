@@ -72,7 +72,7 @@ Prism::text()
             Document::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')), 'application/pdf'),
         ]),
         new UserMessage('Here is the document from a local path', [
-            Document::fromPath('tests/Fixtures/test-pdf.pdf', 'application/pdf'),
+            Document::fromPath('tests/Fixtures/test-pdf.pdf'),
         ]),
     ])
     ->generate();
@@ -80,6 +80,28 @@ Prism::text()
 ```
 Anthropic use vision to process PDFs, and consequently there are some limitations detailed in their [feature documentation](https://docs.anthropic.com/en/docs/build-with-claude/pdf-support).
 
+### Txt and md Document Support
+
+Prism supports txt/md documents on UserMessages via the `$additionalContent` parameter:
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+
+Prism::text()
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
+    ->withMessages([
+        new UserMessage('Here is the document from a text string (e.g. from your database)', [
+            Document::fromText('Hello world!'),
+        ]),
+        new UserMessage('Here is the document from a local path', [
+            Document::fromPath('tests/Fixtures/test-txt.txt'),
+        ]),
+    ])
+    ->generate();
+
+```
 
 ## Considerations
 ### Message Order
