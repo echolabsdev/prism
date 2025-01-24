@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\ValueObjects\Messages\Support;
 
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\File;
 
 /**
  * Note: Prism currently only supports Documents with Anthropic.
@@ -14,8 +15,12 @@ class Document
 {
     public function __construct(
         public readonly string $document,
-        public readonly string $mimeType
-    ) {}
+        public readonly string $mimeType,
+        public readonly ?string $dataFormat = null
+    ) 
+    {
+        $this->dataFormat ??= Str::startsWith($this->mimeType, 'text/') ? 'text' : 'base64';
+    }
 
     public static function fromPath(string $path): self
     {
@@ -35,17 +40,30 @@ class Document
             throw new InvalidArgumentException("Could not determine mime type for {$path}");
         }
 
+        $isText = Str::startsWith($mimeType, 'text/');
+
         return new self(
-            base64_encode($content),
-            $mimeType,
+            document: $isText ? $content : base64_encode($content),
+            mimeType: $mimeType,
+            dataFormat: $isText ? 'text' : 'base64'
         );
     }
 
     public static function fromBase64(string $document, string $mimeType): self
     {
         return new self(
-            $document,
-            $mimeType
+            document: $document,
+            mimeType: $mimeType,
+            dataFormat: 'base64'
+        );
+    }
+
+    public static function fromText(string $text): self
+    {
+        return new self(
+            document: $text,
+            mimeType: 'text/plain',
+            dataFormat: 'text'
         );
     }
 }

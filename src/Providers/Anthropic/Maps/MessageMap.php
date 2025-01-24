@@ -178,7 +178,7 @@ class MessageMap
         return array_map(fn (Document $document): array => array_filter([
             'type' => 'document',
             'source' => [
-                'type' => 'base64',
+                'type' => $document->dataFormat,
                 'media_type' => $document->mimeType,
                 'data' => $document->document,
             ],
