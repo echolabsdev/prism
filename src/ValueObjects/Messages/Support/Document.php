@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\ValueObjects\Messages\Support;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Illuminate\Support\Facades\File;
 
 /**
  * Note: Prism currently only supports Documents with Anthropic.
  */
 class Document
 {
+    public readonly string $dataFormat;
+
     public function __construct(
         public readonly string $document,
         public readonly string $mimeType,
-        public readonly ?string $dataFormat = null
-    ) 
-    {
-        $this->dataFormat ??= Str::startsWith($this->mimeType, 'text/') ? 'text' : 'base64';
+        ?string $dataFormat = null
+    ) {
+        // Done this way to avoid assigning a readonly property twice.
+        $this->dataFormat = $dataFormat ?? (Str::startsWith($this->mimeType, 'text/') ? 'text' : 'base64');
     }
 
     public static function fromPath(string $path): self

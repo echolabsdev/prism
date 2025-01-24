@@ -74,7 +74,7 @@ it('maps user messages with images from base64', function (): void {
         ->toBe('image/png');
 });
 
-it('maps user messages with documents from path', function (): void {
+it('maps user messages with PDF documents from path', function (): void {
     $mappedMessage = MessageMap::map([
         new UserMessage('Here is the document', [
             Document::fromPath('tests/Fixtures/test-pdf.pdf'),
@@ -91,7 +91,7 @@ it('maps user messages with documents from path', function (): void {
         ->toBe('application/pdf');
 });
 
-it('maps user messages with documents from base64', function (): void {
+it('maps user messages with PDF documents from base64', function (): void {
     $mappedMessage = MessageMap::map([
         new UserMessage('Here is the document', [
             Document::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')), 'application/pdf'),
@@ -106,6 +106,57 @@ it('maps user messages with documents from base64', function (): void {
         ->toContain(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')));
     expect(data_get($mappedMessage, '0.content.1.source.media_type'))
         ->toBe('application/pdf');
+});
+
+it('maps user messages with txt documents from path', function (): void {
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Here is the document', [
+            Document::fromPath('tests/Fixtures/test-text.txt'),
+        ]),
+    ]);
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('document');
+    expect(data_get($mappedMessage, '0.content.1.source.type'))
+        ->toBe('text');
+    expect(data_get($mappedMessage, '0.content.1.source.data'))
+        ->toContain(file_get_contents('tests/Fixtures/test-text.txt'));
+    expect(data_get($mappedMessage, '0.content.1.source.media_type'))
+        ->toBe('text/plain');
+});
+
+it('maps user messages with md documents from path', function (): void {
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Here is the document', [
+            Document::fromPath('tests/Fixtures/test-text.md'),
+        ]),
+    ]);
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('document');
+    expect(data_get($mappedMessage, '0.content.1.source.type'))
+        ->toBe('text');
+    expect(data_get($mappedMessage, '0.content.1.source.data'))
+        ->toContain(file_get_contents('tests/Fixtures/test-text.md'));
+    expect(data_get($mappedMessage, '0.content.1.source.media_type'))
+        ->toBe('text/plain');
+});
+
+it('maps user messages with txt documents from text string', function (): void {
+    $mappedMessage = MessageMap::map([
+        new UserMessage('Here is the document', [
+            Document::fromText('Hello world!'),
+        ]),
+    ]);
+
+    expect(data_get($mappedMessage, '0.content.1.type'))
+        ->toBe('document');
+    expect(data_get($mappedMessage, '0.content.1.source.type'))
+        ->toBe('text');
+    expect(data_get($mappedMessage, '0.content.1.source.data'))
+        ->toContain('Hello world!');
+    expect(data_get($mappedMessage, '0.content.1.source.media_type'))
+        ->toBe('text/plain');
 });
 
 it('does not maps user messages with images from url', function (): void {
