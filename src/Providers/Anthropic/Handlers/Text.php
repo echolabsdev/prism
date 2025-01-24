@@ -45,7 +45,10 @@ class Text extends AnthropicHandlerAbstract
     }
 
     #[\Override]
-    protected function prepareRequest(): void {}
+    protected function prepareRequest(): PrismRequest
+    {
+        return $this->request;
+    }
 
     #[\Override]
     protected function buildProviderResponse(): ProviderResponse

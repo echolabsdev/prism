@@ -45,10 +45,13 @@ class Structured extends AnthropicHandlerAbstract
         ]));
     }
 
+    /**
+     * @return StructuredRequest
+     */
     #[\Override]
-    protected function prepareRequest(): void
+    protected function prepareRequest(): PrismRequest
     {
-        $this->appendMessageForJsonMode();
+        return $this->appendMessageForJsonMode();
     }
 
     #[\Override]
@@ -74,11 +77,15 @@ class Structured extends AnthropicHandlerAbstract
         );
     }
 
-    protected function appendMessageForJsonMode(): void
+    /**
+     * @return StructuredRequest
+     */
+    protected function appendMessageForJsonMode(): PrismRequest
     {
-        $this->request->addMessage(new UserMessage(sprintf(
+        return $this->request->addMessage(new UserMessage(sprintf(
             "Respond with ONLY JSON that matches the following schema: \n %s",
             json_encode($this->request->schema->toArray(), JSON_PRETTY_PRINT)
         )));
+
     }
 }

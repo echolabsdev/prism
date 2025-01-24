@@ -34,7 +34,7 @@ abstract class AnthropicHandlerAbstract
         $this->request = $request;
 
         try {
-            $this->prepareRequest();
+            $this->request = $this->prepareRequest();
             $this->httpResponse = $this->sendRequest();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($this->request->model, $e); // @phpstan-ignore property.notFound
@@ -45,7 +45,7 @@ abstract class AnthropicHandlerAbstract
         return $this->buildProviderResponse();
     }
 
-    abstract protected function prepareRequest(): void;
+    abstract protected function prepareRequest(): PrismRequest;
 
     abstract protected function buildProviderResponse(): ProviderResponse;
 
