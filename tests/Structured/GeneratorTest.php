@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace Tests\Unit\Structured;
 
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Schema\ArraySchema;
+use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\Generator;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\Structured\Response;
 use EchoLabs\Prism\Testing\PrismFake;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -163,4 +170,40 @@ it('tracks provider responses properly', function (): void {
             ->and($requests[0]->model)->toBe('test-model')
             ->and($requests[0]->prompt)->toBe('generate data');
     });
+});
+
+test('it adds system message and user message to first step', function (): void {
+    Prism::fake([
+        new ProviderResponse(
+            text: json_encode(['I am a string']),
+            toolCalls: [],
+            usage: new Usage(5, 10),
+            finishReason: FinishReason::Stop,
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
+        ),
+    ]);
+
+    $request = Prism::structured()
+        ->using(Provider::Anthropic, 'test')
+        ->withSchema(new ArraySchema('test schema', 'testing', new StringSchema('stringy', 'string')))
+        ->withSystemPrompt('System Prompt')
+        ->withPrompt('User Prompt');
+
+    $response = $request->generate();
+
+    expect($response)->toBeInstanceOf(Response::class);
+
+    /** @var SystemMessage */
+    $system_message = $response->steps[0]->messages[0];
+
+    expect($system_message)->toBeInstanceOf(SystemMessage::class)
+        ->and($system_message->content)
+        ->toBe('System Prompt');
+
+    /** @var UserMessage */
+    $user_message = $response->steps[0]->messages[1];
+
+    expect($user_message)->toBeInstanceOf(UserMessage::class)
+        ->and($user_message->text())
+        ->toBe('User Prompt');
 });
