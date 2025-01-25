@@ -41,4 +41,14 @@ trait ConfiguresProviders
 
         return $this;
     }
+
+    public function model(): string
+    {
+        return $this->model;
+    }
+
+    public function providerKey(): string
+    {
+        return $this->providerKey;
+    }
 }
