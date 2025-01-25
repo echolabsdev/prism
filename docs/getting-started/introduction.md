@@ -72,7 +72,7 @@ Prism draws significant inspiration from the [Vercel AI SDK](https://sdk.vercel.
 - **Tool System**: Extend AI capabilities by defining custom tools that can interact with your application's business logic.
 - **Image Support**: Work with multi-modal models that can process both text and images.
 
-Prism also provides an fluent `prism()` helper function to resolve the `Prism` instance from the application container.
+Prism also provides a fluent `prism()` helper function to resolve the `Prism` instance from the application container.
 
 ```php
 prism()
