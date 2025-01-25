@@ -157,7 +157,7 @@ export default {
   name: "CompatibilityMatrix",
   data() {
     return {
-      features: ["Text", "Structured", "Embeddings", "Image", "Tools"],
+      features: ["Text", "Structured", "Embeddings", "Image", "Tools", "Documents"],
       providers: [
         {
           name: "Amazon Bedrock",
@@ -166,6 +166,7 @@ export default {
           embeddings: Planned,
           image: Planned,
           tools: Planned,
+          documents: Unsupported,
         },
         {
           name: "Anthropic",
@@ -174,6 +175,7 @@ export default {
           embeddings: Unsupported,
           image: Supported,
           tools: Supported,
+          documents: Supported,
         },
         {
           name: "Azure OpenAI",
@@ -182,6 +184,7 @@ export default {
           embeddings: Planned,
           image: Planned,
           tools: Planned,
+          documents: Unsupported,
         },
         {
           name: "DeepSeek",
@@ -190,6 +193,7 @@ export default {
           embeddings: Unsupported,
           image: Unsupported,
           tools: Supported,
+          documents: Unsupported,
         },
         {
           name: "Gemini",
@@ -198,6 +202,7 @@ export default {
           embeddings: Supported,
           image: Supported,
           tools: Planned,
+          documents: Unsupported,
         },
         {
           name: "Groq",
@@ -206,6 +211,7 @@ export default {
           embeddings: Planned,
           image: Supported,
           tools: Supported,
+          documents: Unsupported,
         },
         {
           name: "Mistral",
@@ -214,6 +220,7 @@ export default {
           embeddings: Supported,
           image: Supported,
           tools: Supported,
+          documents: Unsupported,
         },
         {
           name: "Ollama",
@@ -222,6 +229,7 @@ export default {
           embeddings: Supported,
           image: Supported,
           tools: Supported,
+          documents: Unsupported,
         },
         {
           name: "OpenAI",
@@ -230,6 +238,7 @@ export default {
           embeddings: Supported,
           image: Supported,
           tools: Supported,
+          documents: Unsupported,
         },
         {
           name: "xAI",
@@ -238,6 +247,7 @@ export default {
           embeddings: Unsupported,
           image: Supported,
           tools: Supported,
+          documents: Unsupported,
         },
       ],
     };
