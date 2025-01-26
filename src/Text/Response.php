@@ -20,16 +20,18 @@ readonly class Response
      * @param  ToolCall[]  $toolCalls
      * @param  ToolResult[]  $toolResults
      * @param  Collection<int, Message>  $messages
+     * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
-        public Collection $steps,
-        public Collection $responseMessages,
-        public string $text,
-        public FinishReason $finishReason,
-        public array $toolCalls,
-        public array $toolResults,
-        public Usage $usage,
-        public ResponseMeta $responseMeta,
-        public Collection $messages,
+        public readonly Collection $steps,
+        public readonly Collection $responseMessages,
+        public readonly string $text,
+        public readonly FinishReason $finishReason,
+        public readonly array $toolCalls,
+        public readonly array $toolResults,
+        public readonly Usage $usage,
+        public readonly ResponseMeta $responseMeta,
+        public readonly Collection $messages,
+        public readonly array $additionalContent = []
     ) {}
 }

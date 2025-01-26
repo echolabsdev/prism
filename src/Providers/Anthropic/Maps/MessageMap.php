@@ -22,12 +22,13 @@ class MessageMap
 {
     /**
      * @param  array<int, Message>  $messages
+     * @param  array<string, mixed>  $requestProviderMeta
      * @return array<int, mixed>
      */
-    public static function map(array $messages): array
+    public static function map(array $messages, array $requestProviderMeta = []): array
     {
         return array_values(array_map(
-            fn (Message $message): array => self::mapMessage($message),
+            fn (Message $message): array => self::mapMessage($message, $requestProviderMeta),
             array_filter($messages, fn (Message $message): bool => ! $message instanceof SystemMessage)
         ));
     }
@@ -48,12 +49,13 @@ class MessageMap
     }
 
     /**
+     * @param  array<string, mixed>  $requestProviderMeta
      * @return array<string, mixed>
      */
-    protected static function mapMessage(Message $message): array
+    protected static function mapMessage(Message $message, array $requestProviderMeta = []): array
     {
         return match ($message::class) {
-            UserMessage::class => self::mapUserMessage($message),
+            UserMessage::class => self::mapUserMessage($message, $requestProviderMeta),
             AssistantMessage::class => self::mapAssistantMessage($message),
             ToolResultMessage::class => self::mapToolResultMessage($message),
             SystemMessage::class => self::mapSystemMessage($message),
@@ -91,9 +93,10 @@ class MessageMap
     }
 
     /**
+     * @param  array<string, mixed>  $requestProviderMeta
      * @return array<string, mixed>
      */
-    protected static function mapUserMessage(UserMessage $message): array
+    protected static function mapUserMessage(UserMessage $message, array $requestProviderMeta = []): array
     {
         $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
         $cache_control = $cacheType ? ['type' => $cacheType instanceof BackedEnum ? $cacheType->value : $cacheType] : null;
@@ -107,7 +110,7 @@ class MessageMap
                     'cache_control' => $cache_control,
                 ]),
                 ...self::mapImageParts($message->images(), $cache_control),
-                ...self::mapDocumentParts($message->documents(), $cache_control),
+                ...self::mapDocumentParts($message->documents(), $cache_control, $requestProviderMeta),
             ],
         ];
     }
@@ -171,18 +174,29 @@ class MessageMap
     /**
      * @param  Document[]  $parts
      * @param  array<string, mixed>|null  $cache_control
+     * @param  array<string, mixed>  $requestProviderMeta
      * @return array<int, mixed>
      */
-    protected static function mapDocumentParts(array $parts, ?array $cache_control = null): array
+    protected static function mapDocumentParts(array $parts, ?array $cache_control = null, array $requestProviderMeta = []): array
     {
         return array_map(fn (Document $document): array => array_filter([
             'type' => 'document',
-            'source' => [
+            'source' => array_filter([
                 'type' => $document->dataFormat,
                 'media_type' => $document->mimeType,
-                'data' => $document->document,
-            ],
+                'data' => $document->dataFormat !== 'content' && ! is_array($document->document)
+                    ? $document->document
+                    : null,
+                'content' => $document->dataFormat === 'content' && is_array($document->document)
+                    ? array_map(fn (string $chunk): array => ['type' => 'text', 'text' => $chunk], $document->document)
+                    : null,
+            ]),
+            'title' => $document->documentTitle,
+            'context' => $document->documentContext,
             'cache_control' => $cache_control,
+            'citations' => data_get($requestProviderMeta, 'citations', data_get($document->providerMeta(Provider::Anthropic), 'citations', false))
+                ? ['enabled' => true]
+                : null,
         ]), $parts);
     }
 }

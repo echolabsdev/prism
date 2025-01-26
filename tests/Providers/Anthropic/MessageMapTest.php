@@ -360,3 +360,139 @@ it('sets the cache type on a SystemMessage if cacheType providerMeta is set on m
     'ephemeral',
     AnthropicCacheType::Ephemeral,
 ]);
+
+it('sets citiations to true on a UserMessage Document if citations providerMeta is true', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'What color is the grass and sky?',
+            additionalContent: [
+                Document::fromText('The grass is green. The sky is blue.')->withProviderMeta(Provider::Anthropic, ['citations' => true]),
+            ]
+        )),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'What color is the grass and sky?',
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'text',
+                    'media_type' => 'text/plain',
+                    'data' => 'The grass is green. The sky is blue.',
+                ],
+                'citations' => ['enabled' => true],
+            ],
+        ],
+    ]]);
+});
+
+test('MessageMap applies citations to all documents if requestProviderMeta has citations true', function (): void {
+    $messages = [
+        (new UserMessage(
+            content: 'What color is the grass and sky?',
+            additionalContent: [
+                Document::fromText('The grass is green.', 'All aboout the grass.', 'A novel look into the colour of grass.'),
+                Document::fromText('The sky is blue.'),
+            ]
+        )),
+        (new UserMessage(
+            content: 'What color is sea and earth?',
+            additionalContent: [
+                Document::fromText('The sea is blue'),
+                Document::fromText('The earth is brown.'),
+            ]
+        )),
+    ];
+
+    expect(MessageMap::map($messages, ['citations' => true]))->toBe([
+        [
+            'role' => 'user',
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'What color is the grass and sky?',
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The grass is green.',
+                    ],
+                    'title' => 'All aboout the grass.',
+                    'context' => 'A novel look into the colour of grass.',
+                    'citations' => ['enabled' => true],
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The sky is blue.',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
+            ],
+        ],
+        [
+            'role' => 'user',
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'What color is sea and earth?',
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The sea is blue',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The earth is brown.',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
+            ],
+        ],
+    ]);
+});
+
+it('maps a chunked document correctly', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'What color is the grass and sky?',
+            additionalContent: [
+                Document::fromChunks(['chunk1', 'chunk2'])->withProviderMeta(Provider::Anthropic, ['citations' => true]),
+            ]
+        )),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'What color is the grass and sky?',
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'content',
+                    'content' => [
+                        ['type' => 'text', 'text' => 'chunk1'],
+                        ['type' => 'text', 'text' => 'chunk2'],
+                    ],
+                ],
+                'citations' => ['enabled' => true],
+            ],
+        ],
+    ]]);
+});

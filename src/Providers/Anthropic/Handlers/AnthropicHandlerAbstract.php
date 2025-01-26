@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
+use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
 use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
@@ -69,6 +70,19 @@ abstract class AnthropicHandlerAbstract
 
             return $text;
         }, '');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return null|MessagePartWithCitations[]
+     */
+    protected function extractCitations(array $data): ?array
+    {
+        if (array_filter(data_get($data, 'content.*.citations')) === []) {
+            return null;
+        }
+
+        return Arr::map(data_get($data, 'content', []), fn ($contentBlock): \EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations => MessagePartWithCitations::fromContentBlock($contentBlock));
     }
 
     protected function handleResponseErrors(): void

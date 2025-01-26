@@ -28,7 +28,8 @@ class Generator
 
         $responseMessage = new AssistantMessage(
             $response->text,
-            $response->toolCalls
+            $response->toolCalls,
+            $response->additionalContent,
         );
 
         $this->responseBuilder->addResponseMessage($responseMessage);
@@ -50,6 +51,7 @@ class Generator
             usage: $response->usage,
             responseMeta: $response->responseMeta,
             messages: $request->messages,
+            additionalContent: $response->additionalContent,
         ));
 
         if ($this->shouldContinue($request->maxSteps, $response)) {

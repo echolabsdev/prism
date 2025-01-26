@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\ValueObjects\Messages\Support;
 
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -13,18 +14,41 @@ use InvalidArgumentException;
  */
 readonly class Document
 {
-    public string $dataFormat;
+    use HasProviderMeta;
 
+    public readonly string $dataFormat;
+
+    /**
+     * @param  string|array<string>  $document
+     */
     public function __construct(
-        public string $document,
-        public string $mimeType,
-        ?string $dataFormat = null
+        public readonly string|array $document,
+        public readonly ?string $mimeType,
+        ?string $dataFormat = null,
+        public readonly ?string $documentTitle = null,
+        public readonly ?string $documentContext = null,
     ) {
         // Done this way to avoid assigning a readonly property twice.
-        $this->dataFormat = $dataFormat ?? (Str::startsWith($this->mimeType, 'text/') ? 'text' : 'base64');
+        if ($dataFormat !== null) {
+            $this->dataFormat = $dataFormat;
+
+            return;
+        }
+
+        if (is_array($document)) {
+            $this->dataFormat = 'content';
+
+            return;
+        }
+
+        if ($this->mimeType === null) {
+            throw new InvalidArgumentException('mimeType is required when document is not an array.');
+        }
+
+        $this->dataFormat = Str::startsWith($this->mimeType, 'text/') ? 'text' : 'base64';
     }
 
-    public static function fromPath(string $path): self
+    public static function fromPath(string $path, ?string $title = null, ?string $context = null): self
     {
         if (! is_file($path)) {
             throw new InvalidArgumentException("{$path} is not a file");
@@ -47,25 +71,45 @@ readonly class Document
         return new self(
             document: $isText ? $content : base64_encode($content),
             mimeType: $mimeType,
-            dataFormat: $isText ? 'text' : 'base64'
+            dataFormat: $isText ? 'text' : 'base64',
+            documentTitle: $title,
+            documentContext: $context
         );
     }
 
-    public static function fromBase64(string $document, string $mimeType): self
+    public static function fromBase64(string $document, string $mimeType, ?string $title = null, ?string $context = null): self
     {
         return new self(
             document: $document,
             mimeType: $mimeType,
-            dataFormat: 'base64'
+            dataFormat: 'base64',
+            documentTitle: $title,
+            documentContext: $context
         );
     }
 
-    public static function fromText(string $text): self
+    public static function fromText(string $text, ?string $title = null, ?string $context = null): self
     {
         return new self(
             document: $text,
             mimeType: 'text/plain',
-            dataFormat: 'text'
+            dataFormat: 'text',
+            documentTitle: $title,
+            documentContext: $context
+        );
+    }
+
+    /**
+     * @param  array<string>  $chunks
+     */
+    public static function fromChunks(array $chunks, ?string $title = null, ?string $context = null): self
+    {
+        return new self(
+            document: $chunks,
+            mimeType: null,
+            dataFormat: 'content',
+            documentTitle: $title,
+            documentContext: $context
         );
     }
 }

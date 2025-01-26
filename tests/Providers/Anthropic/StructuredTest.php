@@ -6,9 +6,12 @@ namespace Tests\Providers\Anthropic;
 
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Providers\Anthropic\Handlers\Structured;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Support\Carbon;
 use Tests\Fixtures\FixtureResponse;
@@ -91,4 +94,53 @@ it('adds rate limit data to the responseMeta', function (): void {
     expect($response->responseMeta->rateLimits[0]->limit)->toEqual(1000);
     expect($response->responseMeta->rateLimits[0]->remaining)->toEqual(500);
     expect($response->responseMeta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
+});
+
+it('applies the citations request level providerMeta to all documents', function (): void {
+    Prism::fake();
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('game_time', 'The tigers game time'),
+            new BooleanSchema('coat_required', 'whether a coat is required'),
+        ],
+        ['weather', 'game_time', 'coat_required']
+    );
+
+    $request = Prism::structured()
+        ->withSchema($schema)
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withMessages([
+            (new UserMessage(
+                content: 'What color is the grass and sky?',
+                additionalContent: [
+                    Document::fromText('The grass is green. The sky is blue.'),
+                ]
+            )),
+        ])
+        ->withProviderMeta(Provider::Anthropic, ['citations' => true]);
+
+    $payload = Structured::buildHttpRequestPayload($request->toRequest());
+
+    expect($payload['messages'])->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'What color is the grass and sky?',
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'text',
+                    'media_type' => 'text/plain',
+                    'data' => 'The grass is green. The sky is blue.',
+                ],
+                'citations' => ['enabled' => true],
+            ],
+        ],
+    ]]);
 });

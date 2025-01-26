@@ -17,14 +17,16 @@ readonly class Step
      * @param  ToolCall[]  $toolCalls
      * @param  ToolResult[]  $toolResults
      * @param  Message[]  $messages
+     * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
-        public string $text,
-        public FinishReason $finishReason,
-        public array $toolCalls,
-        public array $toolResults,
-        public Usage $usage,
-        public ResponseMeta $responseMeta,
-        public array $messages,
+        public readonly string $text,
+        public readonly FinishReason $finishReason,
+        public readonly array $toolCalls,
+        public readonly array $toolResults,
+        public readonly Usage $usage,
+        public readonly ResponseMeta $responseMeta,
+        public readonly array $messages,
+        public readonly array $additionalContent = []
     ) {}
 }

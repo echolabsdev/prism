@@ -14,9 +14,11 @@ class AssistantMessage implements Message
 
     /**
      * @param  ToolCall[]  $toolCalls
+     * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
         public readonly string $content,
-        public readonly array $toolCalls = []
+        public readonly array $toolCalls = [],
+        public readonly array $additionalContent = []
     ) {}
 }

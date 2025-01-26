@@ -37,7 +37,7 @@ class Structured extends AnthropicHandlerAbstract
 
         return array_merge([
             'model' => $request->model,
-            'messages' => MessageMap::map($request->messages),
+            'messages' => MessageMap::map($request->messages, $request->providerMeta(Provider::Anthropic)),
             'max_tokens' => $request->maxTokens ?? 2048,
         ], array_filter([
             'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
@@ -74,7 +74,10 @@ class Structured extends AnthropicHandlerAbstract
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
                 rateLimits: $this->processRateLimits()
-            )
+            ),
+            additionalContent: array_filter([
+                'messagePartsWithCitations' => $this->extractCitations($data),
+            ])
         );
     }
 

@@ -53,6 +53,7 @@ readonly class ResponseBuilder
             finishReason: $finalStep->finishReason,
             usage: $this->calculateTotalUsage(),
             responseMeta: $finalStep->responseMeta,
+            additionalContent: $finalStep->additionalContent,
         );
     }
 
