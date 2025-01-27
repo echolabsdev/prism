@@ -172,7 +172,7 @@ it('tracks provider responses properly', function (): void {
     });
 });
 
-test('it adds system message and user message to first step', function (): void {
+test('it adds system message user message and assistant message response to first step', function (): void {
     Prism::fake([
         new ProviderResponse(
             text: json_encode(['I am a string']),
@@ -192,6 +192,7 @@ test('it adds system message and user message to first step', function (): void 
     $response = $request->generate();
 
     expect($response)->toBeInstanceOf(Response::class);
+    expect($response->steps[0]->messages)->toHaveCount(3);
 
     /** @var SystemMessage */
     $system_message = $response->steps[0]->messages[0];
@@ -206,4 +207,12 @@ test('it adds system message and user message to first step', function (): void 
     expect($user_message)->toBeInstanceOf(UserMessage::class)
         ->and($user_message->text())
         ->toBe('User Prompt');
+
+    /** @var AssistantMessage */
+    $assistant_message = $response->steps[0]->messages[2];
+
+    expect($assistant_message)->toBeInstanceOf(AssistantMessage::class)
+        ->and($assistant_message->content)
+        ->toBe(json_encode(['I am a string']));
+
 });

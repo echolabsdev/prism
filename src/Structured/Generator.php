@@ -24,9 +24,9 @@ class Generator
 
     public function generate(Request $request): Response
     {
-        $response = $this->sendProviderRequest($request);
-
         $this->messages = $request->messages;
+
+        $response = $this->sendProviderRequest($request);
 
         $this->responseBuilder->addStep(new Step(
             text: $response->text,
