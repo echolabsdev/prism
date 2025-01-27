@@ -307,7 +307,7 @@ test('it correctly builds message chain with tools', function (): void {
         );
 });
 
-test('it adds the system message and user message to first step', function (): void {
+test('it adds the system message user message and assistant response to first step', function (): void {
     $request = (new PendingRequest)
         ->using('test-provider', 'test-model')
         ->withSystemPrompt('System Prompt')
@@ -330,4 +330,11 @@ test('it adds the system message and user message to first step', function (): v
     expect($user_message)->toBeInstanceOf(UserMessage::class)
         ->and($user_message->text())
         ->toBe('User Prompt');
+
+    /** @var AssistantMessage */
+    $assistant_message = $response->steps[0]->messages[2];
+
+    expect($assistant_message)->toBeInstanceOf(AssistantMessage::class)
+        ->and($assistant_message->content)
+        ->toBe("I'm nyx!");
 });
