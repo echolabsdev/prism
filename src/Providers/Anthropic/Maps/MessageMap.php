@@ -120,10 +120,18 @@ class MessageMap
      */
     protected static function mapAssistantMessage(AssistantMessage $message): array
     {
+        $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
+
         $content = [];
 
-        if ($message->content !== '' && $message->content !== '0') {
-            $cacheType = data_get($message->providerMeta(Provider::Anthropic), 'cacheType', null);
+        if (isset($message->additionalContent['messagePartsWithCitations'])) {
+            foreach ($message->additionalContent['messagePartsWithCitations'] as $part) {
+                $content[] = array_filter([
+                    ...$part->toContentBlock(),
+                    'cache_control' => $cacheType ? ['type' => $cacheType instanceof BackedEnum ? $cacheType->value : $cacheType] : null,
+                ]);
+            }
+        } elseif ($message->content !== '' && $message->content !== '0') {
 
             $content[] = array_filter([
                 'type' => 'text',

@@ -49,6 +49,7 @@ If you prefer, you can use the `AnthropicCacheType` Enum like so:
 use EchoLabs\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 
 (new UserMessage('I am a long re-usable user message.'))->withProviderMeta(Provider::Anthropic, ['cacheType' => AnthropicCacheType::ephemeral])
 ```
@@ -56,7 +57,9 @@ Note that you must use the `withMessages()` method in order to enable prompt cac
 
 Please ensure you read Anthropic's [prompt caching documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching), which covers some important information on e.g. minimum cacheable tokens and message order consistency.
 
-### PDF Support
+## Documents
+
+### PDF Documents
 
 Prism supports Anthropic PDF processing on UserMessages via the `$additionalContent` parameter:
 
@@ -64,6 +67,7 @@ Prism supports Anthropic PDF processing on UserMessages via the `$additionalCont
 use EchoLabs\Enums\Provider;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 
 Prism::text()
     ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
@@ -80,7 +84,7 @@ Prism::text()
 ```
 Anthropic use vision to process PDFs, and consequently there are some limitations detailed in their [feature documentation](https://docs.anthropic.com/en/docs/build-with-claude/pdf-support).
 
-### Txt and md Document Support
+### Txt and md Documents
 
 Prism supports txt/md documents on UserMessages via the `$additionalContent` parameter:
 
@@ -88,6 +92,7 @@ Prism supports txt/md documents on UserMessages via the `$additionalContent` par
 use EchoLabs\Enums\Provider;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 
 Prism::text()
     ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
@@ -102,6 +107,97 @@ Prism::text()
     ->generate();
 
 ```
+
+### Custom content documents
+
+Prism supports Anthropic's "custom content documents", which is primarily for use with citations (see below) where you need citations to reference your own chunking strategy.
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
+
+Prism::text()
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
+    ->withMessages([
+        new UserMessage(
+            content: "Is the grass green and the sky blue?",
+            additionalContent: [
+                Document::fromChunks(["The grass is green.", "Flamingos are pink.", "The sky is blue."])
+            ]
+        )
+    ])
+    ->generate();
+```
+
+## Citations
+
+Prism supports [Anthropic's citations feature](https://docs.anthropic.com/en/docs/build-with-claude/citations) for both text and structured. 
+
+Please note however that due to Anthropic not supporting "native" structured output, and Prism's workaround for this, the output can be unreliable. You should therefore ensure you implement proper error handling for the scenario where Anthropic does not return a valid decodable schema.
+
+### Enabling citations
+
+Anthropic require citations to be enabled on all documents in a request. To enable them, using the `withProviderMeta()` method when building your request:
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
+
+$response = Prism::text()
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
+    ->withMessages([
+        new UserMessage(
+            content: "Is the grass green and the sky blue?",
+            additionalContent: [
+                Document::fromChunks(["The grass is green.", "Flamingos are pink.", "The sky is blue."])
+            ]
+        )
+    ])
+    ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+    ->generate();
+```
+
+### Accessing citations
+
+You can access the chunked output with its citations via the additionalContent property on a response, which returns an array of `Providers\Anthropic\ValueObjects\MessagePartWithCitations`s.
+
+As a rough worked example, let's assume you want to implement footnotes. You'll need to loop through those chunks and (1) re-construct the message with links to the footnotes; and (2) build an array of footnotes to loop through in your frontend.
+
+```php
+use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
+use EchoLabs\Prism\Providers\Anthropic\ValueObjects\Citation;
+
+$messageChunks = $response->additionalContent['messagePartsWithCitations'];
+
+$text = '';
+$footnotes = '';
+
+$footnoteId = 1;
+
+/** @var MessagePartWithCitations $messageChunk  */
+foreach ($messageChunks as $messageChunk) {
+    $text .= $messageChunk->text;
+    
+    /** @var Citation $citation */
+    foreach ($messageChunk->citations as $citation) {
+        $footnotes[] = [
+            'id' => $footnoteId,
+            'document_title' => $citation->documentTitle,
+            'reference_start' => $citation->startIndex,
+            'reference_end' => $citation->endIndex
+        ];
+    
+        $text .= '<sup><a href="#footnote-'.$footnoteId.'">'.$footnoteId.'</a></sup>';
+    
+        $footnoteId++;
+    }
+}
+```
+
 
 ## Considerations
 ### Message Order

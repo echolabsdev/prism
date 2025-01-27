@@ -7,6 +7,7 @@ namespace Tests\Providers\Anthropic;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Structured;
+use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
@@ -143,4 +144,44 @@ it('applies the citations request level providerMeta to all documents', function
             ],
         ],
     ]]);
+});
+
+it('saves message parts with citations to additionalContent on response steps and assistant message for text documents', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-structured-with-text-document-citations');
+
+    $response = Prism::structured()
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withMessages([
+            new UserMessage(
+                content: 'Is the grass green and the sky blue?',
+                additionalContent: [
+                    Document::fromChunks(['The grass is green.', 'Flamingos are pink.', 'The sky is blue.']),
+                ]
+            ),
+        ])
+        ->withSchema(new ObjectSchema('body', '', [new BooleanSchema('answer', '')], ['answer']))
+        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+        ->generate();
+
+    expect($response->structured)->toBe(['answer' => true]);
+
+    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(1);
+    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    /** @var MessagePartWithCitations */
+    $messagePart = $response->additionalContent['messagePartsWithCitations'][0];
+
+    expect($messagePart->text)->toBe('{"answer": true}');
+    expect($messagePart->citations)->toHaveCount(2);
+    expect($messagePart->citations[0]->type)->toBe('content_block_location');
+    expect($messagePart->citations[0]->citedText)->toBe('The grass is green.');
+    expect($messagePart->citations[0]->startIndex)->toBe(0);
+    expect($messagePart->citations[0]->endIndex)->toBe(1);
+    expect($messagePart->citations[0]->documentIndex)->toBe(0);
+
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(1);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    expect($response->responseMessages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(1);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
 });

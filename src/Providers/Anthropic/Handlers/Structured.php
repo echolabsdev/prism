@@ -93,6 +93,5 @@ class Structured extends AnthropicHandlerAbstract
                 ? "\n\n Return the JSON as a single text block with a single set of citations."
                 : ''
         )));
-
     }
 }

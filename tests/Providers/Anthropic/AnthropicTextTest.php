@@ -271,6 +271,8 @@ it('saves message parts with citations to additionalContent on response steps an
         ->withProviderMeta(Provider::Anthropic, ['citations' => true])
         ->generate();
 
+    expect($response->text)->toEqual('According to the text, the grass is green and the sky is blue.');
+
     expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
     expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
 
@@ -309,6 +311,8 @@ it('saves message parts with citations to additionalContent on response steps an
         ->withProviderMeta(Provider::Anthropic, ['citations' => true])
         ->generate();
 
+    expect($response->text)->toBe("According to the documents:\nThe grass is green and the sky is blue.");
+
     expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
     expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
 
@@ -346,6 +350,8 @@ it('saves message parts with citations to additionalContent on response steps an
         ])
         ->withProviderMeta(Provider::Anthropic, ['citations' => true])
         ->generate();
+
+    expect($response->text)->toBe('According to the documents, the grass is green and the sky is blue.');
 
     expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
     expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);

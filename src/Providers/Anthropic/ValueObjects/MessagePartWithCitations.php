@@ -40,4 +40,32 @@ class MessagePartWithCitations
             }, $data['citations'] ?? [])
         );
     }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function toContentBlock(): array
+    {
+        return [
+            'type' => 'text',
+            'text' => $this->text,
+            'citations' => array_map(function (Citation $citation): array {
+                $indexPropertyCommonPart = match ($citation->type) {
+                    'page_location' => 'page_number',
+                    'char_location' => 'char_index',
+                    'content_block_location' => 'block_index',
+                    default => throw new \InvalidArgumentException("Unknown citation type: {$citation->type}"),
+                };
+
+                return [
+                    'type' => $citation->type,
+                    'cited_text' => $citation->citedText,
+                    'document_index' => $citation->documentIndex,
+                    'document_title' => $citation->documentTitle,
+                    "start_$indexPropertyCommonPart" => $citation->startIndex,
+                    "end_$indexPropertyCommonPart" => $citation->endIndex,
+                ];
+            }, $this->citations),
+        ];
+    }
 }
