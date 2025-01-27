@@ -153,7 +153,11 @@ $response = Prism::text()
         new UserMessage(
             content: "Is the grass green and the sky blue?",
             additionalContent: [
-                Document::fromChunks(["The grass is green.", "Flamingos are pink.", "The sky is blue."])
+                Document::fromChunks(
+                    chunks: ["The grass is green.", "Flamingos are pink.", "The sky is blue."],
+                    title: 'The colours of nature',
+                    context: 'The go-to textbook on the colours found in nature!'
+                )
             ]
         )
     ])
