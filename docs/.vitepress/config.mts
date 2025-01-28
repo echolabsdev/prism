@@ -170,6 +170,10 @@ export default defineConfig({
                 text: "Custom Providers",
                 link: "/advanced/custom-providers",
               },
+              {
+                text: "Handling Rate Limits",
+                link: "/advanced/rate-limits",
+              }
             ],
           },
           {
