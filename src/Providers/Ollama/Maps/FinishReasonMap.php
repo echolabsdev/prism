@@ -14,7 +14,6 @@ class FinishReasonMap
             'stop', => FinishReason::Stop,
             'tool_calls' => FinishReason::ToolCalls,
             'length' => FinishReason::Length,
-            'content_filter' => FinishReason::ContentFilter,
             default => FinishReason::Unknown,
         };
     }

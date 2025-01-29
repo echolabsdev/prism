@@ -6,31 +6,52 @@ namespace Tests\Providers\Ollama;
 
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Schema\BooleanSchema;
+use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured');
+    // FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured');
+
+    $profile = file_get_contents('profile.md');
 
     $schema = new ObjectSchema(
         'output',
         'the output object',
         [
-            new StringSchema('weather', 'The weather forecast'),
-            new StringSchema('game_time', 'The tigers game time'),
-            new BooleanSchema('coat_required', 'whether a coat is required'),
+            new StringSchema('name', 'The users name'),
+            new ArraySchema('hobbies', 'a list of the users hobbies',
+                new StringSchema('name', 'the name of the hobby'),
+            ),
+            new ArraySchema('open_source', 'The users open source contributions',
+                new StringSchema('name', 'the name of the project'),
+            ),
         ],
-        ['weather', 'game_time', 'coat_required']
+        ['name', 'hobbies', 'open_source']
     );
 
     $response = Prism::structured()
         ->withSchema($schema)
-        ->using(Provider::Ollama, 'qwen2.5:14b')
-        ->withSystemPrompt('The Tigers game is at 3pm today in Detroit with a temperature of 70º')
-        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->using(Provider::Ollama, 'deepseek-r1:14b-qwen-distill-q8_0')
+        ->withSystemPrompt('Extract the name, hobbies, and open source projects from the users profile')
+        ->withPrompt($profile)
+        ->withClientOptions(['timeout' => 10000])
         ->generate();
+
+    dd($response->structured);
+
+    // array:3 [
+    //   "name" => "Sarah Chen"
+    //   "hobbies" => array:2 [
+    //     0 => "rock climbing"
+    //     1 => "photography"
+    //   ]
+    //   "open_source" => array:2 [
+    //     0 => "Laravel Telescope - Enhanced Database Query Monitoring"
+    //     1 => "Laravel Workflow Manager (Personal Package)"
+    // ]
+    //   ]
 
     expect($response->structured)->toBeArray();
     expect($response->structured)->toHaveKeys([

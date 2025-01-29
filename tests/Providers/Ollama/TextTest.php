@@ -13,11 +13,6 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
-beforeEach(function (): void {
-    config()->set('prism.providers.ollama.driver', 'openai');
-    config()->set('prism.providers.ollama.url', 'http://localhost:11434/v1');
-});
-
 describe('Text generation', function (): void {
     it('can generate text with a prompt', function (): void {
         FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-a-prompt');
@@ -55,7 +50,7 @@ describe('Text generation', function (): void {
     });
 
     it('can generate text using multiple tools and multiple steps', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-multiple-tools');
+        // FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-multiple-tools');
 
         $tools = [
             Tool::as('weather')
@@ -74,6 +69,8 @@ describe('Text generation', function (): void {
             ->withMaxSteps(3)
             ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')
             ->generate();
+
+        dd($response);
 
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
