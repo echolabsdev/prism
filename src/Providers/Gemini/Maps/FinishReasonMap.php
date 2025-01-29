@@ -8,10 +8,10 @@ use EchoLabs\Prism\Enums\FinishReason;
 
 class FinishReasonMap
 {
-    public static function map(?string $reason): FinishReason
+    public static function map(?string $reason, bool $toolCall = false): FinishReason
     {
         return match ($reason) {
-            'STOP' => FinishReason::Stop,
+            'STOP' => $toolCall ? FinishReason::ToolCalls : FinishReason::Stop,
             'MAX_TOKENS' => FinishReason::Length,
             'SAFETY', 'BLOCKLIST', 'PROHIBITED_CONTENT', 'SPII', 'MALFORMED_FUNCTION_CALL' => FinishReason::ContentFilter,
             'RECITATION' => FinishReason::ContentFilter,
