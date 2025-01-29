@@ -201,7 +201,7 @@ export default {
           structured: Planned,
           embeddings: Supported,
           image: Supported,
-          tools: Planned,
+          tools: Supported,
           documents: Unsupported,
         },
         {
