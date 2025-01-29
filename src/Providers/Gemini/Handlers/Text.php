@@ -7,6 +7,8 @@ namespace EchoLabs\Prism\Providers\Gemini\Handlers;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
+use EchoLabs\Prism\Providers\Gemini\Maps\ToolCallMap;
+use EchoLabs\Prism\Providers\Gemini\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
@@ -42,14 +44,19 @@ class Text
             ));
         }
 
+        $isToolCall = !empty(data_get($data, 'candidates.0.content.parts.0.functionCall'));
+
         return new ProviderResponse(
             text: data_get($data, 'candidates.0.content.parts.0.text') ?? '',
-            toolCalls: [],
+            toolCalls: $isToolCall ? ToolCallMap::map(data_get($data, 'candidates.0.content.parts', [])) : [],
             usage: new Usage(
                 data_get($data, 'usageMetadata.promptTokenCount', 0),
                 data_get($data, 'usageMetadata.candidatesTokenCount', 0)
             ),
-            finishReason: FinishReasonMap::map(data_get($data, 'candidates.0.finishReason')),
+            finishReason: FinishReasonMap::map(
+                data_get($data, 'candidates.0.finishReason'),
+                $isToolCall
+            ),
             responseMeta: new ResponseMeta(
                 id: data_get($data, 'id', ''),
                 model: data_get($data, 'modelVersion'),
@@ -71,6 +78,11 @@ class Text
 
         if ($generationConfig !== []) {
             $payload['generationConfig'] = $generationConfig;
+        }
+
+        $tools = ToolMap::map($request->tools);
+        if ($tools !== []) {
+            $payload['tools'] = $tools;
         }
 
         $safetySettings = data_get($request->providerMeta, 'safetySettings');

@@ -8,7 +8,9 @@ use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
 
 class MessageMap
@@ -24,13 +26,10 @@ class MessageMap
         protected ?string $systemPrompt = null
     ) {
         if ($systemPrompt !== null && $systemPrompt !== '' && $systemPrompt !== '0') {
-            $this->contents['system_instruction'] = [
-                'parts' => [
-                    [
-                        'text' => $systemPrompt,
-                    ],
-                ],
-            ];
+            $this->messages = array_merge(
+                [new SystemMessage($systemPrompt)],
+                $this->messages
+            );
         }
     }
 
@@ -53,6 +52,7 @@ class MessageMap
         match ($message::class) {
             UserMessage::class => $this->mapUserMessage($message),
             AssistantMessage::class => $this->mapAssistantMessage($message),
+            ToolResultMessage::class => $this->mapToolResultMessage($message),
             SystemMessage::class => $this->mapSystemMessage($message),
             default => throw new Exception('Could not map message type '.$message::class),
         };
@@ -69,8 +69,35 @@ class MessageMap
         ];
     }
 
+    protected function mapToolResultMessage(ToolResultMessage $message): void
+    {
+        $parts = [];
+        foreach ($message->toolResults as $toolResult) {
+            $parts[] = [
+                'functionResponse' => [
+                    'name' => $toolResult->toolName,
+                    'response' => [
+                        'name' => $toolResult->toolName,
+                        'content' => json_encode($toolResult->result),
+                    ],
+                ],
+            ];
+        }
+
+        $this->contents['contents'][] = [
+            'role' => 'user',
+            'parts' => $parts,
+        ];
+    }
+
     protected function mapUserMessage(UserMessage $message): void
     {
+        $parts = [];
+
+        if ($message->text()) {
+            $parts[] = ['text' => $message->text()];
+        }
+
         $imageParts = array_map(fn (Image $image): array => [
             'inline_data' => [
                 'mime_type' => $image->mimeType,
@@ -78,22 +105,36 @@ class MessageMap
             ],
         ], $message->images());
 
+        $parts = array_merge($parts, $imageParts);
+
         $this->contents['contents'][] = [
             'role' => 'user',
-            'parts' => [
-                ['text' => $message->text()],
-                ...$imageParts,
-            ],
+            'parts' => $parts,
         ];
     }
 
     protected function mapAssistantMessage(AssistantMessage $message): void
     {
+        $parts = [];
+
+        if ($message->content) {
+            $parts[] = ['text' => $message->content];
+        }
+
+        if ($message->toolCalls) {
+            foreach ($message->toolCalls as $toolCall) {
+                $parts[] = [
+                    'functionCall' => [
+                        'name' => $toolCall->name,
+                        'args' => $toolCall->arguments(),
+                    ],
+                ];
+            }
+        }
+
         $this->contents['contents'][] = [
             'role' => 'model',
-            'parts' => [
-                ['text' => $message->content],
-            ],
+            'parts' => $parts,
         ];
     }
 

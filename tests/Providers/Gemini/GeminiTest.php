@@ -7,6 +7,7 @@ namespace Tests\Providers\Gemini;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Tool;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
-    config()->set('prism.providers.gemini.api_key', env('GEMINI_API_KEY', 'gsk_00000000000000000000000000000000'));
+    config()->set('prism.providers.gemini.api_key', env('GEMINI_API_KEY', 'sk-proj-1234567890'));
 });
 
 describe('Text generation for Gemini', function (): void {
@@ -52,6 +53,51 @@ describe('Text generation for Gemini', function (): void {
             ->and($response->responseMeta->id)->toBe('')
             ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
             ->and($response->finishReason)->toBe(FinishReason::Stop);
+    });
+
+    it('can generate text using multiple tools and multiple steps', function (): void {
+        FixtureResponse::fakeResponseSequence('*', 'gemini/generate-text-with-multiple-tools');
+
+        $tools = [
+            (new Tool)
+                ->as('get_weather')
+                ->for('use this tool when you need to get weather for the city')
+                ->withStringParameter('city', 'The city that you want the weather for')
+                ->using(fn (string $city): string => 'The weather will be 45° and cold'),
+            (new Tool)
+                ->as('search_games')
+                ->for('useful for searching current games times in the city')
+                ->withStringParameter('city', 'The city that you want the game times for')
+                ->using(fn (string $city): string => 'The tigers game is at 3pm in detroit'),
+        ];
+
+        $response = Prism::text()
+            ->using(Provider::Gemini, 'gemini-1.5-flash')
+            ->withTools($tools)
+            ->withMaxSteps(5)
+            ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat? please check all the details from tools')
+            ->generate();
+
+        // Assert tool calls in the first step
+        $firstStep = $response->steps[0];
+        expect($firstStep->toolCalls)->toHaveCount(2);
+        expect($firstStep->toolCalls[0]->name)->toBe('search_games');
+        expect($firstStep->toolCalls[0]->arguments())->toBe([
+            'city' => 'Detroit',
+        ]);
+        expect($firstStep->toolCalls[1]->name)->toBe('get_weather');
+        expect($firstStep->toolCalls[1]->arguments())->toBe([
+            'city' => 'Detroit',
+        ]);
+
+        // Assert usage (combined from both responses)
+        expect($response->usage->promptTokens)->toBe(350)
+            ->and($response->usage->completionTokens)->toBe(42);
+
+        // Assert response
+        expect($response->responseMeta->id)->toBe('')
+            ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
+            ->and($response->text)->toBe('The tigers game is at 3pm today in Detroit.  The weather will be 45° and cold, so you should wear a coat.');
     });
 });
 
