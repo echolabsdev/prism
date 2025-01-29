@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Gemini\Maps;
 
 use EchoLabs\Prism\Enums\ToolChoice;
-use InvalidArgumentException;
 
 class ToolChoiceMap
 {
