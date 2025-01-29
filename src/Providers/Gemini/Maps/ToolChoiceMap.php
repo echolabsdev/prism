@@ -28,7 +28,6 @@ class ToolChoiceMap
             ToolChoice::Auto => ['function_calling_config' => ['mode' => 'AUTO']],
             ToolChoice::None => ['function_calling_config' => ['mode' => 'NONE']],
             null => $toolChoice,
-            default => throw new InvalidArgumentException('Invalid tool choice')
         };
     }
 }
