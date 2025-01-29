@@ -8,4 +8,5 @@ enum ToolChoice
 {
     case Auto;
     case Any;
+    case None;
 }

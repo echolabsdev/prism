@@ -14,10 +14,10 @@ class ToolCallMap
      */
     public static function map(array $toolCalls): array
     {
-        if (empty($toolCalls)) {
+        if ($toolCalls === []) {
             return [];
         }
-        
+
         return array_map(fn (array $toolCall): \EchoLabs\Prism\ValueObjects\ToolCall => new ToolCall(
             id: data_get($toolCall, 'functionCall.name'),
             name: data_get($toolCall, 'functionCall.name'),

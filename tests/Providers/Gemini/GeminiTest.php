@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
-    config()->set('prism.providers.gemini.api_key', env('GEMINI_API_KEY', 'sk-proj-1234567890'));
+    config()->set('prism.providers.gemini.api_key', env('GEMINI_API_KEY', 'sss-1234567890'));
 });
 
 describe('Text generation for Gemini', function (): void {
@@ -98,6 +98,32 @@ describe('Text generation for Gemini', function (): void {
         expect($response->responseMeta->id)->toBe('')
             ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
             ->and($response->text)->toBe('The tigers game is at 3pm today in Detroit.  The weather will be 45° and cold, so you should wear a coat.');
+    });
+
+    it('handles specific tool choice', function (): void {
+        FixtureResponse::fakeResponseSequence('*', 'gemini/generate-text-with-required-tool-call');
+
+        $tools = [
+            (new Tool)
+                ->as('weather')
+                ->for('useful when you need to search for current weather conditions')
+                ->withStringParameter('city', 'The city that you want the weather for')
+                ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+            (new Tool)
+                ->as('search')
+                ->for('useful for searching curret events or data')
+                ->withStringParameter('query', 'The detailed search query')
+                ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+        ];
+
+        $response = Prism::text()
+            ->using(Provider::Gemini, 'gemini-1.5-flash')
+            ->withPrompt('Do something')
+            ->withTools($tools)
+            ->withToolChoice('weather')
+            ->generate();
+
+        expect($response->steps[0]->toolCalls[0]->name)->toBe('weather');
     });
 });
 

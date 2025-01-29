@@ -1,0 +1,39 @@
+{
+    "candidates": [
+        {
+            "content": {
+                "parts": [
+                    {
+                        "functionCall": {
+                            "name": "weather",
+                            "args": {
+                                "city": "London"
+                            }
+                        }
+                    }
+                ],
+                "role": "model"
+            },
+            "finishReason": "STOP",
+            "avgLogprobs": -0.036342903971672
+        }
+    ],
+    "usageMetadata": {
+        "promptTokenCount": 91,
+        "candidatesTokenCount": 3,
+        "totalTokenCount": 94,
+        "promptTokensDetails": [
+            {
+                "modality": "TEXT",
+                "tokenCount": 23
+            }
+        ],
+        "candidatesTokensDetails": [
+            {
+                "modality": "TEXT",
+                "tokenCount": 3
+            }
+        ]
+    },
+    "modelVersion": "gemini-1.5-flash"
+} 

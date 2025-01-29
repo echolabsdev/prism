@@ -15,15 +15,13 @@ it('maps tools to gemini format', function (): void {
         ->using(fn (): string => '[Search results]');
 
     expect(ToolMap::map([$tool]))->toBe([[
-        'functionDeclarations' => [[
-            'name' => $tool->name(),
-            'description' => $tool->description(),
-            'parameters' => [
-                'type' => 'object',
-                'properties' => $tool->parameters(),
-                'required' => $tool->requiredParameters(),
-            ],
-        ]],
+        'name' => $tool->name(),
+        'description' => $tool->description(),
+        'parameters' => [
+            'type' => 'object',
+            'properties' => $tool->parameters(),
+            'required' => $tool->requiredParameters(),
+        ],
     ]]);
 });
 
@@ -43,8 +41,8 @@ it('maps multiple tools', function (): void {
 
     $mapped = ToolMap::map($tools);
     expect($mapped)->toHaveCount(2);
-    expect($mapped[0]['functionDeclarations'][0]['name'])->toBe('search');
-    expect($mapped[1]['functionDeclarations'][0]['name'])->toBe('weather');
+    expect($mapped[0]['name'])->toBe('search');
+    expect($mapped[1]['name'])->toBe('weather');
 });
 
 it('returns empty array for no tools', function (): void {

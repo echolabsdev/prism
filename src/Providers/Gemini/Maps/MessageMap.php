@@ -10,7 +10,6 @@ use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
 
 class MessageMap
@@ -94,7 +93,7 @@ class MessageMap
     {
         $parts = [];
 
-        if ($message->text()) {
+        if ($message->text() !== '' && $message->text() !== '0') {
             $parts[] = ['text' => $message->text()];
         }
 
@@ -117,19 +116,17 @@ class MessageMap
     {
         $parts = [];
 
-        if ($message->content) {
+        if ($message->content !== '' && $message->content !== '0') {
             $parts[] = ['text' => $message->content];
         }
 
-        if ($message->toolCalls) {
-            foreach ($message->toolCalls as $toolCall) {
-                $parts[] = [
-                    'functionCall' => [
-                        'name' => $toolCall->name,
-                        'args' => $toolCall->arguments(),
-                    ],
-                ];
-            }
+        foreach ($message->toolCalls as $toolCall) {
+            $parts[] = [
+                'functionCall' => [
+                    'name' => $toolCall->name,
+                    'args' => $toolCall->arguments(),
+                ],
+            ];
         }
 
         $this->contents['contents'][] = [

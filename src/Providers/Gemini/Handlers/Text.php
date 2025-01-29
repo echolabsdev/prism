@@ -8,6 +8,7 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\ToolCallMap;
+use EchoLabs\Prism\Providers\Gemini\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
@@ -44,7 +45,7 @@ class Text
             ));
         }
 
-        $isToolCall = !empty(data_get($data, 'candidates.0.content.parts.0.functionCall'));
+        $isToolCall = ! empty(data_get($data, 'candidates.0.content.parts.0.functionCall'));
 
         return new ProviderResponse(
             text: data_get($data, 'candidates.0.content.parts.0.text') ?? '',
@@ -82,7 +83,13 @@ class Text
 
         $tools = ToolMap::map($request->tools);
         if ($tools !== []) {
-            $payload['tools'] = $tools;
+            $payload['tools'] = [
+                'function_declarations' => $tools,
+            ];
+        }
+
+        if ($request->toolChoice) {
+            $payload['tool_config'] = ToolChoiceMap::map($request->toolChoice);
         }
 
         $safetySettings = data_get($request->providerMeta, 'safetySettings');
