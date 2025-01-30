@@ -77,11 +77,7 @@ class MessageMap
 
         if ($images = $message->images()) {
             $mapped['images'] = array_map(
-                fn (Image $image): string => sprintf(
-                    'data:%s;base64,%s',
-                    $image->mimeType,
-                    $image->image
-                ),
+                fn (Image $image): string => $image->image,
                 $images
             );
         }

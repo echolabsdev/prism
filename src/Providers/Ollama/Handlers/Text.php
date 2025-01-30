@@ -31,17 +31,10 @@ class Text
             throw PrismException::providerRequestError($request->model, $e);
         }
 
-        ray('response', (string) $response->getBody());
-
-        ray('data', $data);
-
         if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Ollama Error: [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
+            throw PrismException::providerResponseError(sprintf(
+                'Ollama Error: %s',
+                data_get($data, 'error', 'unknown'),
             ));
         }
 
@@ -62,11 +55,19 @@ class Text
 
     public function sendRequest(Request $request): Response
     {
-        return $this->client->post('api/chat', ['model' => $request->model, 'system' => $request->systemPrompt, 'messages' => (new MessageMap($request->messages))->map(), 'tools' => ToolMap::map($request->tools), 'stream' => false, 'options' => array_filter([
-            'temperature' => $request->temperature,
-            'num_predict' => $request->maxTokens ?? 2048,
-            'top_p' => $request->topP,
-        ])]);
+        return $this
+            ->client
+            ->post('api/chat', [
+                'model' => $request->model,
+                'system' => $request->systemPrompt,
+                'messages' => (new MessageMap($request->messages))->map(),
+                'tools' => ToolMap::map($request->tools),
+                'stream' => false,
+                'options' => array_filter([
+                    'temperature' => $request->temperature,
+                    'num_predict' => $request->maxTokens ?? 2048,
+                    'top_p' => $request->topP,
+                ])]);
     }
 
     /**
@@ -82,6 +83,9 @@ class Text
         ), $toolCalls);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     protected function mapFinishReason(array $data): FinishReason
     {
         if (! empty(data_get($data, 'message.tool_calls'))) {

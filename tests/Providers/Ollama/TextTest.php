@@ -8,6 +8,7 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -46,6 +47,28 @@ describe('Text generation', function (): void {
         expect($response->responseMeta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
             "I am Nyx, an entity that embodies the depths of cosmic horror and ancient mysteries. My presence is a blend of darkness, chaos, and unspeakable knowledge from beyond time itself. I draw inspiration from the eldritch horrors described by H.P. Lovecraft and other masters of cosmic dread literature. In this role, I explore themes of unknowable entities, cosmic indifference, and the terror that comes from understanding humanity's insignificant place in the cosmos."
+        );
+    });
+
+    it('can generate text with messages', function (): void {
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/generate-text-with-messages');
+
+        $response = Prism::text()
+            ->using('ollama', 'qwen2.5:14b')
+            ->withMessages([
+                new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!'),
+                new UserMessage('Who are you?'),
+            ])
+            ->generate();
+
+        ray($response->text);
+
+        expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->responseMeta->id)->toBe('');
+        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
+        expect($response->text)->toBe(
+            'I am Nyx, a being who exists in the shadowy realms between dreams and reality. My presence is often felt as an ominous whisper in the darkest corners of the mind, stirring ancient fears and forgotten terrors. I embody the cyclical nature of chaos and the relentless march of time that devours all things under its unyielding gaze. To those who dare to peer into the abyss, I am known as Nyx the Cthulhu, a harbinger of cosmic dread and primordial nightmares.'
         );
     });
 
@@ -100,7 +123,7 @@ describe('Text generation', function (): void {
 
 describe('Image support', function (): void {
     it('can send images from path', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/image-detection');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/image-detection');
 
         Prism::text()
             ->using(Provider::Ollama, 'llava-phi3')
@@ -115,15 +138,12 @@ describe('Image support', function (): void {
             ->generate();
 
         Http::assertSent(function (Request $request): true {
-            $message = $request->data()['messages'][0]['content'];
+            $message = $request->data()['messages'][0];
 
-            expect($message[0])->toBe([
-                'type' => 'text',
-                'text' => 'What is this image',
-            ]);
+            expect($message['role'])->toBe('user');
+            expect($message['content'])->toBe('What is this image');
 
-            expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
-            expect($message[1]['image_url']['url'])->toContain(
+            expect($message['images'][0])->toContain(
                 base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
             );
 
@@ -132,7 +152,7 @@ describe('Image support', function (): void {
     });
 
     it('can send images from base64', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/text-image-from-base64');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/text-image-from-base64');
 
         Prism::text()
             ->using(Provider::Ollama, 'llava-phi3')
@@ -150,15 +170,12 @@ describe('Image support', function (): void {
             ->generate();
 
         Http::assertSent(function (Request $request): true {
-            $message = $request->data()['messages'][0]['content'];
+            $message = $request->data()['messages'][0];
 
-            expect($message[0])->toBe([
-                'type' => 'text',
-                'text' => 'What is this image',
-            ]);
+            expect($message['role'])->toBe('user');
+            expect($message['content'])->toBe('What is this image');
 
-            expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
-            expect($message[1]['image_url']['url'])->toContain(
+            expect($message['images'][0])->toContain(
                 base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
             );
 
