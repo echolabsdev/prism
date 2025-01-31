@@ -61,8 +61,6 @@ describe('Text generation', function (): void {
             ])
             ->generate();
 
-        ray($response->text);
-
         expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
         expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
         expect($response->responseMeta->id)->toBe('');
