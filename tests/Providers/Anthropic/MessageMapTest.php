@@ -242,16 +242,15 @@ it('maps tool result messages', function (): void {
 
 it('maps system messages', function (): void {
     expect(MessageMap::mapSystemMessages(
-        [new SystemMessage('Who are you?'), new UserMessage('I am rocket.')],
-        'I am Thanos. Me first.'
+        [new SystemMessage('I am rocket.'), new UserMessage('Who are you?'), new SystemMessage('But call be R.')],
     ))->toBe([
         [
             'type' => 'text',
-            'text' => 'I am Thanos. Me first.',
+            'text' => 'I am rocket.',
         ],
         [
             'type' => 'text',
-            'text' => 'Who are you?',
+            'text' => 'But call be R.',
         ],
     ]);
 });
@@ -349,7 +348,7 @@ it('sets the cache type on an AssistantMessage if cacheType providerMeta is set 
 it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
     expect(MessageMap::mapSystemMessages([
         (new SystemMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
-    ], null))->toBe([
+    ]))->toBe([
         [
             'type' => 'text',
             'text' => 'Who are you?',

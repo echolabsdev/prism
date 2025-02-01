@@ -36,14 +36,11 @@ class MessageMap
      * @param  array<int, Message>  $messages
      * @return array<int, mixed>
      */
-    public static function mapSystemMessages(array $messages, ?string $systemPrompt): array
+    public static function mapSystemMessages(array $messages): array
     {
-        return array_values(array_merge(
-            $systemPrompt !== null ? [self::mapSystemMessage(new SystemMessage($systemPrompt))] : [],
-            array_map(
-                fn (Message $message): array => self::mapMessage($message),
-                array_filter($messages, fn (Message $message): bool => $message instanceof SystemMessage)
-            )
+        return array_values(array_map(
+            fn (Message $message): array => self::mapMessage($message),
+            array_filter($messages, fn (Message $message): bool => $message instanceof SystemMessage)
         ));
     }
 

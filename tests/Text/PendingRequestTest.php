@@ -191,8 +191,7 @@ test('it can set string prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->prompt)->toBe('Hello AI')
-        ->and($generated->messages[0])->toBeInstanceOf(UserMessage::class);
+    expect($generated->messages[0])->toBeInstanceOf(UserMessage::class);
 });
 
 test('it can set view prompt', function (): void {
@@ -205,8 +204,7 @@ test('it can set view prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->prompt)->toBe('Hello AI')
-        ->and($generated->messages[0])->toBeInstanceOf(UserMessage::class);
+    expect($generated->messages[0])->toBeInstanceOf(UserMessage::class);
 });
 
 test('it can set string system prompt', function (): void {
@@ -216,8 +214,7 @@ test('it can set string system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt)
-        ->toBe('System instruction');
+    expect($generated->messages[0]->content)->toBe('System instruction');
 });
 
 test('it can set view system prompt', function (): void {
@@ -230,8 +227,7 @@ test('it can set view system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt)
-        ->toBe('System instruction');
+    expect($generated->messages[0]->content)->toBe('System instruction');
 });
 
 test('it can set messages', function (): void {
@@ -262,7 +258,7 @@ test('it throws exception when using both prompt and messages', function (): voi
         ->withPrompt('test')
         ->withMessages([new UserMessage('test')])
         ->toRequest();
-})->throws(PrismException::class, 'You can only use `prompt` or `messages`');
+})->throws(PrismException::class, 'You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
 
 test('it throws exception when using both messages and prompt', function (): void {
     $this->pendingRequest
@@ -270,7 +266,23 @@ test('it throws exception when using both messages and prompt', function (): voi
         ->withMessages([new UserMessage('test')])
         ->withPrompt('test')
         ->toRequest();
-})->throws(PrismException::class, 'You can only use `prompt` or `messages`');
+})->throws(PrismException::class, 'You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
+
+test('it throws exception when using both systemPrompt and messages', function (): void {
+    $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withSystemPrompt('test')
+        ->withMessages([new UserMessage('test')])
+        ->toRequest();
+})->throws(PrismException::class, 'You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
+
+test('it throws exception when using both messages and systemPrompt', function (): void {
+    $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withMessages([new UserMessage('test')])
+        ->withSystemPrompt('test')
+        ->toRequest();
+})->throws(PrismException::class, 'You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
 
 test('it generates response', function (): void {
     resolve('prism-manager')->extend('test-provider', fn ($config): ProviderContract => new TestProvider);

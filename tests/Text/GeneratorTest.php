@@ -221,7 +221,7 @@ test('it throws when using both prompt and messages', function (): void {
         ]);
 
     expect(fn (): \EchoLabs\Prism\Text\Request => $pendingRequest->toRequest())
-        ->toThrow(\EchoLabs\Prism\Exceptions\PrismException::class, 'You can only use `prompt` or `messages`');
+        ->toThrow(\EchoLabs\Prism\Exceptions\PrismException::class, 'You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
 });
 
 test('it correctly builds message chain with tools', function (): void {

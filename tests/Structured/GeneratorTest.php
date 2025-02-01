@@ -35,9 +35,7 @@ it('generates structured responses', function (): void {
 
     $generator = new Generator($fakeProvider);
     $request = new Request(
-        systemPrompt: 'test prompt',
         model: 'test-model',
-        prompt: 'generate data',
         messages: [],
         maxTokens: null,
         temperature: null,
@@ -91,9 +89,7 @@ it('handles invalid JSON responses', function (): void {
 
     $generator = new Generator($fakeProvider);
     $request = new Request(
-        systemPrompt: 'test prompt',
         model: 'test-model',
-        prompt: 'generate data',
         messages: [],
         maxTokens: null,
         temperature: null,
@@ -135,9 +131,7 @@ it('tracks provider responses properly', function (): void {
 
     $generator = new Generator($fakeProvider);
     $request = new Request(
-        systemPrompt: 'test prompt',
         model: 'test-model',
-        prompt: 'generate data',
         messages: [],
         maxTokens: null,
         temperature: null,
@@ -167,8 +161,7 @@ it('tracks provider responses properly', function (): void {
     $fakeProvider->assertCallCount(1);
     $fakeProvider->assertRequest(function (array $requests): void {
         expect($requests[0])->toBeInstanceOf(Request::class)
-            ->and($requests[0]->model)->toBe('test-model')
-            ->and($requests[0]->prompt)->toBe('generate data');
+            ->and($requests[0]->model)->toBe('test-model');
     });
 });
 

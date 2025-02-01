@@ -24,19 +24,17 @@ readonly class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public string $model,
-        public ?string $systemPrompt,
-        public ?string $prompt,
-        public array $messages,
-        public int $maxSteps,
-        public ?int $maxTokens,
-        public int|float|null $temperature,
-        public int|float|null $topP,
-        public array $tools,
-        public array $clientOptions,
-        public array $clientRetry,
-        public string|ToolChoice|null $toolChoice,
-        public array $providerMeta,
+        public readonly string $model,
+        public readonly array $messages,
+        public readonly int $maxSteps,
+        public readonly ?int $maxTokens,
+        public readonly int|float|null $temperature,
+        public readonly int|float|null $topP,
+        public readonly array $tools,
+        public readonly array $clientOptions,
+        public readonly array $clientRetry,
+        public readonly string|ToolChoice|null $toolChoice,
+        public readonly array $providerMeta,
     ) {}
 
     public function addMessage(Message $message): self
@@ -44,9 +42,7 @@ readonly class Request implements PrismRequest
         $messages = array_merge($this->messages, [$message]);
 
         return new self(
-            systemPrompt: $this->systemPrompt,
             model: $this->model,
-            prompt: $this->prompt,
             messages: $messages,
             maxSteps: $this->maxSteps,
             maxTokens: $this->maxTokens,

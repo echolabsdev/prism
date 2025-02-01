@@ -12,7 +12,7 @@ class PrismException extends Exception
 {
     public static function promptOrMessages(): self
     {
-        return new self('You can only use `prompt` or `messages`');
+        return new self('You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
     }
 
     public static function toolNotFound(string $name, Throwable $previous): self

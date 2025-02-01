@@ -69,7 +69,7 @@ class Text
     {
         $endpoint = "{$request->model}:generateContent";
 
-        $payload = (new MessageMap($request->messages, $request->systemPrompt))();
+        $payload = (new MessageMap($request->messages))();
 
         $generationConfig = array_filter([
             'temperature' => $request->temperature,
