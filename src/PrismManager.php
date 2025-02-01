@@ -8,6 +8,7 @@ use Closure;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\Provider as ProviderEnum;
 use EchoLabs\Prism\Providers\Anthropic\Anthropic;
+use EchoLabs\Prism\Providers\Cohere\Cohere;
 use EchoLabs\Prism\Providers\DeepSeek\DeepSeek;
 use EchoLabs\Prism\Providers\Gemini\Gemini;
 use EchoLabs\Prism\Providers\Groq\Groq;
@@ -29,7 +30,7 @@ class PrismManager
     ) {}
 
     /**
-     * @param  array<string, mixed>  $providerConfig
+     * @param array<string, mixed> $providerConfig
      *
      * @throws InvalidArgumentException
      */
@@ -78,7 +79,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createOpenaiProvider(array $config): OpenAI
     {
@@ -91,7 +92,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createOllamaProvider(array $config): Ollama
     {
@@ -102,7 +103,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createMistralProvider(array $config): Mistral
     {
@@ -113,7 +114,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createAnthropicProvider(array $config): Anthropic
     {
@@ -124,7 +125,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createDeepseekProvider(array $config): DeepSeek
     {
@@ -134,7 +135,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, mixed>  $config
+     * @param array<string, mixed> $config
      */
     protected function callCustomCreator(string $provider, array $config): Provider
     {
@@ -150,7 +151,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createGroqProvider(array $config): Groq
     {
@@ -161,7 +162,7 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createXaiProvider(array $config): XAI
     {
@@ -172,13 +173,26 @@ class PrismManager
     }
 
     /**
-     * @param  array<string, string>  $config
+     * @param array<string, string> $config
      */
     protected function createGeminiProvider(array $config): Gemini
     {
         return new Gemini(
             url: $config['url'],
             apiKey: $config['api_key'],
+        );
+    }
+
+    /**
+     * @param array<string, string> $config
+     * @return Cohere
+     */
+    protected function createCohereProvider(array $config): Cohere
+    {
+        return new Cohere(
+            apiKey: $config['api_key'],
+            url: $config['url'],
+            embedConfig: $config['embed'] ?? [],
         );
     }
 }
