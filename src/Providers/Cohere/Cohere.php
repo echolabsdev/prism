@@ -9,6 +9,8 @@ use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Cohere\Handlers\Embeddings;
+use EchoLabs\Prism\Providers\Cohere\Handlers\Structured;
+use EchoLabs\Prism\Providers\Cohere\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
@@ -44,7 +46,9 @@ class Cohere implements Provider
     #[Override]
     public function text(TextRequest $request): ProviderResponse
     {
-        throw new Exception(sprintf('%s does not support text mode', class_basename($this)));
+        $handler = new Text($this->client($request->clientOptions, $request->clientRetry));
+
+        return $handler->handle($request);
     }
 
     /**
@@ -55,7 +59,9 @@ class Cohere implements Provider
     #[Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        throw new Exception(sprintf('%s does not support structured mode', class_basename($this)));
+        $handler = new Structured($this->client($request->clientOptions, $request->clientRetry));
+
+        return $handler->handle($request);
     }
 
     /**
