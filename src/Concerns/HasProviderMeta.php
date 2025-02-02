@@ -7,7 +7,7 @@ use EchoLabs\Prism\Enums\Provider;
 trait HasProviderMeta
 {
     /** @var array<string, array<string, mixed>> */
-    protected $providerMeta = [];
+    protected array $providerMeta = [];
 
     /**
      * @param  array<string, mixed>  $meta

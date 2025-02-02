@@ -26,7 +26,7 @@ class PrismFake implements Provider
     protected array $recorded = [];
 
     /** @var array<string, mixed> */
-    protected $providerConfig = [];
+    protected array $providerConfig = [];
 
     /**
      * @param  array<int, ProviderResponse|EmbeddingResponse>  $responses

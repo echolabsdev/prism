@@ -120,7 +120,7 @@ class PrismChatController
      * @param  array<int, mixed>  $messages
      * @return array<int, UserMessage|AssistantMessage>
      */
-    protected function mapMessages($messages): array
+    protected function mapMessages(array $messages): array
     {
         return collect($messages)
             ->map(fn ($message): UserMessage|AssistantMessage => match ($message['role']) {
