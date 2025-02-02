@@ -12,9 +12,9 @@ use EchoLabs\Prism\Schema\StringSchema;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
-    // FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured');
+    FixtureResponse::fakeResponseSequence('api/chat', 'ollama/structured');
 
-    $profile = file_get_contents('profile.md');
+    $profile = file_get_contents('tests/Fixtures/profile.md');
 
     $schema = new ObjectSchema(
         'output',
@@ -39,28 +39,14 @@ it('returns structured output', function (): void {
         ->withClientOptions(['timeout' => 10000])
         ->generate();
 
-    dd($response->structured);
-
-    // array:3 [
-    //   "name" => "Sarah Chen"
-    //   "hobbies" => array:2 [
-    //     0 => "rock climbing"
-    //     1 => "photography"
-    //   ]
-    //   "open_source" => array:2 [
-    //     0 => "Laravel Telescope - Enhanced Database Query Monitoring"
-    //     1 => "Laravel Workflow Manager (Personal Package)"
-    // ]
-    //   ]
-
     expect($response->structured)->toBeArray();
     expect($response->structured)->toHaveKeys([
-        'weather',
-        'game_time',
-        'coat_required',
+        'name',
+        'hobbies',
+        'open_source',
     ]);
-    expect($response->structured['weather'])->toBeString();
-    expect($response->structured['game_time'])->toBeString();
-    expect($response->structured['coat_required'])->toBeBool();
+    expect($response->structured['name'])->toBeString();
+    expect($response->structured['hobbies'])->toBeArray();
+    expect($response->structured['open_source'])->toBeArray();
 
 });
