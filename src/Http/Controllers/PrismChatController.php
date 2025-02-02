@@ -137,7 +137,7 @@ class PrismChatController
             $prism = PrismServer::prisms()
                 ->sole('name', $model);
         } catch (ItemNotFoundException $e) {
-            throw PrismServerException::unresolveableModel($model, $e);
+            throw PrismServerException::unresolvableModel($model, $e);
         }
 
         return $prism['prism']();
