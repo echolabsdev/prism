@@ -18,7 +18,7 @@ return [
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
         ],
         'ollama' => [
-            'url' => env('OLLAMA_URL', 'http://localhost:11434/v1'),
+            'url' => env('OLLAMA_URL', 'http://localhost:11434'),
         ],
         'mistral' => [
             'api_key' => env('MISTRAL_API_KEY', ''),

@@ -20,19 +20,15 @@ class Embeddings
     {
         try {
             $response = $this->sendRequest($request);
+            $data = $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
 
-        $data = $response->json();
-
         if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Ollama Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
+            throw PrismException::providerResponseError(sprintf(
+                'Ollama Error: %s',
+                data_get($data, 'error', 'unknown'),
             ));
         }
 
@@ -45,7 +41,7 @@ class Embeddings
     protected function sendRequest(Request $request): Response
     {
         return $this->client->post(
-            'embeddings',
+            'api/embed',
             [
                 'model' => $request->model,
                 'input' => $request->input,
