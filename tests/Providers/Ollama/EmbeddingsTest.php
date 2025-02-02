@@ -9,7 +9,7 @@ use EchoLabs\Prism\Prism;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns embeddings from input', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/embeddings', 'ollama/embeddings-input');
+    FixtureResponse::fakeResponseSequence('api/embed', 'ollama/embeddings-input');
 
     $response = Prism::embeddings()
         ->using(Provider::Ollama, 'mxbai-embed-large')
@@ -22,7 +22,7 @@ it('returns embeddings from input', function (): void {
 });
 
 it('returns embeddings from file', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/embeddings', 'ollama/embeddings-file');
+    FixtureResponse::fakeResponseSequence('api/embed', 'ollama/embeddings-file');
 
     $response = Prism::embeddings()
         ->using(Provider::Ollama, 'mxbai-embed-large')

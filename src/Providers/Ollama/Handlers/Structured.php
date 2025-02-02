@@ -29,12 +29,9 @@ class Structured
         }
 
         if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Ollama Error: [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
+            throw PrismException::providerResponseError(sprintf(
+                'Ollama Error: %s',
+                data_get($data, 'error', 'unknown'),
             ));
         }
 
