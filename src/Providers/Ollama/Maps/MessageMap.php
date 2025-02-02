@@ -63,7 +63,7 @@ class MessageMap
                 'role' => 'tool',
                 'content' => is_string($toolResult->result)
                     ? $toolResult->result
-                    : json_encode($toolResult->result),
+                    : (json_encode($toolResult->result) ?: ''),
             ];
         }
     }
