@@ -6,16 +6,16 @@ namespace EchoLabs\Prism\Schema;
 
 use EchoLabs\Prism\Contracts\Schema;
 
-class EnumSchema implements Schema
+readonly class EnumSchema implements Schema
 {
     /**
      * @param  array<int, string|int|float>  $options
      */
     public function __construct(
-        public readonly string $name,
-        public readonly string $description,
-        public readonly array $options,
-        public readonly bool $nullable = false,
+        public string $name,
+        public string $description,
+        public array $options,
+        public bool $nullable = false,
     ) {}
 
     #[\Override]

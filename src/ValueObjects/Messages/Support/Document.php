@@ -11,13 +11,13 @@ use InvalidArgumentException;
 /**
  * Note: Prism currently only supports Documents with Anthropic.
  */
-class Document
+readonly class Document
 {
-    public readonly string $dataFormat;
+    public string $dataFormat;
 
     public function __construct(
-        public readonly string $document,
-        public readonly string $mimeType,
+        public string $document,
+        public string $mimeType,
         ?string $dataFormat = null
     ) {
         // Done this way to avoid assigning a readonly property twice.

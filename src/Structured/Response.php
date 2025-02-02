@@ -10,7 +10,7 @@ use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
-class Response
+readonly class Response
 {
     /**
      * @param  Collection<int, Step>  $steps
@@ -18,12 +18,12 @@ class Response
      * @param  array<mixed>  $structured
      */
     public function __construct(
-        public readonly Collection $steps,
-        public readonly Collection $responseMessages,
-        public readonly string $text,
-        public readonly ?array $structured,
-        public readonly FinishReason $finishReason,
-        public readonly Usage $usage,
-        public readonly ResponseMeta $responseMeta,
+        public Collection $steps,
+        public Collection $responseMessages,
+        public string $text,
+        public ?array $structured,
+        public FinishReason $finishReason,
+        public Usage $usage,
+        public ResponseMeta $responseMeta,
     ) {}
 }

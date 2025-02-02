@@ -12,7 +12,7 @@ use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
-class Response
+readonly class Response
 {
     /**
      * @param  Collection<int, Step>  $steps
@@ -22,14 +22,14 @@ class Response
      * @param  Collection<int, Message>  $messages
      */
     public function __construct(
-        public readonly Collection $steps,
-        public readonly Collection $responseMessages,
-        public readonly string $text,
-        public readonly FinishReason $finishReason,
-        public readonly array $toolCalls,
-        public readonly array $toolResults,
-        public readonly Usage $usage,
-        public readonly ResponseMeta $responseMeta,
-        public readonly Collection $messages,
+        public Collection $steps,
+        public Collection $responseMessages,
+        public string $text,
+        public FinishReason $finishReason,
+        public array $toolCalls,
+        public array $toolResults,
+        public Usage $usage,
+        public ResponseMeta $responseMeta,
+        public Collection $messages,
     ) {}
 }

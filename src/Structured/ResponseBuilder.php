@@ -10,13 +10,13 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
-class ResponseBuilder
+readonly class ResponseBuilder
 {
     /** @var Collection<int, Step> */
-    public readonly Collection $steps;
+    public Collection $steps;
 
     /** @var Collection<int, Message> */
-    public readonly Collection $responseMessages;
+    public Collection $responseMessages;
 
     public function __construct()
     {

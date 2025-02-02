@@ -7,12 +7,12 @@ namespace EchoLabs\Prism\ValueObjects\Messages;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 
-class ToolResultMessage implements Message
+readonly class ToolResultMessage implements Message
 {
     /**
      * @param  ToolResult[]  $toolResults
      */
     public function __construct(
-        public readonly array $toolResults
+        public array $toolResults
     ) {}
 }
