@@ -15,7 +15,7 @@ readonly class Response
     /**
      * @param  Collection<int, Step>  $steps
      * @param  Collection<int, Message>  $responseMessages
-     * @param  array<mixed>  $structured
+     * @param  array<mixed>|null  $structured
      */
     public function __construct(
         public Collection $steps,

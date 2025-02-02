@@ -12,7 +12,7 @@ use EchoLabs\Prism\ValueObjects\Usage;
 readonly class Step
 {
     /**
-     * @param  array<mixed>  $object
+     * @param  array<mixed>|null  $object
      * @param  Message[]  $messages
      */
     public function __construct(

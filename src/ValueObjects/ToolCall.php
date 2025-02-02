@@ -20,7 +20,7 @@ class ToolCall
      */
     public function arguments(): array
     {
-        if (is_string($this->arguments) && json_validate($this->arguments)) {
+        if (is_string($this->arguments)) {
             /** @var string $arguments */
             $arguments = $this->arguments;
 

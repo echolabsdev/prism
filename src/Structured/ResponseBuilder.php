@@ -59,13 +59,13 @@ readonly class ResponseBuilder
     /**
      * @return array<mixed>
      */
-    protected function decodeObject(string $responseText): ?array
+    protected function decodeObject(string $responseText): array
     {
-        if (! json_validate($responseText)) {
+        try {
+            return json_decode($responseText, true, flags: JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
             throw PrismException::structuredDecodingError($responseText);
         }
-
-        return json_decode($responseText, true);
     }
 
     protected function calculateTotalUsage(): Usage
