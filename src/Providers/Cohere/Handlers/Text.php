@@ -20,16 +20,11 @@ class Text
 {
     use Handler;
 
-    /**
-     * @param PendingRequest $client
-     */
     public function __construct(protected PendingRequest $client)
     {
     }
 
     /**
-     * @param Request $request
-     * @return ProviderResponse
      * @throws PrismException
      */
     public function handle(Request $request): ProviderResponse
@@ -61,8 +56,6 @@ class Text
     }
 
     /**
-     * @param Request $request
-     * @return Response
      * @throws ConnectionException
      */
     public function sendRequest(Request $request): Response

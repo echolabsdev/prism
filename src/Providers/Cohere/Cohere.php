@@ -26,8 +26,6 @@ use SensitiveParameter;
 class Cohere implements Provider
 {
     /**
-     * @param string $apiKey
-     * @param string $url
      * @param array<string, string> $embedConfig
      */
     public function __construct(
@@ -39,8 +37,6 @@ class Cohere implements Provider
     }
 
     /**
-     * @param TextRequest $request
-     * @return ProviderResponse
      * @throws PrismException
      */
     #[Override]
@@ -52,8 +48,6 @@ class Cohere implements Provider
     }
 
     /**
-     * @param StructuredRequest $request
-     * @return ProviderResponse
      * @throws Exception
      */
     #[Override]
@@ -65,8 +59,6 @@ class Cohere implements Provider
     }
 
     /**
-     * @param EmbeddingRequest $request
-     * @return EmbeddingResponse
      * @throws PrismException
      */
     #[Override]

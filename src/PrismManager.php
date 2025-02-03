@@ -185,7 +185,6 @@ class PrismManager
 
     /**
      * @param array<string, string> $config
-     * @return Cohere
      */
     protected function createCohereProvider(array $config): Cohere
     {

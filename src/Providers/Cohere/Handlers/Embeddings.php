@@ -17,15 +17,12 @@ class Embeddings
 {
     /**
      * @param array<string, string> $config
-     * @param PendingRequest $client
      */
     public function __construct(protected array $config, protected PendingRequest $client)
     {
     }
 
     /**
-     * @param Request $request
-     * @return EmbeddingsResponse
      * @throws PrismException
      */
     public function handle(Request $request): EmbeddingsResponse
@@ -48,8 +45,6 @@ class Embeddings
     }
 
     /**
-     * @param Request $request
-     * @return Response
      * @throws ConnectionException
      */
     protected function sendRequest(Request $request): Response
