@@ -27,7 +27,7 @@ class Text extends AnthropicHandlerAbstract
     #[\Override]
     public static function buildHttpRequestPayload(PrismRequest $request): array
     {
-        if (! $request instanceof TextRequest) {
+        if (! $request->is(TextRequest::class)) {
             throw new \InvalidArgumentException('Request must be an instance of '.TextRequest::class);
         }
 

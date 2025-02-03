@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Structured;
 
 use Closure;
+use EchoLabs\Prism\Concerns\ChecksSelf;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Contracts\Schema;
@@ -15,6 +16,8 @@ use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 class Request implements PrismRequest
 {
+    use ChecksSelf;
+
     /**
      * @param  array<int, Message>  $messages
      * @param  array<string, mixed>  $clientOptions

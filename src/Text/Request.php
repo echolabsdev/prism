@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Text;
 
 use Closure;
+use EchoLabs\Prism\Concerns\ChecksSelf;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Enums\ToolChoice;
@@ -12,6 +13,8 @@ use EchoLabs\Prism\Tool;
 
 class Request implements PrismRequest
 {
+    use ChecksSelf;
+
     /**
      * @param  array<int, Message>  $messages
      * @param  array<int, Tool>  $tools
