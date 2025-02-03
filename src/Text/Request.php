@@ -46,8 +46,8 @@ readonly class Request implements PrismRequest
         return new self(
             systemPrompt: $this->systemPrompt,
             model: $this->model,
-            messages: $messages,
             prompt: $this->prompt,
+            messages: $messages,
             maxSteps: $this->maxSteps,
             maxTokens: $this->maxTokens,
             temperature: $this->temperature,

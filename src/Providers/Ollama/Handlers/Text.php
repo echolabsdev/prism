@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
-use Throwable;
-use EchoLabs\Prism\Text\Request;
-use Illuminate\Http\Client\Response;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\Usage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
-use Illuminate\Http\Client\PendingRequest;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
-use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
+use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
+use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\Usage;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
+use Throwable;
 
 class Text
 {
@@ -62,7 +62,7 @@ class Text
         if ($messages[0] instanceof SystemMessage && $messages[0]->content === $request->systemPrompt) {
             array_shift($messages);
         }
-        
+
         return $this
             ->client
             ->post('api/chat', [
