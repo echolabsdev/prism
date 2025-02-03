@@ -161,6 +161,10 @@ export default defineConfig({
                 text: "XAI",
                 link: "/providers/xai",
               },
+              {
+                text: "Cohere",
+                link: "/providers/cohere",
+              },
             ],
           },
           {
