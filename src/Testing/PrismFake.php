@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Testing;
 
 use Closure;
-use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
@@ -13,7 +12,6 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -95,10 +93,7 @@ class PrismFake implements Provider
         $prompts = collect($this->recorded)
             ->flatten()
             ->map
-            ->messages
-            ->flatten()
-            ->filter(fn (Message $message): bool => $message instanceof UserMessage)
-            ->map(fn (UserMessage $message): string => $message->text());
+            ->prompt;
 
         PHPUnit::assertTrue(
             $prompts->contains($prompt),

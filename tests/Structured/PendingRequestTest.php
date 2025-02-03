@@ -36,7 +36,7 @@ test('it cannot have both prompt and messages', function (): void {
         ->withMessages([new UserMessage('Test message')]);
 
     expect(fn () => $this->pendingRequest->toRequest())
-        ->toThrow(PrismException::class, 'You can only use `withPrompt` and `withSystemPrompt` or `withMessages`');
+        ->toThrow(PrismException::class, 'You can only use `prompt` or `messages`');
 });
 
 test('it converts prompt to message', function (): void {
@@ -82,6 +82,8 @@ test('it generates a proper request object', function (): void {
     expect($request)
         ->toBeInstanceOf(Request::class)
         ->model->toBe($model)
+        ->systemPrompt->toBe($systemPrompt)
+        ->prompt->toBe($prompt)
         ->schema->toBe($schema)
         ->temperature->toBe($temperature)
         ->maxTokens->toBe($maxTokens)

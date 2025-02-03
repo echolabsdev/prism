@@ -25,6 +25,8 @@ readonly class Request implements PrismRequest
      */
     public function __construct(
         public readonly string $model,
+        public readonly ?string $systemPrompt,
+        public readonly ?string $prompt,
         public readonly array $messages,
         public readonly int $maxSteps,
         public readonly ?int $maxTokens,
@@ -42,8 +44,10 @@ readonly class Request implements PrismRequest
         $messages = array_merge($this->messages, [$message]);
 
         return new self(
+            systemPrompt: $this->systemPrompt,
             model: $this->model,
             messages: $messages,
+            prompt: $this->prompt,
             maxSteps: $this->maxSteps,
             maxTokens: $this->maxTokens,
             temperature: $this->temperature,

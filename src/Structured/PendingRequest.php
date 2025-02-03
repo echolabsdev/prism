@@ -34,7 +34,7 @@ class PendingRequest
 
     public function toRequest(): Request
     {
-        if ($this->messages && ($this->prompt || $this->systemPrompt)) {
+        if ($this->messages && $this->prompt) {
             throw PrismException::promptOrMessages();
         }
 
@@ -54,6 +54,8 @@ class PendingRequest
 
         return new Request(
             model: $this->model,
+            systemPrompt: $this->systemPrompt,
+            prompt: $this->prompt,
             messages: $messages,
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
