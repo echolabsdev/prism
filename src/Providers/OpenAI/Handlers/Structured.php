@@ -7,6 +7,9 @@ use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
+use EchoLabs\Prism\Providers\OpenAI\Maps\ToolCallMap;
+use EchoLabs\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
+use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
 use EchoLabs\Prism\Providers\OpenAI\Support\StructuredModeResolver;
 use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -51,6 +54,8 @@ class Structured
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
                 'response_format' => $responseFormat,
+                'tools' => ToolMap::map($request->tools),
+                'tool_choice' => ToolChoiceMap::map($request->toolChoice),
             ]))
         );
     }
@@ -124,7 +129,7 @@ class Structured
 
         return new ProviderResponse(
             text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: [],
+            toolCalls: ToolCallMap::map(data_get($data, 'choices.0.message.tool_calls', [])),
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),

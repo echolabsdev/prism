@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Structured;
 
-use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 class Generator
 {
-    /** @var Message[] */
-    protected array $messages = [];
+    use CallsTools;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -24,18 +24,38 @@ class Generator
 
     public function generate(Request $request): Response
     {
-        $this->messages = $request->messages;
-
         $response = $this->sendProviderRequest($request);
+
+        $responseMessage = new AssistantMessage(
+            $response->text,
+            $response->toolCalls
+        );
+
+        $this->responseBuilder->addResponseMessage($responseMessage);
+
+        $request = $request->addMessage($responseMessage);
+
+        if ($response->finishReason === FinishReason::ToolCalls) {
+            $toolResults = $this->callTools($request->tools, $response->toolCalls);
+            $message = new ToolResultMessage($toolResults);
+
+            $request = $request->addMessage($message);
+        }
 
         $this->responseBuilder->addStep(new Step(
             text: $response->text,
             object: $this->decodeObject($response->text),
             finishReason: $response->finishReason,
+            toolCalls: $response->toolCalls,
+            toolResults: $toolResults ?? [],
             usage: $response->usage,
             responseMeta: $response->responseMeta,
-            messages: $this->messages,
+            messages: $request->messages,
         ));
+
+        if ($this->shouldContinue($request->maxSteps, $response)) {
+            return $this->generate($request);
+        }
 
         return $this->responseBuilder->toResponse();
     }
@@ -54,17 +74,7 @@ class Generator
 
     protected function sendProviderRequest(Request $request): ProviderResponse
     {
-        $response = $this->provider->structured($request);
-
-        $responseMessage = new AssistantMessage(
-            $response->text,
-            $response->toolCalls
-        );
-
-        $this->responseBuilder->addResponseMessage($responseMessage);
-        $this->messages[] = $responseMessage;
-
-        return $response;
+        return $this->provider->structured($request);
     }
 
     protected function shouldContinue(int $maxSteps, ProviderResponse $response): bool
