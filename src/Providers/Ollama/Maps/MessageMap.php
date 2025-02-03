@@ -10,12 +10,11 @@ use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
 
 class MessageMap
 {
-    /** @var array<int, mixed> */
+    /** @var array<int, array{role: string, content: string}> */
     protected array $mappedMessages = [];
 
     /**
@@ -23,27 +22,19 @@ class MessageMap
      */
     public function __construct(
         protected array $messages,
-        protected string $systemPrompt
-    ) {
-        if ($systemPrompt !== '' && $systemPrompt !== '0') {
-            $this->messages = array_merge(
-                [new SystemMessage($systemPrompt)],
-                $this->messages
-            );
-        }
-    }
+    ) {}
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, array{role: string, content: string, images?: array<string>}>
      */
-    public function __invoke(): array
+    public function map(): array
     {
         array_map(
             fn (Message $message) => $this->mapMessage($message),
             $this->messages
         );
 
-        return $this->mappedMessages;
+        return array_values($this->mappedMessages);
     }
 
     protected function mapMessage(Message $message): void
@@ -70,45 +61,35 @@ class MessageMap
         foreach ($message->toolResults as $toolResult) {
             $this->mappedMessages[] = [
                 'role' => 'tool',
-                'tool_call_id' => $toolResult->toolCallId,
-                'content' => $toolResult->result,
+                'content' => is_string($toolResult->result)
+                    ? $toolResult->result
+                    : (json_encode($toolResult->result) ?: ''),
             ];
         }
     }
 
     protected function mapUserMessage(UserMessage $message): void
     {
-        $imageParts = array_map(fn (Image $image): array => [
-            'type' => 'image_url',
-            'image_url' => [
-                'url' => sprintf('data:%s;base64,%s', $image->mimeType, $image->image),
-            ],
-        ], $message->images());
-
-        $this->mappedMessages[] = [
+        $mapped = [
             'role' => 'user',
-            'content' => [
-                ['type' => 'text', 'text' => $message->text()],
-                ...$imageParts,
-            ],
+            'content' => $message->text(),
         ];
+
+        if ($images = $message->images()) {
+            $mapped['images'] = array_map(
+                fn (Image $image): string => $image->image,
+                $images
+            );
+        }
+
+        $this->mappedMessages[] = $mapped;
     }
 
     protected function mapAssistantMessage(AssistantMessage $message): void
     {
-        $toolCalls = array_map(fn (ToolCall $toolCall): array => [
-            'id' => $toolCall->id,
-            'type' => 'function',
-            'function' => [
-                'name' => $toolCall->name,
-                'arguments' => json_encode($toolCall->arguments()),
-            ],
-        ], $message->toolCalls);
-
-        $this->mappedMessages[] = array_filter([
+        $this->mappedMessages[] = [
             'role' => 'assistant',
             'content' => $message->content,
-            'tool_calls' => $toolCalls,
-        ]);
+        ];
     }
 }

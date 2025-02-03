@@ -8,7 +8,6 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -23,7 +22,6 @@ class Structured
     public function handle(Request $request): ProviderResponse
     {
         try {
-            $request = $this->appendMessageForJsonMode($request);
             $response = $this->sendRequest($request);
             $data = $response->json();
         } catch (Throwable $e) {
@@ -31,51 +29,33 @@ class Structured
         }
 
         if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Ollama Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
+            throw PrismException::providerResponseError(sprintf(
+                'Ollama Error: %s',
+                data_get($data, 'error', 'unknown'),
             ));
         }
 
         return new ProviderResponse(
-            text: data_get($data, 'choices.0.message.content') ?? '',
+            text: data_get($data, 'message.content') ?? '',
             toolCalls: [],
             usage: new Usage(
-                data_get($data, 'usage.prompt_tokens'),
-                data_get($data, 'usage.completion_tokens'),
+                data_get($data, 'prompt_eval_count', 0),
+                data_get($data, 'eval_count', 0),
             ),
-            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
+            finishReason: FinishReasonMap::map(data_get($data, 'done_reason', '')),
             responseMeta: new ResponseMeta(
-                id: data_get($data, 'id'),
-                model: data_get($data, 'model'),
+                id: '',
+                model: $request->model,
             )
         );
     }
 
     public function sendRequest(Request $request): Response
     {
-        return $this->client->post(
-            'chat/completions',
-            array_merge([
-                'model' => $request->model,
-                'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_tokens' => $request->maxTokens ?? 2048,
-                'format' => ['type' => 'json_object'],
-            ], array_filter([
-                'temperature' => $request->temperature,
-                'top_p' => $request->topP,
-            ]))
-        );
-    }
-
-    protected function appendMessageForJsonMode(Request $request): Request
-    {
-        return $request->addMessage(new SystemMessage(sprintf(
-            "Respond with ONLY JSON that matches the following schema: \n %s",
-            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
-        )));
+        return $this->client->post('api/chat', ['model' => $request->model, 'system' => $request->systemPrompt, 'messages' => (new MessageMap($request->messages))->map(), 'format' => $request->schema->toArray(), 'stream' => false, 'options' => array_filter([
+            'temperature' => $request->temperature,
+            'num_predict' => $request->maxTokens ?? 2048,
+            'top_p' => $request->topP,
+        ])]);
     }
 }

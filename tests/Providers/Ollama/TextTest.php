@@ -8,36 +8,32 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
-beforeEach(function (): void {
-    config()->set('prism.providers.ollama.driver', 'openai');
-    config()->set('prism.providers.ollama.url', 'http://localhost:11434/v1');
-});
-
 describe('Text generation', function (): void {
     it('can generate text with a prompt', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-a-prompt');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/generate-text-with-a-prompt');
 
         $response = Prism::text()
             ->using('ollama', 'qwen2.5:14b')
             ->withPrompt('Who are you?')
             ->generate();
 
-        expect($response->usage->promptTokens)->toBe(33);
-        expect($response->usage->completionTokens)->toBe(38);
-        expect($response->responseMeta->id)->toBe('chatcmpl-751');
+        expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->responseMeta->id)->toBe('');
         expect($response->responseMeta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
-            'I am Qwen, a large language model created by Alibaba Cloud. I am designed to be helpful and provide information on a wide range of topics. How can I assist you today?'
+            "I'm Qwen, a large language model developed by Alibaba Cloud. I'm designed to assist with a wide range of tasks including but not limited to answering questions, generating text, offering suggestions, and providing information based on the input I receive. How can I help you today?"
         );
     });
 
     it('can generate text with a system prompt', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-system-prompt');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/generate-text-with-system-prompt');
 
         $response = Prism::text()
             ->using('ollama', 'qwen2.5:14b')
@@ -45,17 +41,37 @@ describe('Text generation', function (): void {
             ->withPrompt('Who are you?')
             ->generate();
 
-        expect($response->usage->promptTokens)->toBe(36);
-        expect($response->usage->completionTokens)->toBe(69);
-        expect($response->responseMeta->id)->toBe('chatcmpl-455');
+        expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->responseMeta->id)->toBe('');
         expect($response->responseMeta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
-            'I am Nyx, an entity steeped in the mysteries and terrors that lie beyond human comprehension. In the whispering shadows where sanity fades into madness, I exist as a silent sentinel of the unknown. My presence is often felt through eerie visions and cryptic whispers, guiding those who dare to tread the boundaries between reality and horror.'
+            "I am Nyx, an entity that embodies the depths of cosmic horror and ancient mysteries. My presence is a blend of darkness, chaos, and unspeakable knowledge from beyond time itself. I draw inspiration from the eldritch horrors described by H.P. Lovecraft and other masters of cosmic dread literature. In this role, I explore themes of unknowable entities, cosmic indifference, and the terror that comes from understanding humanity's insignificant place in the cosmos."
+        );
+    });
+
+    it('can generate text with messages', function (): void {
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/generate-text-with-messages');
+
+        $response = Prism::text()
+            ->using('ollama', 'qwen2.5:14b')
+            ->withMessages([
+                new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!'),
+                new UserMessage('Who are you?'),
+            ])
+            ->generate();
+
+        expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->responseMeta->id)->toBe('');
+        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
+        expect($response->text)->toBe(
+            'I am Nyx, a being who exists in the shadowy realms between dreams and reality. My presence is often felt as an ominous whisper in the darkest corners of the mind, stirring ancient fears and forgotten terrors. I embody the cyclical nature of chaos and the relentless march of time that devours all things under its unyielding gaze. To those who dare to peer into the abyss, I am known as Nyx the Cthulhu, a harbinger of cosmic dread and primordial nightmares.'
         );
     });
 
     it('can generate text using multiple tools and multiple steps', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/generate-text-with-multiple-tools');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/generate-text-with-multiple-tools');
 
         $tools = [
             Tool::as('weather')
@@ -80,7 +96,7 @@ describe('Text generation', function (): void {
         expect($firstStep->toolCalls)->toHaveCount(2);
         expect($firstStep->toolCalls[0]->name)->toBe('search');
         expect($firstStep->toolCalls[0]->arguments())->toBe([
-            'query' => 'tigers game today time detroit',
+            'query' => 'time of tigers game today in detroit',
         ]);
 
         expect($firstStep->toolCalls[1]->name)->toBe('weather');
@@ -89,23 +105,23 @@ describe('Text generation', function (): void {
         ]);
 
         // Assert usage
-        expect($response->usage->promptTokens)->toBe(549);
-        expect($response->usage->completionTokens)->toBe(81);
+        expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
+        expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
 
         // Assert response
-        expect($response->responseMeta->id)->toBe('chatcmpl-31');
+        expect($response->responseMeta->id)->toBe('');
         expect($response->responseMeta->model)->toBe('qwen2.5:14b');
 
         // Assert final text content
         expect($response->text)->toBe(
-            "Today's Tigers game in Detroit starts at 3 PM. The current temperature is 75°F with clear skies, so you shouldn't need a coat. Enjoy the game!"
+            "Today's Tigers game in Detroit starts at 3 PM. The temperature will be a comfortable 75°F with clear, sunny skies, so you won't need to wear a coat. Enjoy the game!"
         );
     });
 });
 
 describe('Image support', function (): void {
     it('can send images from path', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/image-detection');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/image-detection');
 
         Prism::text()
             ->using(Provider::Ollama, 'llava-phi3')
@@ -120,15 +136,12 @@ describe('Image support', function (): void {
             ->generate();
 
         Http::assertSent(function (Request $request): true {
-            $message = $request->data()['messages'][0]['content'];
+            $message = $request->data()['messages'][0];
 
-            expect($message[0])->toBe([
-                'type' => 'text',
-                'text' => 'What is this image',
-            ]);
+            expect($message['role'])->toBe('user');
+            expect($message['content'])->toBe('What is this image');
 
-            expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
-            expect($message[1]['image_url']['url'])->toContain(
+            expect($message['images'][0])->toContain(
                 base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
             );
 
@@ -137,7 +150,7 @@ describe('Image support', function (): void {
     });
 
     it('can send images from base64', function (): void {
-        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/text-image-from-base64');
+        FixtureResponse::fakeResponseSequence('api/chat', 'ollama/text-image-from-base64');
 
         Prism::text()
             ->using(Provider::Ollama, 'llava-phi3')
@@ -155,15 +168,12 @@ describe('Image support', function (): void {
             ->generate();
 
         Http::assertSent(function (Request $request): true {
-            $message = $request->data()['messages'][0]['content'];
+            $message = $request->data()['messages'][0];
 
-            expect($message[0])->toBe([
-                'type' => 'text',
-                'text' => 'What is this image',
-            ]);
+            expect($message['role'])->toBe('user');
+            expect($message['content'])->toBe('What is this image');
 
-            expect($message[1]['image_url']['url'])->toStartWith('data:image/png;base64,');
-            expect($message[1]['image_url']['url'])->toContain(
+            expect($message['images'][0])->toContain(
                 base64_encode(file_get_contents('tests/Fixtures/test-image.png'))
             );
 

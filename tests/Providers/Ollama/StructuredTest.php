@@ -6,40 +6,47 @@ namespace Tests\Providers\Ollama;
 
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Schema\BooleanSchema;
+use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/chat/completions', 'ollama/structured');
+    FixtureResponse::fakeResponseSequence('api/chat', 'ollama/structured');
+
+    $profile = file_get_contents('tests/Fixtures/profile.md');
 
     $schema = new ObjectSchema(
         'output',
         'the output object',
         [
-            new StringSchema('weather', 'The weather forecast'),
-            new StringSchema('game_time', 'The tigers game time'),
-            new BooleanSchema('coat_required', 'whether a coat is required'),
+            new StringSchema('name', 'The users name'),
+            new ArraySchema('hobbies', 'a list of the users hobbies',
+                new StringSchema('name', 'the name of the hobby'),
+            ),
+            new ArraySchema('open_source', 'The users open source contributions',
+                new StringSchema('name', 'the name of the project'),
+            ),
         ],
-        ['weather', 'game_time', 'coat_required']
+        ['name', 'hobbies', 'open_source']
     );
 
     $response = Prism::structured()
         ->withSchema($schema)
-        ->using(Provider::Ollama, 'qwen2.5:14b')
-        ->withSystemPrompt('The Tigers game is at 3pm today in Detroit with a temperature of 70º')
-        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->using(Provider::Ollama, 'deepseek-r1:14b-qwen-distill-q8_0')
+        ->withSystemPrompt('Extract the name, hobbies, and open source projects from the users profile')
+        ->withPrompt($profile)
+        ->withClientOptions(['timeout' => 10000])
         ->generate();
 
     expect($response->structured)->toBeArray();
     expect($response->structured)->toHaveKeys([
-        'weather',
-        'game_time',
-        'coat_required',
+        'name',
+        'hobbies',
+        'open_source',
     ]);
-    expect($response->structured['weather'])->toBeString();
-    expect($response->structured['game_time'])->toBeString();
-    expect($response->structured['coat_required'])->toBeBool();
+    expect($response->structured['name'])->toBeString();
+    expect($response->structured['hobbies'])->toBeArray();
+    expect($response->structured['open_source'])->toBeArray();
 
 });
