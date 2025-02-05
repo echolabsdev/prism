@@ -55,9 +55,13 @@ class Request
         );
     }
 
-    public function providerMeta(Provider $provider, string $valuePath = ''): mixed
+    public function providerMeta(string|Provider $provider, string $valuePath = ''): mixed
     {
-        $providerMeta = data_get($this->providerMeta, $provider->value, []);
+        $providerMeta = data_get(
+            $this->providerMeta,
+            is_string($provider) ? $provider : $provider->value,
+            []
+        );
 
         return data_get($providerMeta, $valuePath, $providerMeta);
     }
