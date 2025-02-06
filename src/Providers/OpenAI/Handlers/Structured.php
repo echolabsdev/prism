@@ -46,7 +46,7 @@ class Structured
             array_merge([
                 'model' => $request->model,
                 'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_completion_tokens' => $request->maxTokens ?? 2048,
+                'max_completion_tokens' => $request->maxTokens,
             ], array_filter([
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
