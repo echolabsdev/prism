@@ -11,7 +11,7 @@ use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 
-class Request implements PrismRequest
+readonly class Request implements PrismRequest
 {
     use ChecksSelf;
 
@@ -23,19 +23,19 @@ class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public readonly string $model,
-        public readonly ?string $systemPrompt,
-        public readonly ?string $prompt,
-        public readonly array $messages,
-        public readonly int $maxSteps,
-        public readonly ?int $maxTokens,
-        public readonly int|float|null $temperature,
-        public readonly int|float|null $topP,
-        public readonly array $tools,
-        public readonly array $clientOptions,
-        public readonly array $clientRetry,
-        public readonly string|ToolChoice|null $toolChoice,
-        public readonly array $providerMeta,
+        public string $model,
+        public ?string $systemPrompt,
+        public ?string $prompt,
+        public array $messages,
+        public int $maxSteps,
+        public ?int $maxTokens,
+        public int|float|null $temperature,
+        public int|float|null $topP,
+        public array $tools,
+        public array $clientOptions,
+        public array $clientRetry,
+        public string|ToolChoice|null $toolChoice,
+        public array $providerMeta,
     ) {}
 
     public function addMessage(Message $message): self
@@ -57,5 +57,16 @@ class Request implements PrismRequest
             toolChoice: $this->toolChoice,
             providerMeta: $this->providerMeta,
         );
+    }
+
+    public function providerMeta(string|Provider $provider, string $valuePath = ''): mixed
+    {
+        $providerMeta = data_get(
+            $this->providerMeta,
+            is_string($provider) ? $provider : $provider->value,
+            []
+        );
+
+        return data_get($providerMeta, $valuePath, $providerMeta);
     }
 }

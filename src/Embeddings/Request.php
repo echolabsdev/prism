@@ -8,7 +8,7 @@ use Closure;
 use EchoLabs\Prism\Concerns\ChecksSelf;
 use EchoLabs\Prism\Contracts\PrismRequest;
 
-class Request implements PrismRequest
+readonly class Request implements PrismRequest
 {
     use ChecksSelf;
 
@@ -17,9 +17,9 @@ class Request implements PrismRequest
      * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $clientRetry
      */
     public function __construct(
-        public readonly string $model,
-        public readonly string $input,
-        public readonly array $clientOptions,
-        public readonly array $clientRetry,
+        public string $model,
+        public string $input,
+        public array $clientOptions,
+        public array $clientRetry,
     ) {}
 }

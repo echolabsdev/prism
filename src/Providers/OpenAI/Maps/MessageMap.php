@@ -16,7 +16,7 @@ use Exception;
 class MessageMap
 {
     /** @var array<int, mixed> */
-    protected $mappedMessages = [];
+    protected array $mappedMessages = [];
 
     /**
      * @param  array<int, Message>  $messages

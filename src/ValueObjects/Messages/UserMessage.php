@@ -26,13 +26,15 @@ class UserMessage implements Message
 
     public function text(): string
     {
-        return collect($this->additionalContent)
-            ->map(function ($content) {
-                if ($content instanceof Text) {
-                    return $content->text;
-                }
-            })
-            ->implode('');
+        $result = '';
+
+        foreach ($this->additionalContent as $content) {
+            if ($content instanceof Text) {
+                $result .= $content->text;
+            }
+        }
+
+        return $result;
     }
 
     /**

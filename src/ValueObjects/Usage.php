@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\ValueObjects;
 
-class Usage
+readonly class Usage
 {
     public function __construct(
-        public readonly int $promptTokens,
-        public readonly int $completionTokens,
-        public readonly ?int $cacheWriteInputTokens = null,
-        public readonly ?int $cacheReadInputTokens = null
+        public int $promptTokens,
+        public int $completionTokens,
+        public ?int $cacheWriteInputTokens = null,
+        public ?int $cacheReadInputTokens = null
     ) {}
 }

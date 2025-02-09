@@ -6,16 +6,16 @@ namespace EchoLabs\Prism\ValueObjects;
 
 use EchoLabs\Prism\Enums\FinishReason;
 
-class ProviderResponse
+readonly class ProviderResponse
 {
     /**
      * @param  array<int, ToolCall>  $toolCalls
      */
     public function __construct(
-        public readonly string $text,
-        public readonly array $toolCalls,
-        public readonly Usage $usage,
-        public readonly FinishReason $finishReason,
-        public readonly ResponseMeta $responseMeta,
+        public string $text,
+        public array $toolCalls,
+        public Usage $usage,
+        public FinishReason $finishReason,
+        public ResponseMeta $responseMeta,
     ) {}
 }

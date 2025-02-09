@@ -11,7 +11,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withPrompt('Tell me a short story about a brave knight.')
     ->generate();
 
@@ -27,7 +27,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withSystemPrompt('You are an expert mathematician who explains concepts simply.')
     ->withPrompt('Explain the Pythagorean theorem.')
     ->generate();
@@ -40,7 +40,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withSystemPrompt(view('prompts.math-tutor'))
     ->withPrompt('What is calculus?')
     ->generate();
@@ -59,7 +59,7 @@ use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 
 $response = Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withMessages([
         new UserMessage('What is JSON?'),
         new AssistantMessage('JSON is a lightweight data format...'),
@@ -107,7 +107,7 @@ $message = new UserMessage(
 );
 
 $response = Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withMessages([$message])
     ->generate();
 ```
@@ -159,7 +159,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-sonnet')
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withPrompt('Explain quantum computing.')
     ->generate();
 
@@ -211,7 +211,7 @@ use Throwable;
 
 try {
     $response = Prism::text()
-        ->using(Provider::Anthropic, 'claude-3-sonnet')
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
         ->withPrompt('Generate text...')
         ->generate();
 } catch (PrismException $e) {

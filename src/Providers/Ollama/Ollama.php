@@ -16,11 +16,11 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class Ollama implements Provider
+readonly class Ollama implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
-        public readonly string $url,
+        #[\SensitiveParameter] public string $apiKey,
+        public string $url,
     ) {}
 
     #[\Override]

@@ -15,12 +15,12 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class Anthropic implements Provider
+readonly class Anthropic implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
-        public readonly string $apiVersion,
-        public readonly ?string $betaFeatures = null
+        #[\SensitiveParameter] public string $apiKey,
+        public string $apiVersion,
+        public ?string $betaFeatures = null
     ) {}
 
     #[\Override]

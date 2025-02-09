@@ -15,11 +15,11 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class Mistral implements Provider
+readonly class Mistral implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
-        public readonly string $url,
+        #[\SensitiveParameter] public string $apiKey,
+        public string $url,
     ) {}
 
     #[\Override]

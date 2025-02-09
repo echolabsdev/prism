@@ -14,7 +14,7 @@ use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
-class Request implements PrismRequest
+readonly class Request implements PrismRequest
 {
     use ChecksSelf;
 
@@ -25,18 +25,18 @@ class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public readonly ?string $systemPrompt,
-        public readonly string $model,
-        public readonly ?string $prompt,
-        public readonly array $messages,
-        public readonly ?int $maxTokens,
-        public readonly int|float|null $temperature,
-        public readonly int|float|null $topP,
-        public readonly array $clientOptions,
-        public readonly array $clientRetry,
-        public readonly Schema $schema,
-        public readonly array $providerMeta,
-        public readonly StructuredMode $mode,
+        public ?string $systemPrompt,
+        public string $model,
+        public ?string $prompt,
+        public array $messages,
+        public ?int $maxTokens,
+        public int|float|null $temperature,
+        public int|float|null $topP,
+        public array $clientOptions,
+        public array $clientRetry,
+        public Schema $schema,
+        public array $providerMeta,
+        public StructuredMode $mode,
     ) {}
 
     public function addMessage(UserMessage|SystemMessage $message): self
@@ -59,9 +59,13 @@ class Request implements PrismRequest
         );
     }
 
-    public function providerMeta(Provider $provider, string $valuePath = ''): mixed
+    public function providerMeta(string|Provider $provider, string $valuePath = ''): mixed
     {
-        $providerMeta = data_get($this->providerMeta, $provider->value, []);
+        $providerMeta = data_get(
+            $this->providerMeta,
+            is_string($provider) ? $provider : $provider->value,
+            []
+        );
 
         return data_get($providerMeta, $valuePath, $providerMeta);
     }

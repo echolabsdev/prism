@@ -9,7 +9,7 @@ use Throwable;
 
 class PrismServerException extends Exception
 {
-    public static function unresolveableModel(string $model, ?Throwable $previous = null): self
+    public static function unresolvableModel(string $model, ?Throwable $previous = null): self
     {
         return new self(
             sprintf('Prism "%s" is not registered with PrismServer', $model),

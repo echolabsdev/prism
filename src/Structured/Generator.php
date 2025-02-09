@@ -41,14 +41,10 @@ class Generator
     }
 
     /**
-     * @return array<mixed>
+     * @return array<mixed>|null
      */
     protected function decodeObject(string $responseText): ?array
     {
-        if (! json_validate($responseText)) {
-            return null;
-        }
-
         return json_decode($responseText, true);
     }
 

@@ -17,10 +17,10 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class DeepSeek implements Provider
+readonly class DeepSeek implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
+        #[\SensitiveParameter] public string $apiKey,
     ) {}
 
     #[\Override]
