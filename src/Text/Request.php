@@ -8,6 +8,7 @@ use Closure;
 use EchoLabs\Prism\Concerns\ChecksSelf;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 
