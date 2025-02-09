@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Concerns;
 
 trait ConfiguresModels
 {
-    protected ?int $maxTokens = null;
+    protected ?int $maxTokens = 2048;
 
     protected int|float|null $temperature = null;
 
