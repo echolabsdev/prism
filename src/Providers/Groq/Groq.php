@@ -14,11 +14,11 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class Groq implements Provider
+readonly class Groq implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
-        public readonly string $url,
+        #[\SensitiveParameter] public string $apiKey,
+        public string $url,
     ) {}
 
     #[\Override]

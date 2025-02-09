@@ -12,7 +12,7 @@ use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
-class Request
+readonly class Request
 {
     /**
      * @param  array<int, Message>  $messages
@@ -21,18 +21,18 @@ class Request
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public readonly ?string $systemPrompt,
-        public readonly string $model,
-        public readonly ?string $prompt,
-        public readonly array $messages,
-        public readonly ?int $maxTokens,
-        public readonly int|float|null $temperature,
-        public readonly int|float|null $topP,
-        public readonly array $clientOptions,
-        public readonly array $clientRetry,
-        public readonly Schema $schema,
-        public readonly array $providerMeta,
-        public readonly StructuredMode $mode,
+        public ?string $systemPrompt,
+        public string $model,
+        public ?string $prompt,
+        public array $messages,
+        public ?int $maxTokens,
+        public int|float|null $temperature,
+        public int|float|null $topP,
+        public array $clientOptions,
+        public array $clientRetry,
+        public Schema $schema,
+        public array $providerMeta,
+        public StructuredMode $mode,
     ) {}
 
     public function addMessage(UserMessage|SystemMessage $message): self

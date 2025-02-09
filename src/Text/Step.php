@@ -11,7 +11,7 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 
-class Step
+readonly class Step
 {
     /**
      * @param  ToolCall[]  $toolCalls
@@ -19,12 +19,12 @@ class Step
      * @param  Message[]  $messages
      */
     public function __construct(
-        public readonly string $text,
-        public readonly FinishReason $finishReason,
-        public readonly array $toolCalls,
-        public readonly array $toolResults,
-        public readonly Usage $usage,
-        public readonly ResponseMeta $responseMeta,
-        public readonly array $messages,
+        public string $text,
+        public FinishReason $finishReason,
+        public array $toolCalls,
+        public array $toolResults,
+        public Usage $usage,
+        public ResponseMeta $responseMeta,
+        public array $messages,
     ) {}
 }

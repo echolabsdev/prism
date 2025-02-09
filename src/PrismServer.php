@@ -8,13 +8,13 @@ use Closure;
 use EchoLabs\Prism\Text\PendingRequest;
 use Illuminate\Support\Collection;
 
-class PrismServer
+readonly class PrismServer
 {
     /**
      * @param  Collection<int, array{name: string, prism: Closure():PendingRequest|callable():PendingRequest}>  $prisms
      * */
     public function __construct(
-        protected readonly Collection $prisms = new Collection,
+        protected Collection $prisms = new Collection,
     ) {}
 
     /** @param \Closure():PendingRequest|callable():PendingRequest $prism */

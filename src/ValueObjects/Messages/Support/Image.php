@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-class Image
+readonly class Image
 {
     public function __construct(
-        public readonly string $image,
-        public readonly ?string $mimeType = null,
+        public string $image,
+        public ?string $mimeType = null,
     ) {}
 
     public static function fromPath(string $path): self

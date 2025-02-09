@@ -17,13 +17,13 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class OpenAI implements Provider
+readonly class OpenAI implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
-        public readonly string $url,
-        public readonly ?string $organization,
-        public readonly ?string $project,
+        #[\SensitiveParameter] public string $apiKey,
+        public string $url,
+        public ?string $organization,
+        public ?string $project,
     ) {}
 
     #[\Override]

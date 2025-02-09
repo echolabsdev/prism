@@ -15,11 +15,11 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
-class Gemini implements Provider
+readonly class Gemini implements Provider
 {
     public function __construct(
-        #[\SensitiveParameter] public readonly string $apiKey,
-        public readonly string $url,
+        #[\SensitiveParameter] public string $apiKey,
+        public string $url,
     ) {}
 
     #[\Override]
