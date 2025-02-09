@@ -202,7 +202,8 @@ it('throws an exception for o1 models', function (string $model): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 })->with([
-    'o1',
     'o1-mini',
+    'o1-mini-2024-09-12',
     'o1-preview',
+    'o1-preview-2024-09-12',
 ]);

@@ -45,9 +45,10 @@ class StructuredModeResolver
     protected static function unsupported(string $model): bool
     {
         return in_array($model, [
-            'o1',
             'o1-mini',
+            'o1-mini-2024-09-12',
             'o1-preview',
+            'o1-preview-2024-09-12',
         ]);
     }
 }
