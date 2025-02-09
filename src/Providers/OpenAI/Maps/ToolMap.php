@@ -20,11 +20,13 @@ class ToolMap
             'function' => [
                 'name' => $tool->name(),
                 'description' => $tool->description(),
-                'parameters' => [
-                    'type' => 'object',
-                    'properties' => $tool->parameters(),
-                    'required' => $tool->requiredParameters(),
-                ],
+                ...count($tool->parameters()) ? [
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => $tool->parameters(),
+                        'required' => $tool->requiredParameters(),
+                    ],
+                ] : [],
             ],
             'strict' => data_get($tool->providerMeta(Provider::OpenAI), 'strict', null),
         ]), $tools);
