@@ -9,6 +9,8 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
+use Illuminate\Support\Carbon;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
@@ -41,4 +43,52 @@ it('returns structured output', function (): void {
     expect($response->structured['weather'])->toBeString();
     expect($response->structured['game_time'])->toBeString();
     expect($response->structured['coat_required'])->toBeBool();
+});
+
+it('adds rate limit data to the responseMeta', function (): void {
+    $requests_reset = Carbon::now()->addSeconds(30);
+
+    FixtureResponse::fakeResponseSequence(
+        'messages',
+        'anthropic/structured',
+        [
+            'anthropic-ratelimit-requests-limit' => 1000,
+            'anthropic-ratelimit-requests-remaining' => 500,
+            'anthropic-ratelimit-requests-reset' => $requests_reset->toISOString(),
+            'anthropic-ratelimit-input-tokens-limit' => 80000,
+            'anthropic-ratelimit-input-tokens-remaining' => 0,
+            'anthropic-ratelimit-input-tokens-reset' => Carbon::now()->addSeconds(60)->toISOString(),
+            'anthropic-ratelimit-output-tokens-limit' => 16000,
+            'anthropic-ratelimit-output-tokens-remaining' => 15000,
+            'anthropic-ratelimit-output-tokens-reset' => Carbon::now()->addSeconds(5)->toISOString(),
+            'anthropic-ratelimit-tokens-limit' => 96000,
+            'anthropic-ratelimit-tokens-remaining' => 15000,
+            'anthropic-ratelimit-tokens-reset' => Carbon::now()->addSeconds(5)->toISOString(),
+        ]
+    );
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('weather', 'The weather forecast'),
+            new StringSchema('game_time', 'The tigers game time'),
+            new BooleanSchema('coat_required', 'whether a coat is required'),
+        ],
+        ['weather', 'game_time', 'coat_required']
+    );
+
+    $response = Prism::structured()
+        ->withSchema($schema)
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withSystemPrompt('The tigers game is at 3pm and the temperature will be 70º')
+        ->withPrompt('What time is the tigers game today and should I wear a coat?')
+        ->generate();
+
+    expect($response->responseMeta->rateLimits)->toHaveCount(4);
+    expect($response->responseMeta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+    expect($response->responseMeta->rateLimits[0]->name)->toEqual('requests');
+    expect($response->responseMeta->rateLimits[0]->limit)->toEqual(1000);
+    expect($response->responseMeta->rateLimits[0]->remaining)->toEqual(500);
+    expect($response->responseMeta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
 });
