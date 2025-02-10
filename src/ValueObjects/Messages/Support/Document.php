@@ -12,7 +12,7 @@ use InvalidArgumentException;
 /**
  * Note: Prism currently only supports Documents with Anthropic.
  */
-readonly class Document
+class Document
 {
     use HasProviderMeta;
 

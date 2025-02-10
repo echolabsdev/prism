@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\Contracts\PrismRequest;
-use Illuminate\Http\Client\PendingRequest;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
-use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
+use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Usage;
+use Illuminate\Http\Client\PendingRequest;
 
 class Structured extends AnthropicHandlerAbstract
 {
