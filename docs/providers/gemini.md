@@ -7,7 +7,3 @@
     'url' => env('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/models'),
 ],
 ```
-
-## Limitations
-
-- The structured output is not supported.
