@@ -162,6 +162,11 @@ class Tool
         return $this->description;
     }
 
+    public function hasParameters(): bool
+    {
+        return (bool) count($this->parameters);
+    }
+
     /**
      * @param  string|int|float  $args
      *

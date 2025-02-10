@@ -21,11 +21,13 @@ class ToolMap
         return array_map(fn (Tool $tool): array => [
             'name' => $tool->name(),
             'description' => $tool->description(),
-            'parameters' => [
-                'type' => 'object',
-                'properties' => $tool->parameters(),
-                'required' => $tool->requiredParameters(),
-            ],
+            ...$tool->hasParameters() ? [
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => $tool->parameters(),
+                    'required' => $tool->requiredParameters(),
+                ],
+            ] : [],
         ], $tools);
     }
 }
