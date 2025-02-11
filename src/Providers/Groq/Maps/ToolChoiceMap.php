@@ -12,9 +12,13 @@ class ToolChoiceMap
     /**
      * @return array<string, mixed>|string|null
      */
-    public static function map(string|ToolChoice|null $toolChoice): string|array|null
+    public static function map(string|ToolChoice|null $toolChoice, int $currentStep = 0, int $autoAfter = 1): string|array|null
     {
         if (is_string($toolChoice)) {
+            if ($currentStep >= $autoAfter) {
+                return 'auto';
+            }
+
             return [
                 'type' => 'function',
                 'function' => [

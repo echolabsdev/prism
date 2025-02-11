@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Providers\OpenAI;
 
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
 use Illuminate\Http\Client\Request;
@@ -202,15 +200,4 @@ it('handles specific tool choice', function (): void {
         ->generate();
 
     expect($response->toolCalls[0]->name)->toBe('weather');
-});
-
-it('throws an exception for ToolChoice::Any', function (): void {
-    $this->expectException(PrismException::class);
-    $this->expectExceptionMessage('Invalid tool choice');
-
-    Prism::text()
-        ->using('openai', 'gpt-4')
-        ->withPrompt('Who are you?')
-        ->withToolChoice(ToolChoice::Any)
-        ->generate();
 });

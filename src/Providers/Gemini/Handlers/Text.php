@@ -87,7 +87,9 @@ class Text
                     ...(new MessageMap($request->messages(), $request->systemPrompts()))(),
                     'generationConfig' => $generationConfig !== [] ? $generationConfig : null,
                     'tools' => $tools !== [] ? ['function_declarations' => $tools] : null,
-                    'tool_config' => $request->toolChoice() ? ToolChoiceMap::map($request->toolChoice()) : null,
+                    'tool_config' => $request->toolChoice() ?
+                        ToolChoiceMap::map($request->toolChoice(), $this->responseBuilder->steps->count(), $request->toolChoiceAutoAfter()) :
+                        null,
                     'safetySettings' => $request->providerMeta(Provider::Gemini, 'safetySettings'),
                 ])
             );

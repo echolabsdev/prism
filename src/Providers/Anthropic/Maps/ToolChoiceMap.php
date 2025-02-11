@@ -12,13 +12,19 @@ class ToolChoiceMap
     /**
      * @return array<string, mixed>|string|null
      */
-    public static function map(string|ToolChoice|null $toolChoice): string|array|null
+    public static function map(string|ToolChoice|null $toolChoice, int $currentStep = 0, int $autoAfter = 1): string|array|null
     {
         if (is_null($toolChoice)) {
             return null;
         }
 
         if (is_string($toolChoice)) {
+            if ($currentStep >= $autoAfter) {
+                return [
+                    'type' => 'auto',
+                ];
+            }
+
             return [
                 'type' => 'tool',
                 'name' => $toolChoice,
@@ -32,7 +38,7 @@ class ToolChoiceMap
         return [
             'type' => match ($toolChoice) {
                 ToolChoice::Auto => 'auto',
-                ToolChoice::Any => 'any',
+                ToolChoice::Any => $currentStep >= $autoAfter ? 'auto' : 'any',
                 ToolChoice::None => 'none',
             },
         ];
