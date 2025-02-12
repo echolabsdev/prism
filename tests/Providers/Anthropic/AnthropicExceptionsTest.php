@@ -1,6 +1,8 @@
 <?php
 
+use EchoLabs\Prism\Exceptions\PrismProviderOverloadedException;
 use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
+use EchoLabs\Prism\Exceptions\PrismRequestTooLargeException;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Support\Carbon;
@@ -63,3 +65,31 @@ it('sets the correct data on the RateLimitException', function (): void {
         expect($e->rateLimits[1]->remaining)->toEqual(0);
     }
 });
+
+it('throws an overloaded exception if the Anthropic responds with a 529', function (): void {
+    Http::fake([
+        'https://api.anthropic.com/*' => Http::response(
+            status: 529,
+        ),
+    ])->preventStrayRequests();
+
+    Prism::text()
+        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->withPrompt('Hello world!')
+        ->generate();
+
+})->throws(PrismProviderOverloadedException::class);
+
+it('throws a request too large exception if the Anthropic responds with a 413', function (): void {
+    Http::fake([
+        'https://api.anthropic.com/*' => Http::response(
+            status: 413,
+        ),
+    ])->preventStrayRequests();
+
+    Prism::text()
+        ->using('anthropic', 'claude-3-5-sonnet-20240620')
+        ->withPrompt('Hello world!')
+        ->generate();
+
+})->throws(PrismRequestTooLargeException::class);
