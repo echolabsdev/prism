@@ -33,8 +33,8 @@ class Embeddings
         }
 
         return new EmbeddingsResponse(
-            embeddings: data_get($data, 'data.0.embedding', []),
-            usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
+            embeddings: data_get($data, 'embeddings.0', []),
+            usage: new EmbeddingsUsage(0),
         );
     }
 
@@ -45,6 +45,7 @@ class Embeddings
             [
                 'model' => $request->model,
                 'input' => $request->input,
+                'truncate' => false,
             ]
         );
     }
