@@ -167,6 +167,10 @@ export default defineConfig({
             text: "Advanced",
             items: [
               {
+                text: "Error Handling",
+                link: "/advanced/error-handling",
+              },                
+              {
                 text: "Custom Providers",
                 link: "/advanced/custom-providers",
               },

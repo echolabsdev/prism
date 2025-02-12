@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
 use EchoLabs\Prism\Contracts\PrismRequest;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Exceptions\PrismProviderOverloadedException;
 use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
+use EchoLabs\Prism\Exceptions\PrismRequestTooLargeException;
 use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
 use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
@@ -94,6 +97,14 @@ abstract class AnthropicHandlerAbstract
                     ? (int) $this->httpResponse->getHeader('retry-after')[0]
                     : null
             );
+        }
+
+        if ($this->httpResponse->getStatusCode() === 529) {
+            throw PrismProviderOverloadedException::make(Provider::Anthropic);
+        }
+
+        if ($this->httpResponse->getStatusCode() === 413) {
+            throw PrismRequestTooLargeException::make(Provider::Anthropic);
         }
 
         $data = $this->httpResponse->json();

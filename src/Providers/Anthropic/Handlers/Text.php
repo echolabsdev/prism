@@ -35,7 +35,7 @@ class Text extends AnthropicHandlerAbstract
         return array_merge([
             'model' => $request->model,
             'messages' => MessageMap::map($request->messages, $request->providerMeta(Provider::Anthropic)),
-            'max_tokens' => $request->maxTokens ?? 2048,
+            'max_tokens' => $request->maxTokens,
         ], array_filter([
             'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
             'temperature' => $request->temperature,
