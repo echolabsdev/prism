@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Exceptions\PrismStructuredDecodingException;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
@@ -65,7 +65,7 @@ readonly class ResponseBuilder
         try {
             return json_decode($responseText, true, flags: JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
-            throw PrismException::structuredDecodingError($responseText);
+            throw PrismStructuredDecodingException::make($responseText);
         }
     }
 
