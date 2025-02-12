@@ -22,7 +22,7 @@ readonly class Groq implements Provider
     ) {}
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(Request $request, int $currentStep): ProviderResponse
     {
         $handler = new Text($this->client($request->clientOptions, $request->clientRetry));
 

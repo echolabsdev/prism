@@ -63,7 +63,7 @@ class Generator
 
     protected function sendProviderRequest(Request $request): ProviderResponse
     {
-        return $this->provider->text($request);
+        return $this->provider->text($request, $this->responseBuilder->steps->count());
     }
 
     protected function shouldContinue(int $maxSteps, ProviderResponse $response): bool

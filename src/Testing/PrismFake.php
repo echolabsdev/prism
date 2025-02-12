@@ -34,7 +34,7 @@ class PrismFake implements Provider
     public function __construct(protected array $responses = []) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request, int $currentStep): ProviderResponse
     {
         $this->recorded[] = $request;
 

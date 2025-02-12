@@ -22,10 +22,10 @@ class Text
 {
     public function __construct(protected PendingRequest $client) {}
 
-    public function handle(Request $request): ProviderResponse
+    public function handle(Request $request, int $currentStep): ProviderResponse
     {
         try {
-            $response = $this->sendRequest($request);
+            $response = $this->sendRequest($request, $currentStep);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
@@ -57,7 +57,7 @@ class Text
         );
     }
 
-    public function sendRequest(Request $request): Response
+    public function sendRequest(Request $request, int $currentStep): Response
     {
         return $this->client->post(
             'chat/completions',
@@ -69,7 +69,7 @@ class Text
                 'temperature' => $request->temperature,
                 'top_p' => $request->topP,
                 'tools' => ToolMap::map($request->tools),
-                'tool_choice' => ToolChoiceMap::map($request->toolChoice),
+                'tool_choice' => ToolChoiceMap::map($request->toolChoice, $currentStep),
             ]))
         );
     }

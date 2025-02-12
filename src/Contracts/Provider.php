@@ -12,7 +12,7 @@ use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 interface Provider
 {
-    public function text(TextRequest $request): ProviderResponse;
+    public function text(TextRequest $request, int $currentStep): ProviderResponse;
 
     public function structured(StructuredRequest $request): ProviderResponse;
 
