@@ -144,3 +144,20 @@ it('can throw a prism custom exception for invalid parameters', function (): voi
 
     $searchTool->handle([]);
 });
+
+it('can throw a prism custom exception for unknown named parameters', function (): void {
+    $searchTool = (new Tool)
+        ->as('search')
+        ->for('useful for searching current data')
+        ->withParameter(new StringSchema('query', 'the search query'))
+        ->using(function (string $query): string {
+            expect($query)->toBe('What time is the event?');
+
+            return 'The event is at 3pm eastern';
+        });
+
+    $this->expectException(PrismException::class);
+    $this->expectExceptionMessage('Invalid parameters for tool : search');
+
+    $searchTool->handle(input: 'What time is the event?');
+});

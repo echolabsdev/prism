@@ -38,6 +38,10 @@ trait CallsTools
                         result: $result,
                     );
                 } catch (Throwable $e) {
+                    if ($e instanceof PrismException) {
+                        throw $e;
+                    }
+
                     throw PrismException::toolCallFailed($toolCall, $e);
                 }
 

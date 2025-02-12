@@ -15,6 +15,7 @@ use EchoLabs\Prism\Schema\EnumSchema;
 use EchoLabs\Prism\Schema\NumberSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use Error;
 use InvalidArgumentException;
 use Throwable;
 use TypeError;
@@ -171,7 +172,11 @@ class Tool
     {
         try {
             return call_user_func($this->fn, ...$args);
-        } catch (ArgumentCountError|InvalidArgumentException|TypeError $e) {
+        } catch (ArgumentCountError|Error|InvalidArgumentException|TypeError $e) {
+            if ($e::class === Error::class && ! str_starts_with($e->getMessage(), 'Unknown named parameter')) {
+                throw $e;
+            }
+
             throw PrismException::invalidParameterInTool($this->name, $e);
         }
     }
