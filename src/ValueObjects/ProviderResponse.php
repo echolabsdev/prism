@@ -10,12 +10,14 @@ readonly class ProviderResponse
 {
     /**
      * @param  array<int, ToolCall>  $toolCalls
+     * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
-        public string $text,
-        public array $toolCalls,
-        public Usage $usage,
-        public FinishReason $finishReason,
-        public ResponseMeta $responseMeta,
+        public readonly string $text,
+        public readonly array $toolCalls,
+        public readonly Usage $usage,
+        public readonly FinishReason $finishReason,
+        public readonly ResponseMeta $responseMeta,
+        public readonly array $additionalContent = []
     ) {}
 }

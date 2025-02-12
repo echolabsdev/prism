@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
 use EchoLabs\Prism\Contracts\PrismRequest;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
@@ -33,7 +34,7 @@ class Text extends AnthropicHandlerAbstract
 
         return array_merge([
             'model' => $request->model,
-            'messages' => MessageMap::map($request->messages),
+            'messages' => MessageMap::map($request->messages, $request->providerMeta(Provider::Anthropic)),
             'max_tokens' => $request->maxTokens ?? 2048,
         ], array_filter([
             'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
@@ -69,7 +70,10 @@ class Text extends AnthropicHandlerAbstract
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
                 rateLimits: $this->processRateLimits()
-            )
+            ),
+            additionalContent: array_filter([
+                'messagePartsWithCitations' => $this->extractCitations($data),
+            ])
         );
     }
 

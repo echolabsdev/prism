@@ -35,6 +35,7 @@ class Generator
             usage: $response->usage,
             responseMeta: $response->responseMeta,
             messages: $this->messages,
+            additionalContent: $response->additionalContent,
         ));
 
         return $this->responseBuilder->toResponse();
@@ -54,7 +55,8 @@ class Generator
 
         $responseMessage = new AssistantMessage(
             $response->text,
-            $response->toolCalls
+            $response->toolCalls,
+            $response->additionalContent
         );
 
         $this->responseBuilder->addResponseMessage($responseMessage);

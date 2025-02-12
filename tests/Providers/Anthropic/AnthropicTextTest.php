@@ -7,6 +7,9 @@ namespace Tests\Providers\Anthropic;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
+use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
@@ -213,4 +216,159 @@ it('adds rate limit data to the responseMeta', function (): void {
     expect($response->responseMeta->rateLimits[0]->limit)->toEqual(1000);
     expect($response->responseMeta->rateLimits[0]->remaining)->toEqual(500);
     expect($response->responseMeta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
+});
+
+it('applies the citations request level providerMeta to all documents', function (): void {
+    Prism::fake();
+
+    $request = Prism::text()
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withMessages([
+            (new UserMessage(
+                content: 'What color is the grass and sky?',
+                additionalContent: [
+                    Document::fromText('The grass is green. The sky is blue.'),
+                ]
+            )),
+        ])
+        ->withProviderMeta(Provider::Anthropic, ['citations' => true]);
+
+    $payload = Text::buildHttpRequestPayload($request->toRequest());
+
+    expect($payload['messages'])->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'What color is the grass and sky?',
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'text',
+                    'media_type' => 'text/plain',
+                    'data' => 'The grass is green. The sky is blue.',
+                ],
+                'citations' => ['enabled' => true],
+            ],
+        ],
+    ]]);
+});
+
+it('saves message parts with citations to additionalContent on response steps and assistant message for PDF documents', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-pdf-citations');
+
+    $response = Prism::text()
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withMessages([
+            (new UserMessage(
+                content: 'What color is the grass and sky?',
+                additionalContent: [
+                    Document::fromPath('tests/Fixtures/test-pdf.pdf'),
+                ]
+            )),
+        ])
+        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+        ->generate();
+
+    expect($response->text)->toEqual('According to the text, the grass is green and the sky is blue.');
+
+    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    /** @var MessagePartWithCitations */
+    $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+
+    expect($messagePart->text)->toBe('the grass is green');
+    expect($messagePart->citations)->toHaveCount(1);
+    expect($messagePart->citations[0]->type)->toBe('page_location');
+    expect($messagePart->citations[0]->citedText)->toBe('The grass is green. ');
+    expect($messagePart->citations[0]->startIndex)->toBe(1);
+    expect($messagePart->citations[0]->endIndex)->toBe(2);
+    expect($messagePart->citations[0]->documentIndex)->toBe(0);
+    expect($messagePart->citations[0]->documentTitle)->toBe('All aboout the grass and the sky');
+
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+});
+
+it('saves message parts with citations to additionalContent on response steps and assistant message for text documents', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-text-document-citations');
+
+    $response = Prism::text()
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withMessages([
+            (new UserMessage(
+                content: 'What color is the grass and sky?',
+                additionalContent: [
+                    Document::fromText('The grass is green. The sky is blue.'),
+                ]
+            )),
+        ])
+        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+        ->generate();
+
+    expect($response->text)->toBe("According to the documents:\nThe grass is green and the sky is blue.");
+
+    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    /** @var MessagePartWithCitations */
+    $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+
+    expect($messagePart->text)->toBe('The grass is green');
+    expect($messagePart->citations)->toHaveCount(1);
+    expect($messagePart->citations[0]->type)->toBe('char_location');
+    expect($messagePart->citations[0]->citedText)->toBe('The grass is green. ');
+    expect($messagePart->citations[0]->startIndex)->toBe(0);
+    expect($messagePart->citations[0]->endIndex)->toBe(20);
+    expect($messagePart->citations[0]->documentIndex)->toBe(0);
+    expect($messagePart->citations[0]->documentTitle)->toBe('All aboout the grass and the sky');
+
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+});
+
+it('saves message parts with citations to additionalContent on response steps and assistant message for custom content documents', function (): void {
+    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-custom-content-document-citations');
+
+    $response = Prism::text()
+        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+        ->withMessages([
+            (new UserMessage(
+                content: 'What color is the grass and sky?',
+                additionalContent: [
+                    Document::fromChunks(['The grass is green.', 'The sky is blue.']),
+                ]
+            )),
+        ])
+        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+        ->generate();
+
+    expect($response->text)->toBe('According to the documents, the grass is green and the sky is blue.');
+
+    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    /** @var MessagePartWithCitations */
+    $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+
+    expect($messagePart->text)->toBe('the grass is green');
+    expect($messagePart->citations)->toHaveCount(1);
+    expect($messagePart->citations[0]->type)->toBe('content_block_location');
+    expect($messagePart->citations[0]->citedText)->toBe('The grass is green.');
+    expect($messagePart->citations[0]->startIndex)->toBe(0);
+    expect($messagePart->citations[0]->endIndex)->toBe(1);
+
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+    expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
 });

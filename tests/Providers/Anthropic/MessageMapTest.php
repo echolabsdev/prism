@@ -7,6 +7,7 @@ namespace Tests\Providers\Anthropic;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
+use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -360,3 +361,276 @@ it('sets the cache type on a SystemMessage if cacheType providerMeta is set on m
     'ephemeral',
     AnthropicCacheType::Ephemeral,
 ]);
+
+it('sets citiations to true on a UserMessage Document if citations providerMeta is true', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'What color is the grass and sky?',
+            additionalContent: [
+                Document::fromText('The grass is green. The sky is blue.')->withProviderMeta(Provider::Anthropic, ['citations' => true]),
+            ]
+        )),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'What color is the grass and sky?',
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'text',
+                    'media_type' => 'text/plain',
+                    'data' => 'The grass is green. The sky is blue.',
+                ],
+                'citations' => ['enabled' => true],
+            ],
+        ],
+    ]]);
+});
+
+test('MessageMap applies citations to all documents if requestProviderMeta has citations true', function (): void {
+    $messages = [
+        (new UserMessage(
+            content: 'What color is the grass and sky?',
+            additionalContent: [
+                Document::fromText('The grass is green.', 'All aboout the grass.', 'A novel look into the colour of grass.'),
+                Document::fromText('The sky is blue.'),
+            ]
+        )),
+        (new UserMessage(
+            content: 'What color is sea and earth?',
+            additionalContent: [
+                Document::fromText('The sea is blue'),
+                Document::fromText('The earth is brown.'),
+            ]
+        )),
+    ];
+
+    expect(MessageMap::map($messages, ['citations' => true]))->toBe([
+        [
+            'role' => 'user',
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'What color is the grass and sky?',
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The grass is green.',
+                    ],
+                    'title' => 'All aboout the grass.',
+                    'context' => 'A novel look into the colour of grass.',
+                    'citations' => ['enabled' => true],
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The sky is blue.',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
+            ],
+        ],
+        [
+            'role' => 'user',
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'What color is sea and earth?',
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The sea is blue',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The earth is brown.',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
+            ],
+        ],
+    ]);
+});
+
+it('maps a chunked document correctly', function (): void {
+    expect(MessageMap::map([
+        (new UserMessage(
+            content: 'What color is the grass and sky?',
+            additionalContent: [
+                Document::fromChunks(['chunk1', 'chunk2'])->withProviderMeta(Provider::Anthropic, ['citations' => true]),
+            ]
+        )),
+    ]))->toBe([[
+        'role' => 'user',
+        'content' => [
+            [
+                'type' => 'text',
+                'text' => 'What color is the grass and sky?',
+            ],
+            [
+                'type' => 'document',
+                'source' => [
+                    'type' => 'content',
+                    'content' => [
+                        ['type' => 'text', 'text' => 'chunk1'],
+                        ['type' => 'text', 'text' => 'chunk2'],
+                    ],
+                ],
+                'citations' => ['enabled' => true],
+            ],
+        ],
+    ]]);
+});
+
+it('maps an assistant message with PDF citations back to its original format', function (): void {
+    $block_one = [
+        'type' => 'text',
+        'text' => '.',
+    ];
+
+    $block_two = [
+        'type' => 'text',
+        'text' => 'the grass is green',
+        'citations' => [
+            [
+                'type' => 'page_location',
+                'cited_text' => 'The grass is green. ',
+                'document_index' => 0,
+                'document_title' => 'All aboout the grass and the sky',
+                'start_page_number' => 1,
+                'end_page_number' => 2,
+            ],
+        ],
+    ];
+
+    $block_three = [
+        'type' => 'text',
+        'text' => ' and ',
+    ];
+
+    $block_four = [
+        'type' => 'text',
+        'text' => 'the sky is blue',
+        'citations' => [
+            [
+                'type' => 'page_location',
+                'cited_text' => 'The sky is blue.',
+                'document_index' => 0,
+                'document_title' => 'All aboout the grass and the sky',
+                'start_page_number' => 1,
+                'end_page_number' => 2,
+            ],
+        ],
+    ];
+
+    $block_five = [
+        'type' => 'text',
+        'text' => '.',
+    ];
+
+    expect(MessageMap::map([
+        new AssistantMessage(
+            content: 'According to the text, the grass is green and the sky is blue.',
+            additionalContent: [
+                'messagePartsWithCitations' => [
+                    MessagePartWithCitations::fromContentBlock($block_one),
+                    MessagePartWithCitations::fromContentBlock($block_two),
+                    MessagePartWithCitations::fromContentBlock($block_three),
+                    MessagePartWithCitations::fromContentBlock($block_four),
+                    MessagePartWithCitations::fromContentBlock($block_five),
+                ],
+            ]
+        ),
+    ]))->toBe([[
+        'role' => 'assistant',
+        'content' => [
+            $block_one,
+            $block_two,
+            $block_three,
+            $block_four,
+            $block_five,
+        ],
+    ]]);
+});
+
+it('maps an assistant message with text document citations back to its original format', function (): void {
+    $block = [
+        'type' => 'text',
+        'text' => 'the grass is green',
+        'citations' => [
+            [
+                'type' => 'char_location',
+                'cited_text' => 'The grass is green. ',
+                'document_index' => 0,
+                'document_title' => 'All aboout the grass and the sky',
+                'start_char_index' => 1,
+                'end_char_index' => 20,
+            ],
+        ],
+    ];
+
+    expect(MessageMap::map([
+        new AssistantMessage(
+            content: 'According to the text, the grass is green and the sky is blue.',
+            additionalContent: [
+                'messagePartsWithCitations' => [
+                    MessagePartWithCitations::fromContentBlock($block),
+                ],
+            ]
+        ),
+    ]))->toBe([[
+        'role' => 'assistant',
+        'content' => [
+            $block,
+        ],
+    ]]);
+});
+
+it('maps an assistant message with custom content document citations back to its original format', function (): void {
+    $block = [
+        'type' => 'text',
+        'text' => 'the grass is green',
+        'citations' => [
+            [
+                'type' => 'content_block_location',
+                'cited_text' => 'The grass is green. ',
+                'document_index' => 0,
+                'document_title' => 'All aboout the grass and the sky',
+                'start_block_index' => 0,
+                'end_block_index' => 1,
+            ],
+        ],
+    ];
+
+    expect(MessageMap::map([
+        new AssistantMessage(
+            content: 'According to the text, the grass is green and the sky is blue.',
+            additionalContent: [
+                'messagePartsWithCitations' => [
+                    MessagePartWithCitations::fromContentBlock($block),
+                ],
+            ]
+        ),
+    ]))->toBe([[
+        'role' => 'assistant',
+        'content' => [
+            $block,
+        ],
+    ]]);
+});

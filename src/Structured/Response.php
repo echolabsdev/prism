@@ -15,15 +15,17 @@ readonly class Response
     /**
      * @param  Collection<int, Step>  $steps
      * @param  Collection<int, Message>  $responseMessages
-     * @param  array<mixed>|null  $structured
+     * @param  array<mixed>  $structured
+     * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
-        public Collection $steps,
-        public Collection $responseMessages,
-        public string $text,
-        public ?array $structured,
-        public FinishReason $finishReason,
-        public Usage $usage,
-        public ResponseMeta $responseMeta,
+        public readonly Collection $steps,
+        public readonly Collection $responseMessages,
+        public readonly string $text,
+        public readonly ?array $structured,
+        public readonly FinishReason $finishReason,
+        public readonly Usage $usage,
+        public readonly ResponseMeta $responseMeta,
+        public readonly array $additionalContent = []
     ) {}
 }

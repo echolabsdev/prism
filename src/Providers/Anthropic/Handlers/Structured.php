@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
 use EchoLabs\Prism\Contracts\PrismRequest;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
@@ -36,7 +37,7 @@ class Structured extends AnthropicHandlerAbstract
 
         return array_merge([
             'model' => $request->model,
-            'messages' => MessageMap::map($request->messages),
+            'messages' => MessageMap::map($request->messages, $request->providerMeta(Provider::Anthropic)),
             'max_tokens' => $request->maxTokens ?? 2048,
         ], array_filter([
             'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
@@ -73,7 +74,10 @@ class Structured extends AnthropicHandlerAbstract
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
                 rateLimits: $this->processRateLimits()
-            )
+            ),
+            additionalContent: array_filter([
+                'messagePartsWithCitations' => $this->extractCitations($data),
+            ])
         );
     }
 
@@ -83,9 +87,11 @@ class Structured extends AnthropicHandlerAbstract
     protected function appendMessageForJsonMode(): PrismRequest
     {
         return $this->request->addMessage(new UserMessage(sprintf(
-            "Respond with ONLY JSON that matches the following schema: \n %s",
-            json_encode($this->request->schema->toArray(), JSON_PRETTY_PRINT)
+            "Respond with ONLY JSON that matches the following schema: \n %s %s",
+            json_encode($this->request->schema->toArray(), JSON_PRETTY_PRINT),
+            ($this->request->providerMeta(Provider::Anthropic)['citations'] ?? false)
+                ? "\n\n Return the JSON as a single text block with a single set of citations."
+                : ''
         )));
-
     }
 }

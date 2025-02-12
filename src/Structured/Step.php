@@ -14,13 +14,15 @@ readonly class Step
     /**
      * @param  array<mixed>|null  $object
      * @param  Message[]  $messages
+     * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
-        public string $text,
-        public ?array $object,
-        public FinishReason $finishReason,
-        public Usage $usage,
-        public ResponseMeta $responseMeta,
-        public array $messages,
+        public readonly string $text,
+        public readonly ?array $object,
+        public readonly FinishReason $finishReason,
+        public readonly Usage $usage,
+        public readonly ResponseMeta $responseMeta,
+        public readonly array $messages,
+        public readonly array $additionalContent = []
     ) {}
 }

@@ -51,6 +51,7 @@ readonly class ResponseBuilder
             usage: $this->calculateTotalUsage(),
             responseMeta: $finalStep->responseMeta,
             messages: collect($finalStep->messages),
+            additionalContent: $finalStep->additionalContent,
         );
     }
 
