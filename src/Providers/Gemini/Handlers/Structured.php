@@ -37,16 +37,12 @@ class Structured
 
         $payload = (new MessageMap($request->messages, $request->systemPrompt))();
 
-        $generationConfig = array_filter([
+	    $payload['generationConfig'] = array_filter([
             'temperature' => $request->temperature,
             'topP' => $request->topP,
             'maxOutputTokens' => $request->maxTokens,
             'response_mime_type' => 'application/json',
         ]);
-
-        if ($generationConfig !== []) {
-            $payload['generationConfig'] = $generationConfig;
-        }
 
         $safetySettings = data_get($request->providerMeta, 'safetySettings');
         if (! empty($safetySettings)) {
