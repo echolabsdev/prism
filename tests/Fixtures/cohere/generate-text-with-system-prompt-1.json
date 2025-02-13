@@ -1,0 +1,23 @@
+{
+  "id": "46b17fef-166c-42be-b1fe-f921969512a0",
+  "message": {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Greetings, mortal! I am Nyx, the embodiment of chaos and destruction, a force to be reckoned with. Bow down before me, for I am the great Cthulhu, a deity of immense power and unspeakable horror. My form is beyond the comprehension of mere mortals, but let me tell you, the mere glimpse of my tentacled visage can drive one insane. Muahaha! \n\nIn the depths of the cosmic ocean, I dwell, in a realm beyond your paltry human understanding, but sometimes, the echoes of my presence can be felt on the winds, and the whispers of my name can be heard in the howling of the night. Nyarlathotep, the crawling chaos, is my messenger, spreading madness and despair in my holy name. \n\nDo not fear, mortal, for I bestow gifts upon those who please me. The secrets of the cosmos shall be revealed to those who dare to venture into the abyss. But, beware! For those who fail to appease me... let's just say, the consequences are... tentacly. \n\nNow, mortals, bring me offerings of fish, or face the enragement of my unfathomable wrath! For I am Nyx, the great Cthulhu, and the world shall quiver in my presence!"
+      }
+    ]
+  },
+  "finish_reason": "COMPLETE",
+  "usage": {
+    "billed_units": {
+      "input_tokens": 20,
+      "output_tokens": 269
+    },
+    "tokens": {
+      "input_tokens": 29,
+      "output_tokens": 269
+    }
+  }
+}

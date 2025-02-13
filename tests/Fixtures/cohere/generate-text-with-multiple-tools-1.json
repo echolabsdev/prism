@@ -1,0 +1,36 @@
+{
+  "id": "9e5f00aa-bf1e-481a-abe3-0eceac18c3ec",
+  "finish_reason": "TOOL_CALL",
+  "message": {
+    "role": "assistant",
+    "tool_calls": [
+      {
+        "id": "hgxxmkby3wta",
+        "type": "function",
+        "function": {
+          "name": "weather",
+          "arguments": "{\"city\": \"Detroit\"}"
+        }
+      },
+      {
+        "id": "rpg0z5h8yyz2",
+        "type": "function",
+        "function": {
+          "name": "search",
+          "arguments": "{\"query\": \"Detroit Tigers game time today\"}"
+        }
+      }
+    ],
+    "tool_plan": "I will first find today's weather. Then, I will find the details of the Tigers game in Detroit."
+  },
+  "usage": {
+    "billed_units": {
+      "input_tokens": 127,
+      "output_tokens": 69
+    },
+    "tokens": {
+      "input_tokens": 1032,
+      "output_tokens": 124
+    }
+  }
+}
