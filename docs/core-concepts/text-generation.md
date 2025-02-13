@@ -49,18 +49,23 @@ $response = Prism::text()
 You an also pass a View to the `withPrompt` method.
 
 ## Message Chains and Conversations
+> [!NOTE]
+> You should avoid using `withSystemPrompt()` for message chains. Doing so will result in that SystemMessage being duplicated in all but the first generation.
+> Instead, include your system prompt as a `SystemMessage` at the top of your first `withMessages()` call.
 
 For interactive conversations, use message chains to maintain context:
 
 ```php
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
     ->withMessages([
+        new SystemMessage('You are a software engineer'),
         new UserMessage('What is JSON?'),
         new AssistantMessage('JSON is a lightweight data format...'),
         new UserMessage('Can you show me an example?')
@@ -74,9 +79,6 @@ $response = Prism::text()
 - `UserMessage`
 - `AssistantMessage`
 - `ToolResultMessage`
-
-> [!NOTE]
-> Some providers, like Anthropic, do not support the `SystemMessage` type. In those cases we convert `SystemMessage` to `UserMessage`.
 
 ## Multi-modal Capabilities (Images)
 

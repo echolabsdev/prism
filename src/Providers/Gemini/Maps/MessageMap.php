@@ -22,15 +22,7 @@ class MessageMap
      */
     public function __construct(
         protected array $messages,
-        protected ?string $systemPrompt = null
-    ) {
-        if ($systemPrompt !== null && $systemPrompt !== '' && $systemPrompt !== '0') {
-            $this->messages = array_merge(
-                [new SystemMessage($systemPrompt)],
-                $this->messages
-            );
-        }
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>

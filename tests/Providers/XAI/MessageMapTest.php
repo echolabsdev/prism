@@ -7,6 +7,7 @@ namespace Tests\Providers\XAI;
 use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -16,8 +17,7 @@ it('maps user messages', function (): void {
     $messageMap = new MessageMap(
         messages: [
             new UserMessage('Who are you?'),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toBe([[
@@ -32,8 +32,7 @@ it('maps assistant message', function (): void {
     $messageMap = new MessageMap(
         messages: [
             new AssistantMessage('I am Nyx'),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toContain([
@@ -54,8 +53,7 @@ it('maps assistant message with tool calls', function (): void {
                     ]
                 ),
             ]),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toBe([[
@@ -87,8 +85,7 @@ it('maps tool result messages', function (): void {
                     '[search results]'
                 ),
             ]),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toBe([[
@@ -100,13 +97,23 @@ it('maps tool result messages', function (): void {
 
 it('maps system prompt', function (): void {
     $messageMap = new MessageMap(
-        messages: [],
-        systemPrompt: 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'
+        messages: [
+            new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'),
+            new UserMessage('Who are you?'),
+        ]
     );
 
-    expect($messageMap())->toContain([
-        'role' => 'system',
-        'content' => 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]',
+    expect($messageMap())->toBe([
+        [
+            'role' => 'system',
+            'content' => 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]',
+        ],
+        [
+            'role' => 'user',
+            'content' => [
+                ['type' => 'text', 'text' => 'Who are you?'],
+            ],
+        ],
     ]);
 });
 
@@ -116,8 +123,7 @@ it('maps user messages with images from path', function (): void {
             new UserMessage('Who are you?', [
                 Image::fromPath('tests/Fixtures/test-image.png'),
             ]),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toBe([[
@@ -140,8 +146,7 @@ it('maps user messages with images from base64', function (): void {
             new UserMessage('Who are you?', [
                 Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png'),
             ]),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toBe([[
@@ -164,8 +169,7 @@ it('maps user messages with images from url', function (): void {
             new UserMessage('Who are you?', [
                 Image::fromUrl('https://storage.echolabs.dev/assets/logo.png'),
             ]),
-        ],
-        systemPrompt: ''
+        ]
     );
 
     expect($messageMap())->toBe([[

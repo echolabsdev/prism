@@ -10,6 +10,7 @@ use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -55,12 +56,19 @@ class Text
 
     public function sendRequest(Request $request): Response
     {
+        $messages = $request->messages;
+
+        // Remove first message if it is a system message with the same content as the request system prompt
+        if ($messages[0] instanceof SystemMessage && $messages[0]->content === $request->systemPrompt) {
+            array_shift($messages);
+        }
+
         return $this
             ->client
             ->post('api/chat', [
                 'model' => $request->model,
                 'system' => $request->systemPrompt,
-                'messages' => (new MessageMap($request->messages))->map(),
+                'messages' => (new MessageMap($messages))->map(),
                 'tools' => ToolMap::map($request->tools),
                 'stream' => false,
                 'options' => array_filter([
