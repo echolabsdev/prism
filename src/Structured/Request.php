@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Structured;
 
 use Closure;
+use EchoLabs\Prism\Concerns\AccessesProviderMeta;
 use EchoLabs\Prism\Concerns\ChecksSelf;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Contracts\Schema;
-use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 readonly class Request implements PrismRequest
 {
-    use ChecksSelf;
+    use AccessesProviderMeta, ChecksSelf;
 
     /**
      * @param  array<int, Message>  $messages
@@ -57,16 +57,5 @@ readonly class Request implements PrismRequest
             providerMeta: $this->providerMeta,
             mode: $this->mode,
         );
-    }
-
-    public function providerMeta(string|Provider $provider, string $valuePath = ''): mixed
-    {
-        $providerMeta = data_get(
-            $this->providerMeta,
-            is_string($provider) ? $provider : $provider->value,
-            []
-        );
-
-        return data_get($providerMeta, $valuePath, $providerMeta);
     }
 }

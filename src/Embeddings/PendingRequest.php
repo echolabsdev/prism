@@ -53,6 +53,7 @@ class PendingRequest
             input: $this->input,
             clientOptions: $this->clientOptions,
             clientRetry: $this->clientRetry,
+            providerMeta: $this->providerMeta
         );
     }
 }
