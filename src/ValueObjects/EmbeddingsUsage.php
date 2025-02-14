@@ -7,6 +7,6 @@ namespace EchoLabs\Prism\ValueObjects;
 readonly class EmbeddingsUsage
 {
     public function __construct(
-        public null|int $tokens
+        public ?int $tokens
     ) {}
 }
