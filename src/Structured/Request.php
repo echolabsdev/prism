@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Structured;
 
 use Closure;
-use EchoLabs\Prism\Concerns\AccessesProviderMeta;
 use EchoLabs\Prism\Concerns\ChecksSelf;
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Contracts\Schema;
@@ -14,9 +14,9 @@ use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
-readonly class Request implements PrismRequest
+class Request implements PrismRequest
 {
-    use AccessesProviderMeta, ChecksSelf;
+    use ChecksSelf, HasProviderMeta;
 
     /**
      * @param  array<int, Message>  $messages
@@ -25,19 +25,21 @@ readonly class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public ?string $systemPrompt,
-        public string $model,
-        public ?string $prompt,
-        public array $messages,
-        public ?int $maxTokens,
-        public int|float|null $temperature,
-        public int|float|null $topP,
-        public array $clientOptions,
-        public array $clientRetry,
-        public Schema $schema,
-        public array $providerMeta,
-        public StructuredMode $mode,
-    ) {}
+        readonly public ?string $systemPrompt,
+        readonly public string $model,
+        readonly public ?string $prompt,
+        readonly public array $messages,
+        readonly public ?int $maxTokens,
+        readonly public int|float|null $temperature,
+        readonly public int|float|null $topP,
+        readonly public array $clientOptions,
+        readonly public array $clientRetry,
+        readonly public Schema $schema,
+        readonly public StructuredMode $mode,
+        array $providerMeta = [],
+    ) {
+        $this->providerMeta = $providerMeta;
+    }
 
     public function addMessage(UserMessage|SystemMessage $message): self
     {

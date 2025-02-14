@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Embeddings;
 
 use Closure;
-use EchoLabs\Prism\Concerns\AccessesProviderMeta;
 use EchoLabs\Prism\Concerns\ChecksSelf;
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Contracts\PrismRequest;
 
-readonly class Request implements PrismRequest
+class Request implements PrismRequest
 {
-    use AccessesProviderMeta, ChecksSelf;
+    use ChecksSelf, HasProviderMeta;
 
     /**
      * @param  array<string, mixed>  $clientOptions
@@ -19,10 +19,12 @@ readonly class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public string $model,
-        public string $input,
-        public array $clientOptions,
-        public array $clientRetry,
-        public array $providerMeta
-    ) {}
+        readonly public string $model,
+        readonly public string $input,
+        readonly public array $clientOptions,
+        readonly public array $clientRetry,
+        array $providerMeta = [],
+    ) {
+        $this->providerMeta = $providerMeta;
+    }
 }

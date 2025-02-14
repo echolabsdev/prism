@@ -145,8 +145,8 @@ test('it sets provider meta with enum', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->providerMeta)
-        ->toHaveKey('openai', ['key' => 'value']);
+    expect($generated->providerMeta(Provider::OpenAI))
+        ->toBe(['key' => 'value']);
 });
 
 test('it sets provider meta with string', function (): void {
@@ -157,8 +157,8 @@ test('it sets provider meta with string', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->providerMeta)
-        ->toHaveKey('openai', ['key' => 'value']);
+    expect($generated->providerMeta('openai'))
+        ->toBe(['key' => 'value']);
 });
 
 test('it gets provider meta on a request with an enum', function (): void {
