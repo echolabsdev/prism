@@ -33,8 +33,8 @@ class Embeddings
         }
 
         return new EmbeddingsResponse(
-            embeddings: data_get($data, 'data.0.embedding', []),
-            usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
+            embeddings: data_get($data, 'embeddings', []),
+            usage: new EmbeddingsUsage(data_get($data, 'prompt_eval_count', null)),
         );
     }
 
