@@ -31,7 +31,7 @@ class TestProvider implements Provider
     public $callCount = 0;
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request, int $currentStep): ProviderResponse
     {
         $this->callCount++;
 

@@ -27,14 +27,14 @@ readonly class OpenAI implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request, int $currentStep): ProviderResponse
     {
         $handler = new Text($this->client(
             $request->clientOptions,
             $request->clientRetry
         ));
 
-        return $handler->handle($request);
+        return $handler->handle($request, $currentStep);
     }
 
     #[\Override]
