@@ -6,15 +6,15 @@ namespace EchoLabs\Prism\Text;
 
 use Closure;
 use EchoLabs\Prism\Concerns\ChecksSelf;
+use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
-use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
 
-readonly class Request implements PrismRequest
+class Request implements PrismRequest
 {
-    use ChecksSelf;
+    use ChecksSelf, HasProviderMeta;
 
     /**
      * @param  array<int, Message>  $messages
@@ -24,20 +24,22 @@ readonly class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        public string $model,
-        public ?string $systemPrompt,
-        public ?string $prompt,
-        public array $messages,
-        public int $maxSteps,
-        public ?int $maxTokens,
-        public int|float|null $temperature,
-        public int|float|null $topP,
-        public array $tools,
-        public array $clientOptions,
-        public array $clientRetry,
-        public string|ToolChoice|null $toolChoice,
-        public array $providerMeta,
-    ) {}
+        readonly public string $model,
+        readonly public ?string $systemPrompt,
+        readonly public ?string $prompt,
+        readonly public array $messages,
+        readonly public int $maxSteps,
+        readonly public ?int $maxTokens,
+        readonly public int|float|null $temperature,
+        readonly public int|float|null $topP,
+        readonly public array $tools,
+        readonly public array $clientOptions,
+        readonly public array $clientRetry,
+        readonly public string|ToolChoice|null $toolChoice,
+        array $providerMeta = [],
+    ) {
+        $this->providerMeta = $providerMeta;
+    }
 
     public function addMessage(Message $message): self
     {
@@ -58,16 +60,5 @@ readonly class Request implements PrismRequest
             toolChoice: $this->toolChoice,
             providerMeta: $this->providerMeta,
         );
-    }
-
-    public function providerMeta(string|Provider $provider, string $valuePath = ''): mixed
-    {
-        $providerMeta = data_get(
-            $this->providerMeta,
-            is_string($provider) ? $provider : $provider->value,
-            []
-        );
-
-        return data_get($providerMeta, $valuePath, $providerMeta);
     }
 }

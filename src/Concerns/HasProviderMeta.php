@@ -19,15 +19,14 @@ trait HasProviderMeta
         return $this;
     }
 
-    /**
-     * @return array<string, mixed>> $meta
-     */
-    public function providerMeta(string|Provider $provider): array
+    public function providerMeta(string|Provider $provider, ?string $valuePath = null): mixed
     {
-        return data_get(
+        $providerMeta = data_get(
             $this->providerMeta,
             is_string($provider) ? $provider : $provider->value,
             []
         );
+
+        return data_get($providerMeta, $valuePath, $providerMeta);
     }
 }

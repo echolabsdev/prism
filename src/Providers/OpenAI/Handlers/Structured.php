@@ -79,7 +79,7 @@ class Structured
             'json_schema' => array_filter([
                 'name' => $request->schema->name(),
                 'schema' => $request->schema->toArray(),
-                'strict' => $request->providerMeta(Provider::OpenAI, 'schema.strict'),
+                'strict' => (bool) $request->providerMeta(Provider::OpenAI, 'schema.strict'),
             ]),
         ]);
 

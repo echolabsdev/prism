@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Gemini\Handlers;
 
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
@@ -92,7 +93,8 @@ class Text
             $payload['tool_config'] = ToolChoiceMap::map($request->toolChoice);
         }
 
-        $safetySettings = data_get($request->providerMeta, 'safetySettings');
+        $safetySettings = $request->providerMeta(Provider::Gemini, 'safetySettings');
+
         if (! empty($safetySettings)) {
             $payload['safetySettings'] = $safetySettings;
         }
