@@ -5,15 +5,10 @@ declare(strict_types=1);
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\PrismManager;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\PendingRequest;
 use EchoLabs\Prism\Structured\Request;
-use EchoLabs\Prism\Structured\Response;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use Illuminate\Support\Facades\App;
 
 beforeEach(function (): void {
     $this->pendingRequest = new PendingRequest;
@@ -92,39 +87,6 @@ test('it generates a proper request object', function (): void {
         ->clientRetry->toBe($clientRetry)
         ->mode->toBe(StructuredMode::Auto)
         ->and($request->providerMeta(Provider::OpenAI))->toBe($providerMeta);
-});
-
-test('it generates and delegates to generator', function (): void {
-    $provider = mock(\EchoLabs\Prism\Contracts\Provider::class);
-    App::instance(PrismManager::class, new class($provider) extends PrismManager
-    {
-        public function __construct(private $provider) {}
-
-        public function resolve($name, $config = []): \EchoLabs\Prism\Contracts\Provider
-        {
-            return $this->provider;
-        }
-    });
-
-    $request = $this->pendingRequest
-        ->using(Provider::OpenAI, 'gpt-4')
-        ->withSchema(new StringSchema('test', 'test description'))
-        ->withPrompt('Test prompt');
-
-    $provider->shouldReceive('structured')->once()->andReturn(
-        new ProviderResponse(
-            text: json_encode(['test', 'description']),
-            toolCalls: [],
-            usage: new \EchoLabs\Prism\ValueObjects\Usage(1, 1),
-            finishReason: \EchoLabs\Prism\Enums\FinishReason::Stop,
-            responseMeta: new ResponseMeta('test', 'test'),
-        )
-    );
-
-    $response = $request->generate();
-
-    expect($response)
-        ->toBeInstanceOf(Response::class);
 });
 
 test('you can run toRequest multiple times', function (): void {

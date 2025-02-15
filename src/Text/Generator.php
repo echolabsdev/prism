@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Text;
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
@@ -63,7 +64,13 @@ class Generator
 
     protected function sendProviderRequest(Request $request): ProviderResponse
     {
-        return $this->provider->text($request);
+        $response = $this->provider->text($request);
+
+        if (! $response instanceof ProviderResponse) {
+            throw new PrismException('Provider response must be an instance of ProviderResponse');
+        }
+
+        return $response;
     }
 
     protected function shouldContinue(int $maxSteps, ProviderResponse $response): bool
