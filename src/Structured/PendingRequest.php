@@ -15,6 +15,8 @@ use EchoLabs\Prism\Concerns\HasSchema;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use ReflectionMethod;
 
 class PendingRequest
 {
@@ -29,7 +31,14 @@ class PendingRequest
 
     public function generate(): Response
     {
-        return (new Generator($this->provider))->generate($this->toRequest());
+        $reflectionMethod = new ReflectionMethod($this->provider, 'structured');
+        $returnType = $reflectionMethod->getReturnType();
+
+        if ($returnType->getName() === ProviderResponse::class) {
+            return (new Generator($this->provider))->generate($this->toRequest());
+        }
+
+        return $this->provider->structured($this->toRequest());
     }
 
     public function toRequest(): Request
