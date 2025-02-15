@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Structured;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
@@ -52,6 +53,10 @@ class Generator
     protected function sendProviderRequest(Request $request): ProviderResponse
     {
         $response = $this->provider->structured($request);
+
+        if (! $response instanceof ProviderResponse) {
+            throw new PrismException('Provider response must be an instance of ProviderResponse');
+        }
 
         $responseMessage = new AssistantMessage(
             $response->text,

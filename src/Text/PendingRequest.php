@@ -36,11 +36,21 @@ class PendingRequest
         $reflectionMethod = new ReflectionMethod($this->provider, 'text');
         $returnType = $reflectionMethod->getReturnType();
 
+        if ($returnType === null || ! method_exists($returnType, 'getName')) {
+            throw new PrismException('Provider method must have a return type');
+        }
+
         if ($returnType->getName() === ProviderResponse::class) {
             return (new Generator($this->provider))->generate($this->toRequest());
         }
 
-        return $this->provider->text($this->toRequest());
+        $response = $this->provider->text($this->toRequest());
+
+        if (! $response instanceof Response) {
+            throw new PrismException('Provider should return '.Response::class);
+        }
+
+        return $response;
     }
 
     public function toRequest(): Request
