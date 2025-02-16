@@ -12,6 +12,15 @@
 */
 
 uses(Tests\TestCase::class)->in(__DIR__);
+uses()->group('providers')->in('Providers');
+uses()->group('anthropic')->in('Providers/Anthropic');
+uses()->group('deepseek')->in('Providers/DeepSeek');
+uses()->group('gemini')->in('Providers/Gemini');
+uses()->group('groq')->in('Providers/Groq');
+uses()->group('mistral')->in('Providers/Mistral');
+uses()->group('ollama')->in('Providers/Ollama');
+uses()->group('openai')->in('Providers/OpenAI');
+uses()->group('xai')->in('Providers/XAI');
 
 /*
 |--------------------------------------------------------------------------

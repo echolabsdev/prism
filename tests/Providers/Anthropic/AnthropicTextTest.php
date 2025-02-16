@@ -11,7 +11,6 @@ use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
 use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Http\Client\Request;
@@ -174,7 +173,6 @@ it('can calculate cache usage correctly', function (): void {
     $response = Prism::text()
         ->using('anthropic', 'claude-3-5-sonnet-20240620')
         ->withMessages([
-            (new SystemMessage('Old context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
             (new UserMessage('New context'))->withProviderMeta(Provider::Anthropic, ['cacheType' => 'ephemeral']),
         ])
         ->generate();

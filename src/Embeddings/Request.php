@@ -49,6 +49,7 @@ class Request implements PrismRequest
         return $this->input;
     }
 
+    #[\Override]
     public function model(): string
     {
         return $this->model;

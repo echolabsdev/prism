@@ -9,10 +9,14 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 class Generator
 {
+    /** @var SystemMessage[] */
+    protected array $systemPrompts = [];
+
     /** @var Message[] */
     protected array $messages = [];
 
@@ -25,6 +29,7 @@ class Generator
 
     public function generate(Request $request): Response
     {
+        $this->systemPrompts = $request->systemPrompts();
         $this->messages = $request->messages();
 
         $response = $this->sendProviderRequest($request);
@@ -36,6 +41,7 @@ class Generator
             usage: $response->usage,
             responseMeta: $response->responseMeta,
             messages: $this->messages,
+            systemPrompts: $this->systemPrompts,
             additionalContent: $response->additionalContent,
         ));
 

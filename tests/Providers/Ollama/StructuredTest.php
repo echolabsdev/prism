@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Tests\Providers\Ollama;
 
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\ArraySchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
@@ -50,3 +53,33 @@ it('returns structured output', function (): void {
     expect($response->structured['open_source'])->toBeArray();
 
 });
+
+it('throws an exception with multiple system prompts', function (): void {
+    Http::preventStrayRequests();
+
+    $schema = new ObjectSchema(
+        'output',
+        'the output object',
+        [
+            new StringSchema('name', 'The users name'),
+            new ArraySchema('hobbies', 'a list of the users hobbies',
+                new StringSchema('name', 'the name of the hobby'),
+            ),
+            new ArraySchema('open_source', 'The users open source contributions',
+                new StringSchema('name', 'the name of the project'),
+            ),
+        ],
+        ['name', 'hobbies', 'open_source']
+    );
+
+    $response = Prism::structured()
+        ->using('ollama', 'qwen2.5:14b')
+        ->withSchema($schema)
+        ->withSystemPrompts([
+            new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]!'),
+            new SystemMessage('But my friends call my Nyx.'),
+        ])
+        ->withPrompt('Who are you?')
+        ->generate();
+
+})->throws(PrismException::class, 'Ollama does not support multiple system prompts using withSystemPrompt / withSystemPrompts. However, you can provide additional system prompts by including SystemMessages in with withMessages.');

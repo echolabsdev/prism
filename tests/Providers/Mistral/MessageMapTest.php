@@ -7,6 +7,7 @@ namespace Tests\Providers\Mistral;
 use EchoLabs\Prism\Providers\Mistral\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -17,7 +18,7 @@ it('maps user messages', function (): void {
         messages: [
             new UserMessage('Who are you?'),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([[
@@ -35,7 +36,7 @@ it('maps user messages with images', function (): void {
                 Image::fromPath('tests/Fixtures/test-image.png'),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     $mappedMessage = $messageMap();
@@ -53,7 +54,7 @@ it('maps assistant message', function (): void {
         messages: [
             new AssistantMessage('I am Nyx'),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toContain([
@@ -75,7 +76,7 @@ it('maps assistant message with tool calls', function (): void {
                 ),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([[
@@ -108,7 +109,7 @@ it('maps tool result messages', function (): void {
                 ),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([[
@@ -120,12 +121,27 @@ it('maps tool result messages', function (): void {
 
 it('maps system prompt', function (): void {
     $messageMap = new MessageMap(
-        messages: [],
-        systemPrompt: 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'
+        messages: [new UserMessage('Who are you?')],
+        systemPrompts: [
+            new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'),
+            new SystemMessage('But my friends call me Nyx'),
+        ]
     );
 
-    expect($messageMap())->toContain([
-        'role' => 'system',
-        'content' => 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]',
+    expect($messageMap())->toBe([
+        [
+            'role' => 'system',
+            'content' => 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]',
+        ],
+        [
+            'role' => 'system',
+            'content' => 'But my friends call me Nyx',
+        ],
+        [
+            'role' => 'user',
+            'content' => [
+                ['type' => 'text', 'text' => 'Who are you?'],
+            ],
+        ],
     ]);
 });

@@ -63,7 +63,7 @@ class Text
             'chat/completions',
             array_merge([
                 'model' => $request->model(),
-                'messages' => (new MessageMap($request->messages(), $request->systemPrompt() ?? ''))(),
+                'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
                 'max_tokens' => $request->maxTokens ?? 2048,
             ], array_filter([
                 'temperature' => $request->temperature(),

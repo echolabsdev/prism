@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Anthropic\Maps;
 use BackedEnum;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
@@ -27,25 +28,26 @@ class MessageMap
      */
     public static function map(array $messages, array $requestProviderMeta = []): array
     {
-        return array_values(array_map(
+        if (array_filter($messages, fn (Message $message): bool => $message instanceof SystemMessage) !== []) {
+            throw new PrismException('Anthropic does not support SystemMessages in the messages array. Use withSystemPrompt or withSystemPrompts instead.');
+        }
+
+        return array_map(
             fn (Message $message): array => self::mapMessage($message, $requestProviderMeta),
-            array_filter($messages, fn (Message $message): bool => ! $message instanceof SystemMessage)
-        ));
+            $messages
+        );
     }
 
     /**
-     * @param  array<int, Message>  $messages
+     * @param  SystemMessage[]  $messages
      * @return array<int, mixed>
      */
-    public static function mapSystemMessages(array $messages, ?string $systemPrompt): array
+    public static function mapSystemMessages(array $messages): array
     {
-        return array_values(array_merge(
-            $systemPrompt !== null ? [self::mapSystemMessage(new SystemMessage($systemPrompt))] : [],
-            array_map(
-                fn (Message $message): array => self::mapMessage($message),
-                array_filter($messages, fn (Message $message): bool => $message instanceof SystemMessage)
-            )
-        ));
+        return array_map(
+            fn (Message $message): array => self::mapSystemMessage($message),
+            $messages
+        );
     }
 
     /**
@@ -58,7 +60,6 @@ class MessageMap
             UserMessage::class => self::mapUserMessage($message, $requestProviderMeta),
             AssistantMessage::class => self::mapAssistantMessage($message),
             ToolResultMessage::class => self::mapToolResultMessage($message),
-            SystemMessage::class => self::mapSystemMessage($message),
             default => throw new Exception('Could not map message type '.$message::class),
         };
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Gemini\Maps;
 
 use EchoLabs\Prism\Contracts\Message;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
@@ -19,18 +20,12 @@ class MessageMap
 
     /**
      * @param  array<int, Message>  $messages
+     * @param  SystemMessage[]  $systemPrompts
      */
     public function __construct(
         protected array $messages,
-        protected ?string $systemPrompt = null
-    ) {
-        if ($systemPrompt !== null && $systemPrompt !== '' && $systemPrompt !== '0') {
-            $this->messages = array_merge(
-                [new SystemMessage($systemPrompt)],
-                $this->messages
-            );
-        }
-    }
+        protected array $systemPrompts = []
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -43,6 +38,10 @@ class MessageMap
             $this->mapMessage($message);
         }
 
+        foreach ($this->systemPrompts as $systemPrompt) {
+            $this->mapSystemMessage($systemPrompt);
+        }
+
         return array_filter($this->contents);
     }
 
@@ -52,13 +51,16 @@ class MessageMap
             UserMessage::class => $this->mapUserMessage($message),
             AssistantMessage::class => $this->mapAssistantMessage($message),
             ToolResultMessage::class => $this->mapToolResultMessage($message),
-            SystemMessage::class => $this->mapSystemMessage($message),
             default => throw new Exception('Could not map message type '.$message::class),
         };
     }
 
     protected function mapSystemMessage(SystemMessage $message): void
     {
+        if (isset($this->contents['system_instruction'])) {
+            throw new PrismException('Gemini only supports one system instruction.');
+        }
+
         $this->contents['system_instruction'] = [
             'parts' => [
                 [
