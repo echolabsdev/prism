@@ -12,6 +12,7 @@ use EchoLabs\Prism\Providers\Ollama\Handlers\Structured;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
@@ -24,7 +25,7 @@ readonly class Ollama implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request): TextResponse
     {
         $handler = new Text($this->client(
             $request->clientOptions(),
