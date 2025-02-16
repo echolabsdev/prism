@@ -59,7 +59,7 @@ class Text
     /**
      * @return array<string, mixed>
      */
-    public function sendRequest(Request $request): array
+    protected function sendRequest(Request $request): array
     {
         try {
             $response = $this
