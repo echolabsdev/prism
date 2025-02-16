@@ -50,6 +50,7 @@ class Request implements PrismRequest
         return $this->systemPrompts;
     }
 
+    #[\Override]
     public function model(): string
     {
         return $this->model;
