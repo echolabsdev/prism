@@ -18,6 +18,7 @@ use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Throwable;
@@ -51,6 +52,7 @@ class Text
         return match ($this->mapFinishReason($data)) {
             FinishReason::ToolCalls => $this->handleToolCalls($data, $request),
             FinishReason::Stop => $this->handleStop($data, $request),
+            default => throw new PrismException('Ollama: unknown finish reason'),
         };
     }
 
@@ -116,6 +118,10 @@ class Text
         return $this->responseBuilder->steps->count() < $request->maxSteps();
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  ToolResult[]  $toolResults
+     */
     protected function addStep(array $data, Request $request, array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
