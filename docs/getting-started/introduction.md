@@ -62,6 +62,19 @@ $response = Prism::text()
 
 echo $response->text;
 ```
+
+```php [Cohere]
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
+$response = Prism::text()
+    ->using(Provider::Cohere, 'command-r')
+    ->withSystemPrompt(view('prompts.system'))
+    ->withPrompt('Explain quantum computing to a 5-year-old.')
+    ->generate();
+
+echo $response->text;
+```
 :::
 
 Prism draws significant inspiration from the [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core), adapting its powerful concepts and developer-friendly approach to the Laravel ecosystem.
@@ -93,6 +106,7 @@ We currently offer first-party support for these leading AI providers:
 - [Ollama](/providers/ollama.md)
 - [OpenAI](/providers/openai.md)
 - [xAI](/providers/xai.md)
+- [Cohere](/providers/cohere.md)
 
 Each provider brings its own strengths to the table, and Prism makes it easy to use them all through a consistent, elegant interface.
 
