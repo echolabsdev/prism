@@ -34,6 +34,7 @@ class PendingRequest
     public function generate(): Response
     {
         $reflectionMethod = new ReflectionMethod($this->provider, 'text');
+
         $returnType = $reflectionMethod->getReturnType();
 
         if ($returnType === null || ! method_exists($returnType, 'getName')) {

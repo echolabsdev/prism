@@ -6,8 +6,10 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
+use EchoLabs\Prism\Structured\ResponseBuilder;
+use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -18,7 +20,7 @@ class Structured
 {
     public function __construct(protected PendingRequest $client) {}
 
-    public function handle(Request $request): ProviderResponse
+    public function handle(Request $request): StructuredResponse
     {
         try {
             $request = $this->appendMessageForJsonMode($request);
@@ -27,7 +29,7 @@ class Structured
 
             $this->validateResponse($response);
 
-            return $this->createResponse($response);
+            return $this->createResponse($request, $response);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model, $e);
         }
@@ -63,23 +65,34 @@ class Structured
         }
     }
 
-    protected function createResponse(Response $response): ProviderResponse
+    protected function createResponse(Request $request, Response $response): StructuredResponse
     {
         $data = $response->json();
+        $responseBuilder = new ResponseBuilder;
 
-        return new ProviderResponse(
+        $step = new Step(
             text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: [],
+            object: json_decode(data_get($data, 'choices.0.message.content') ?? '', true),
+            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
             ),
-            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
             responseMeta: new ResponseMeta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
             ),
+            messages: $request->messages,
+            additionalContent: [],
         );
+
+        $responseBuilder->addStep($step);
+
+        foreach ($request->messages as $message) {
+            $responseBuilder->addResponseMessage($message);
+        }
+
+        return $responseBuilder->toResponse();
     }
 
     protected function appendMessageForJsonMode(Request $request): Request
