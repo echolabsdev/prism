@@ -8,6 +8,7 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Embeddings;
+use EchoLabs\Prism\Providers\Gemini\Handlers\Structured;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Text\Request as TextRequest;
@@ -36,7 +37,12 @@ readonly class Gemini implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): ProviderResponse
     {
-        throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
+        $handler = new Structured($this->client(
+            $request->clientOptions,
+            $request->clientRetry
+        ));
+
+        return $handler->handle($request);
     }
 
     #[\Override]
