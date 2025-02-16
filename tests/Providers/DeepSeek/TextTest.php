@@ -32,7 +32,6 @@ it('can generate text with a prompt', function (): void {
     expect($response->responseMeta->id)->toBe('85edf901-7432-49c6-baab-91ffb01dbe7a');
     expect($response->responseMeta->model)->toBe('deepseek-chat');
 
-    // Assert content
     expect($response->text)->toBe(
         "Greetings! I'm DeepSeek-V3, an artificial intelligence assistant created by DeepSeek. I'm at your service and would be delighted to assist you with any inquiries or tasks you may have."
     );
