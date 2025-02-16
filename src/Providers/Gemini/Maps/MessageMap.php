@@ -124,7 +124,9 @@ class MessageMap
             $parts[] = [
                 'functionCall' => [
                     'name' => $toolCall->name,
-                    'args' => $toolCall->arguments(),
+                    ...count($toolCall->arguments()) ? [
+                        'args' => $toolCall->arguments(),
+                    ] : [],
                 ],
             ];
         }
