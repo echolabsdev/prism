@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\DeepSeek\Handlers;
 
+use EchoLabs\Prism\Concerns\CallsTools;
+use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\MessageMap;
@@ -14,15 +16,12 @@ use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\Text\ResponseBuilder;
 use EchoLabs\Prism\Text\Step;
+use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
-use Throwable;
-use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 
 class Text
 {
