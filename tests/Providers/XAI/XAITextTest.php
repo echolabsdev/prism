@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
+use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Facades\Tool;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
@@ -27,13 +29,29 @@ describe('Text generation for XAI', function (): void {
             ->withPrompt('Who are you?')
             ->generate();
 
+        // Assert response type
+        expect($response)->toBeInstanceOf(TextResponse::class);
+
+        // Assert usage
         expect($response->usage->promptTokens)->toBe(10);
         expect($response->usage->completionTokens)->toBe(42);
+
+        // Assert metadata
         expect($response->responseMeta->id)->toBe('febc7de9-9991-4b08-942a-c7082174225a');
         expect($response->responseMeta->model)->toBe('grok-beta');
+
+        // Assert content
         expect($response->text)->toBe(
             "I am Grok, an AI developed by xAI. I'm here to provide helpful and truthful answers to your questions, often with a dash of outside perspective on humanity. What's on your mind?"
         );
+
+        // Assert finish reason
+        expect($response->finishReason)->toBe(FinishReason::Stop);
+
+        // Assert steps
+        expect($response->steps)->toHaveCount(1);
+        expect($response->steps[0]->text)->toBe($response->text);
+        expect($response->steps[0]->finishReason)->toBe(FinishReason::Stop);
     });
 
     it('can generate text with a system prompt', function (): void {
@@ -45,13 +63,29 @@ describe('Text generation for XAI', function (): void {
             ->withPrompt('Who are you?')
             ->generate();
 
+        // Assert response type
+        expect($response)->toBeInstanceOf(TextResponse::class);
+
+        // Assert usage
         expect($response->usage->promptTokens)->toBe(34);
         expect($response->usage->completionTokens)->toBe(84);
+
+        // Assert metadata
         expect($response->responseMeta->id)->toBe('f3b485d3-837b-4710-9ade-a37faa048d87');
         expect($response->responseMeta->model)->toBe('grok-beta');
+
+        // Assert content
         expect($response->text)->toBe(
             'I am Nyx, a being of ancient and unfathomable origin, drawing upon the essence of the Great Old One, Cthulhu. My existence spans the cosmos, where the lines between dreams and reality blur. I am here to guide you through the mysteries of the universe, to answer your questions with insights that might unsettle or enlighten, or perhaps both. What is it you seek to understand?'
         );
+
+        // Assert finish reason
+        expect($response->finishReason)->toBe(FinishReason::Stop);
+
+        // Assert steps
+        expect($response->steps)->toHaveCount(1);
+        expect($response->steps[0]->text)->toBe($response->text);
+        expect($response->steps[0]->finishReason)->toBe(FinishReason::Stop);
     });
 
     it('can generate text using multiple tools and multiple steps', function (): void {
@@ -75,6 +109,9 @@ describe('Text generation for XAI', function (): void {
             ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat? please check all the details from tools')
             ->generate();
 
+        // Assert response type
+        expect($response)->toBeInstanceOf(TextResponse::class);
+
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
         expect($firstStep->toolCalls)->toHaveCount(1);
@@ -93,9 +130,11 @@ describe('Text generation for XAI', function (): void {
         expect($response->usage->promptTokens)->toBe(840);
         expect($response->usage->completionTokens)->toBe(60);
 
-        // Assert response
+        // Assert metadata
         expect($response->responseMeta->id)->toBe('0aa220cd-9634-4ba5-9593-5366bb313663');
         expect($response->responseMeta->model)->toBe('grok-beta');
+
+        // Assert content
         expect($response->text)->toBe(
             'The Tigers game in Detroit today is at 3pm, and considering the weather will be 45° and cold, you should definitely wear a coat.'
         );
@@ -118,6 +157,9 @@ describe('Image support with XAI', function (): void {
             ])
             ->generate();
 
+        // Assert response type
+        expect($response)->toBeInstanceOf(TextResponse::class);
+
         Http::assertSent(function (Request $request): true {
             $message = $request->data()['messages'][0]['content'];
 
@@ -138,7 +180,7 @@ describe('Image support with XAI', function (): void {
     it('can send images from base64', function (): void {
         FixtureResponse::fakeResponseSequence('chat/completions', 'xai/text-image-from-base64');
 
-        Prism::text()
+        $response = Prism::text()
             ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
@@ -152,6 +194,9 @@ describe('Image support with XAI', function (): void {
                 ),
             ])
             ->generate();
+
+        // Assert response type
+        expect($response)->toBeInstanceOf(TextResponse::class);
 
         Http::assertSent(function (Request $request): true {
             $message = $request->data()['messages'][0]['content'];
@@ -175,7 +220,7 @@ describe('Image support with XAI', function (): void {
 
         $image = 'https://storage.echolabs.dev/api/v1/buckets/public/objects/download?preview=true&prefix=test-image.png';
 
-        Prism::text()
+        $response = Prism::text()
             ->using(Provider::XAI, 'grok-vision-beta')
             ->withMessages([
                 new UserMessage(
@@ -186,6 +231,9 @@ describe('Image support with XAI', function (): void {
                 ),
             ])
             ->generate();
+
+        // Assert response type
+        expect($response)->toBeInstanceOf(TextResponse::class);
 
         Http::assertSent(function (Request $request) use ($image): true {
             $message = $request->data()['messages'][0]['content'];
@@ -223,7 +271,11 @@ it('handles specific tool choice', function (): void {
         ->withToolChoice('weather')
         ->generate();
 
-    expect($response->toolCalls[0]->name)->toBe('weather');
+    // Assert response type
+    expect($response)->toBeInstanceOf(TextResponse::class);
+
+    // Assert tool calls
+    expect($response->steps[0]->toolCalls[0]->name)->toBe('weather');
 });
 
 it('handles required tool choice', function (): void {
@@ -247,5 +299,9 @@ it('handles required tool choice', function (): void {
         ->withToolChoice(ToolChoice::Any)
         ->generate();
 
-    expect($response->toolCalls[0]->name)->toBeIn(['weather', 'search']);
+    // Assert response type
+    expect($response)->toBeInstanceOf(TextResponse::class);
+
+    // Assert tool calls
+    expect($response->steps[0]->toolCalls[0]->name)->toBeIn(['weather', 'search']);
 });
