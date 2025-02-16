@@ -8,6 +8,7 @@ use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\PendingRequest;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 beforeEach(function (): void {
@@ -53,7 +54,7 @@ test('it generates a proper request object', function (): void {
     $schema = new StringSchema('test', 'test description');
     $model = 'gpt-4';
     $prompt = 'Test prompt';
-    $systemPrompt = 'System prompt';
+    $systemPrompts = [new SystemMessage('Test system prompt')];
     $temperature = 0.7;
     $maxTokens = 100;
     $topP = 0.9;
@@ -65,7 +66,7 @@ test('it generates a proper request object', function (): void {
         ->using(Provider::OpenAI, $model)
         ->withSchema($schema)
         ->withPrompt($prompt)
-        ->withSystemPrompt($systemPrompt)
+        ->withSystemPrompt($systemPrompts[0])
         ->usingTemperature($temperature)
         ->withMaxTokens($maxTokens)
         ->usingTopP($topP)
@@ -77,7 +78,7 @@ test('it generates a proper request object', function (): void {
     expect($request)
         ->toBeInstanceOf(Request::class)
         ->model()->toBe($model)
-        ->systemPrompt()->toBe($systemPrompt)
+        ->systemPrompts()->toBe($systemPrompts)
         ->prompt()->toBe($prompt)
         ->schema()->toBe($schema)
         ->temperature()->toBe($temperature)

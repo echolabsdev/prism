@@ -39,7 +39,7 @@ class Structured
             'chat/completions',
             array_merge([
                 'model' => $request->model(),
-                'messages' => (new MessageMap($request->messages(), $request->systemPrompt() ?? ''))(),
+                'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
                 'max_completion_tokens' => $request->maxTokens(),
             ], array_filter([
                 'temperature' => $request->temperature(),

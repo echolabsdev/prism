@@ -13,7 +13,6 @@ use EchoLabs\Prism\Concerns\HasPrompts;
 use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Concerns\HasSchema;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use ReflectionMethod;
@@ -59,10 +58,6 @@ class PendingRequest
 
         $messages = $this->messages;
 
-        if ($this->systemPrompt) {
-            $messages[] = new SystemMessage($this->systemPrompt);
-        }
-
         if ($this->prompt) {
             $messages[] = new UserMessage($this->prompt);
         }
@@ -73,7 +68,7 @@ class PendingRequest
 
         return new Request(
             model: $this->model,
-            systemPrompt: $this->systemPrompt,
+            systemPrompts: $this->systemPrompts,
             prompt: $this->prompt,
             messages: $messages,
             temperature: $this->temperature,

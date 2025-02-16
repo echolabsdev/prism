@@ -216,7 +216,7 @@ test('it can set string system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt())
+    expect($generated->systemPrompts()[0]->content)
         ->toBe('System instruction');
 });
 
@@ -230,7 +230,7 @@ test('it can set view system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt())
+    expect($generated->systemPrompts()[0]->content)
         ->toBe('System instruction');
 });
 
@@ -255,6 +255,36 @@ test('it can set messages', function (): void {
             fn ($message) => $message->toBeInstanceOf(AssistantMessage::class),
         );
 });
+
+test('it can set system prompts', function (): void {
+    $request = $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withSystemPrompts([
+            new SystemMessage('Prompt 1'),
+            new SystemMessage('Prompt 2'),
+        ]);
+
+    $generated = $request->toRequest();
+
+    expect($generated->systemPrompts())
+        ->toHaveCount(2)
+        ->sequence(
+            fn ($message): bool => $message->content === 'Prompt 1',
+            fn ($message): bool => $message->content === 'Prompt 2',
+        );
+});
+
+test('throws an exception if using withSystemPrompts with system prompts already set', function (): void {
+    $request = $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withSystemPrompt('Prompt 1')
+        ->withSystemPrompts([
+            new SystemMessage('Prompt 1'),
+            new SystemMessage('Prompt 2'),
+        ]);
+
+    $generated = $request->toRequest();
+})->throws(PrismException::class, 'System prompts have already been set. Remove previous calls to withSystemPrompt or withSystemPrompts.');
 
 test('it throws exception when using both prompt and messages', function (): void {
     $this->pendingRequest

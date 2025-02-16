@@ -19,13 +19,14 @@ class Request implements PrismRequest
     use ChecksSelf, HasProviderMeta;
 
     /**
+     * @param  SystemMessage[]  $systemPrompts
      * @param  array<int, Message>  $messages
      * @param  array<string, mixed>  $clientOptions
      * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $clientRetry
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        protected ?string $systemPrompt,
+        protected array $systemPrompts,
         protected string $model,
         protected ?string $prompt,
         protected array $messages,
@@ -41,9 +42,12 @@ class Request implements PrismRequest
         $this->providerMeta = $providerMeta;
     }
 
-    public function systemPrompt(): ?string
+    /**
+     * @return SystemMessage[]
+     */
+    public function systemPrompts(): array
     {
-        return $this->systemPrompt;
+        return $this->systemPrompts;
     }
 
     public function model(): string
