@@ -25,7 +25,11 @@ readonly class Mistral implements Provider
     #[\Override]
     public function text(TextRequest $request): ProviderResponse
     {
-        $handler = new Text($this->client($request->clientOptions, $request->clientRetry));
+        $handler = new Text(
+            $this->client(
+                $request->clientOptions(),
+                $request->clientRetry()
+            ));
 
         return $handler->handle($request);
     }
@@ -40,8 +44,8 @@ readonly class Mistral implements Provider
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
         $handler = new Embeddings($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);

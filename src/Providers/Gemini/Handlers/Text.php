@@ -31,7 +31,7 @@ class Text
         try {
             $response = $this->sendRequest($request);
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
 
         $data = $response->json();
@@ -68,29 +68,29 @@ class Text
 
     protected function sendRequest(Request $request): Response
     {
-        $endpoint = "{$request->model}:generateContent";
+        $endpoint = "{$request->model()}:generateContent";
 
-        $payload = (new MessageMap($request->messages, $request->systemPrompt))();
+        $payload = (new MessageMap($request->messages(), $request->systemPrompt()))();
 
         $generationConfig = array_filter([
-            'temperature' => $request->temperature,
-            'topP' => $request->topP,
-            'maxOutputTokens' => $request->maxTokens,
+            'temperature' => $request->temperature(),
+            'topP' => $request->topP(),
+            'maxOutputTokens' => $request->maxTokens(),
         ]);
 
         if ($generationConfig !== []) {
             $payload['generationConfig'] = $generationConfig;
         }
 
-        $tools = ToolMap::map($request->tools);
+        $tools = ToolMap::map($request->tools());
         if ($tools !== []) {
             $payload['tools'] = [
                 'function_declarations' => $tools,
             ];
         }
 
-        if ($request->toolChoice) {
-            $payload['tool_config'] = ToolChoiceMap::map($request->toolChoice);
+        if ($request->toolChoice()) {
+            $payload['tool_config'] = ToolChoiceMap::map($request->toolChoice());
         }
 
         $safetySettings = $request->providerMeta(Provider::Gemini, 'safetySettings');

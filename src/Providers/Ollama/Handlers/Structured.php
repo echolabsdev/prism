@@ -25,7 +25,7 @@ class Structured
             $response = $this->sendRequest($request);
             $data = $response->json();
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
 
         if (! $data || data_get($data, 'error')) {
@@ -45,17 +45,23 @@ class Structured
             finishReason: FinishReasonMap::map(data_get($data, 'done_reason', '')),
             responseMeta: new ResponseMeta(
                 id: '',
-                model: $request->model,
+                model: $request->model(),
             )
         );
     }
 
     public function sendRequest(Request $request): Response
     {
-        return $this->client->post('api/chat', ['model' => $request->model, 'system' => $request->systemPrompt, 'messages' => (new MessageMap($request->messages))->map(), 'format' => $request->schema->toArray(), 'stream' => false, 'options' => array_filter([
-            'temperature' => $request->temperature,
-            'num_predict' => $request->maxTokens ?? 2048,
-            'top_p' => $request->topP,
-        ])]);
+        return $this->client->post('api/chat', [
+            'model' => $request->model(),
+            'system' => $request->systemPrompt(),
+            'messages' => (new MessageMap($request->messages()))->map(),
+            'format' => $request->schema()->toArray(),
+            'stream' => false,
+            'options' => array_filter([
+                'temperature' => $request->temperature(),
+                'num_predict' => $request->maxTokens() ?? 2048,
+                'top_p' => $request->topP(),
+            ])]);
     }
 }
