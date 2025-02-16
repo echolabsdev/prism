@@ -25,7 +25,7 @@ test('it can configure the provider and model', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->model)->toBe('gpt-4');
+    expect($generated->model())->toBe('gpt-4');
 });
 
 test('it sets provider meta with enum', function (): void {
@@ -101,7 +101,7 @@ test('it configures the client options', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->clientOptions)
+    expect($generated->clientOptions())
         ->toBe(['timeout' => 30]);
 });
 
@@ -112,7 +112,7 @@ test('it configures client retry', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->clientRetry)
+    expect($generated->clientRetry())
         ->toBe([3, 100, null, true]);
 });
 
@@ -123,7 +123,7 @@ test('it sets max tokens', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->maxTokens)->toBe(100);
+    expect($generated->maxTokens())->toBe(100);
 });
 
 test('it sets temperature', function (): void {
@@ -133,7 +133,7 @@ test('it sets temperature', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->temperature)->toBe(0.7);
+    expect($generated->temperature())->toBe(0.7);
 });
 
 test('it sets top p', function (): void {
@@ -143,7 +143,7 @@ test('it sets top p', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->topP)->toBe(0.9);
+    expect($generated->topP())->toBe(0.9);
 });
 
 test('it sets max steps', function (): void {
@@ -153,7 +153,7 @@ test('it sets max steps', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->maxSteps)->toBe(5);
+    expect($generated->maxSteps())->toBe(5);
 });
 
 test('it can add a tool', function (): void {
@@ -167,9 +167,9 @@ test('it can add a tool', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->tools)
+    expect($generated->tools())
         ->toHaveCount(1)
-        ->and($generated->tools[0]->name())
+        ->and($generated->tools()[0]->name())
         ->toBe('test');
 });
 
@@ -180,7 +180,7 @@ test('it sets tool choice', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->toolChoice)
+    expect($generated->toolChoice())
         ->toBe(ToolChoice::Auto);
 });
 
@@ -191,8 +191,8 @@ test('it can set string prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->prompt)->toBe('Hello AI')
-        ->and($generated->messages[0])->toBeInstanceOf(UserMessage::class);
+    expect($generated->prompt())->toBe('Hello AI')
+        ->and($generated->messages()[0])->toBeInstanceOf(UserMessage::class);
 });
 
 test('it can set view prompt', function (): void {
@@ -205,8 +205,8 @@ test('it can set view prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->prompt)->toBe('Hello AI')
-        ->and($generated->messages[0])->toBeInstanceOf(UserMessage::class);
+    expect($generated->prompt())->toBe('Hello AI')
+        ->and($generated->messages()[0])->toBeInstanceOf(UserMessage::class);
 });
 
 test('it can set string system prompt', function (): void {
@@ -216,7 +216,7 @@ test('it can set string system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt)
+    expect($generated->systemPrompt())
         ->toBe('System instruction');
 });
 
@@ -230,7 +230,7 @@ test('it can set view system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt)
+    expect($generated->systemPrompt())
         ->toBe('System instruction');
 });
 
@@ -247,7 +247,7 @@ test('it can set messages', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->messages)
+    expect($generated->messages())
         ->toHaveCount(3)
         ->sequence(
             fn ($message) => $message->toBeInstanceOf(SystemMessage::class),

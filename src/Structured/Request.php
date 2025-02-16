@@ -25,39 +25,90 @@ class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        readonly public ?string $systemPrompt,
-        readonly public string $model,
-        readonly public ?string $prompt,
-        readonly public array $messages,
-        readonly public ?int $maxTokens,
-        readonly public int|float|null $temperature,
-        readonly public int|float|null $topP,
-        readonly public array $clientOptions,
-        readonly public array $clientRetry,
-        readonly public Schema $schema,
-        readonly public StructuredMode $mode,
+        protected ?string $systemPrompt,
+        protected string $model,
+        protected ?string $prompt,
+        protected array $messages,
+        protected ?int $maxTokens,
+        protected int|float|null $temperature,
+        protected int|float|null $topP,
+        protected array $clientOptions,
+        protected array $clientRetry,
+        protected Schema $schema,
+        protected StructuredMode $mode,
         array $providerMeta = [],
     ) {
         $this->providerMeta = $providerMeta;
     }
 
+    public function systemPrompt(): ?string
+    {
+        return $this->systemPrompt;
+    }
+
+    public function model(): string
+    {
+        return $this->model;
+    }
+
+    public function prompt(): ?string
+    {
+        return $this->prompt;
+    }
+
+    /**
+     * @return array<int, Message>
+     */
+    public function messages(): array
+    {
+        return $this->messages;
+    }
+
+    public function maxTokens(): ?int
+    {
+        return $this->maxTokens;
+    }
+
+    public function temperature(): int|float|null
+    {
+        return $this->temperature;
+    }
+
+    public function topP(): int|float|null
+    {
+        return $this->topP;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function clientOptions(): array
+    {
+        return $this->clientOptions;
+    }
+
+    /**
+     * @return array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}
+     */
+    public function clientRetry(): array
+    {
+        return $this->clientRetry;
+    }
+
+    public function schema(): Schema
+    {
+        return $this->schema;
+    }
+
+    public function mode(): StructuredMode
+    {
+        return $this->mode;
+    }
+
     public function addMessage(UserMessage|SystemMessage $message): self
     {
-        $messages = array_merge($this->messages, [$message]);
+        $this->messages = array_merge($this->messages, [$message]);
 
-        return new self(
-            systemPrompt: $this->systemPrompt,
-            model: $this->model,
-            prompt: $this->prompt,
-            messages: $messages,
-            maxTokens: $this->maxTokens,
-            temperature: $this->temperature,
-            topP: $this->topP,
-            clientOptions: $this->clientOptions,
-            clientRetry: $this->clientRetry,
-            schema: $this->schema,
-            providerMeta: $this->providerMeta,
-            mode: $this->mode,
-        );
+        return $this;
     }
 }

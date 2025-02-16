@@ -28,7 +28,7 @@ class Text
             $response = $this->sendRequest($request);
             $data = $response->json();
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
 
         if (! $data || data_get($data, 'error')) {
@@ -48,7 +48,7 @@ class Text
             finishReason: $this->mapFinishReason($data),
             responseMeta: new ResponseMeta(
                 id: '',
-                model: $request->model,
+                model: $request->model(),
             )
         );
     }
@@ -58,15 +58,15 @@ class Text
         return $this
             ->client
             ->post('api/chat', [
-                'model' => $request->model,
-                'system' => $request->systemPrompt,
-                'messages' => (new MessageMap($request->messages))->map(),
-                'tools' => ToolMap::map($request->tools),
+                'model' => $request->model(),
+                'system' => $request->systemPrompt(),
+                'messages' => (new MessageMap($request->messages()))->map(),
+                'tools' => ToolMap::map($request->tools()),
                 'stream' => false,
                 'options' => array_filter([
-                    'temperature' => $request->temperature,
-                    'num_predict' => $request->maxTokens ?? 2048,
-                    'top_p' => $request->topP,
+                    'temperature' => $request->temperature(),
+                    'num_predict' => $request->maxTokens() ?? 2048,
+                    'top_p' => $request->topP(),
                 ])]);
     }
 

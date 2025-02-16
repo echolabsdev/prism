@@ -19,12 +19,38 @@ class Request implements PrismRequest
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
-        readonly public string $model,
-        readonly public string $input,
-        readonly public array $clientOptions,
-        readonly public array $clientRetry,
+        protected string $model,
+        protected string $input,
+        protected array $clientOptions,
+        protected array $clientRetry,
         array $providerMeta = [],
     ) {
         $this->providerMeta = $providerMeta;
+    }
+
+    /**
+     * @return array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool} $clientRetry
+     */
+    public function clientRetry(): array
+    {
+        return $this->clientRetry;
+    }
+
+    /**
+     * @return array<string, mixed> $clientOptions
+     */
+    public function clientOptions(): array
+    {
+        return $this->clientOptions;
+    }
+
+    public function input(): string
+    {
+        return $this->input;
+    }
+
+    public function model(): string
+    {
+        return $this->model;
     }
 }

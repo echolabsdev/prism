@@ -22,7 +22,7 @@ class Embeddings
             $response = $this->sendRequest($request);
             $data = $response->json();
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
 
         if (! $data || data_get($data, 'error')) {
@@ -43,8 +43,8 @@ class Embeddings
         return $this->client->post(
             'api/embed',
             [
-                'model' => $request->model,
-                'input' => $request->input,
+                'model' => $request->model(),
+                'input' => $request->input(),
             ]
         );
     }

@@ -92,8 +92,7 @@ class PrismFake implements Provider
     {
         $prompts = collect($this->recorded)
             ->flatten()
-            ->map
-            ->prompt;
+            ->map(fn ($response) => $response->prompt());
 
         PHPUnit::assertTrue(
             $prompts->contains($prompt),

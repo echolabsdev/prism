@@ -24,14 +24,14 @@ class Structured
     public function handle(Request $request): ProviderResponse
     {
         try {
-            return match ($request->mode) {
+            return match ($request->mode()) {
                 StructuredMode::Auto => $this->handleAutoMode($request),
                 StructuredMode::Structured => $this->handleStructuredMode($request),
                 StructuredMode::Json => $this->handleJsonMode($request),
 
             };
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
 
     }
@@ -44,12 +44,12 @@ class Structured
         return $this->client->post(
             'chat/completions',
             array_merge([
-                'model' => $request->model,
-                'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_completion_tokens' => $request->maxTokens,
+                'model' => $request->model(),
+                'messages' => (new MessageMap($request->messages(), $request->systemPrompt() ?? ''))(),
+                'max_completion_tokens' => $request->maxTokens(),
             ], array_filter([
-                'temperature' => $request->temperature,
-                'top_p' => $request->topP,
+                'temperature' => $request->temperature(),
+                'top_p' => $request->topP(),
                 'response_format' => $responseFormat,
             ]))
         );
@@ -57,7 +57,7 @@ class Structured
 
     protected function handleAutoMode(Request $request): ProviderResponse
     {
-        $mode = StructuredModeResolver::forModel($request->model);
+        $mode = StructuredModeResolver::forModel($request->model());
 
         return match ($mode) {
             StructuredMode::Structured => $this->handleStructuredMode($request),
@@ -68,17 +68,17 @@ class Structured
 
     protected function handleStructuredMode(Request $request): ProviderResponse
     {
-        $mode = StructuredModeResolver::forModel($request->model);
+        $mode = StructuredModeResolver::forModel($request->model());
 
         if ($mode !== StructuredMode::Structured) {
-            throw new PrismException(sprintf('%s model does not support structured mode', $request->model));
+            throw new PrismException(sprintf('%s model does not support structured mode', $request->model()));
         }
 
         $response = $this->sendRequest($request, [
             'type' => 'json_schema',
             'json_schema' => array_filter([
-                'name' => $request->schema->name(),
-                'schema' => $request->schema->toArray(),
+                'name' => $request->schema()->name(),
+                'schema' => $request->schema()->toArray(),
                 'strict' => (bool) $request->providerMeta(Provider::OpenAI, 'schema.strict'),
             ]),
         ]);
@@ -151,7 +151,7 @@ class Structured
     {
         return $request->addMessage(new SystemMessage(sprintf(
             "Respond with JSON that matches the following schema: \n %s",
-            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
+            json_encode($request->schema()->toArray(), JSON_PRETTY_PRINT)
         )));
     }
 }

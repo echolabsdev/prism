@@ -25,7 +25,7 @@ class Generator
 
     public function generate(Request $request): Response
     {
-        $this->messages = $request->messages;
+        $this->messages = $request->messages();
 
         $response = $this->sendProviderRequest($request);
 

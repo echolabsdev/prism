@@ -43,10 +43,10 @@ test('it converts prompt to message', function (): void {
         ->withPrompt($prompt)
         ->toRequest();
 
-    expect($request->messages)
+    expect($request->messages())
         ->toHaveCount(1)
-        ->and($request->messages[0])->toBeInstanceOf(UserMessage::class)
-        ->and($request->messages[0]->text())->toBe($prompt);
+        ->and($request->messages()[0])->toBeInstanceOf(UserMessage::class)
+        ->and($request->messages()[0]->text())->toBe($prompt);
 });
 
 test('it generates a proper request object', function (): void {
@@ -76,16 +76,16 @@ test('it generates a proper request object', function (): void {
 
     expect($request)
         ->toBeInstanceOf(Request::class)
-        ->model->toBe($model)
-        ->systemPrompt->toBe($systemPrompt)
-        ->prompt->toBe($prompt)
-        ->schema->toBe($schema)
-        ->temperature->toBe($temperature)
-        ->maxTokens->toBe($maxTokens)
-        ->topP->toBe($topP)
-        ->clientOptions->toBe($clientOptions)
-        ->clientRetry->toBe($clientRetry)
-        ->mode->toBe(StructuredMode::Auto)
+        ->model()->toBe($model)
+        ->systemPrompt()->toBe($systemPrompt)
+        ->prompt()->toBe($prompt)
+        ->schema()->toBe($schema)
+        ->temperature()->toBe($temperature)
+        ->maxTokens()->toBe($maxTokens)
+        ->topP()->toBe($topP)
+        ->clientOptions()->toBe($clientOptions)
+        ->clientRetry()->toBe($clientRetry)
+        ->mode()->toBe(StructuredMode::Auto)
         ->and($request->providerMeta(Provider::OpenAI))->toBe($providerMeta);
 });
 

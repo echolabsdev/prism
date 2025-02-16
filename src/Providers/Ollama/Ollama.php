@@ -27,8 +27,8 @@ readonly class Ollama implements Provider
     public function text(TextRequest $request): ProviderResponse
     {
         $handler = new Text($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);
@@ -38,8 +38,8 @@ readonly class Ollama implements Provider
     public function structured(StructuredRequest $request): ProviderResponse
     {
         $handler = new Structured($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);
@@ -49,8 +49,8 @@ readonly class Ollama implements Provider
     public function embeddings(EmbeddingsRequest $request): EmbeddingsResponse
     {
         $handler = new Embeddings($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);

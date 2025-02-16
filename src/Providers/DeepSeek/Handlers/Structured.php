@@ -29,7 +29,7 @@ class Structured
 
             return $this->createResponse($response);
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
     }
 
@@ -38,12 +38,12 @@ class Structured
         return $this->client->post(
             'chat/completions',
             array_merge([
-                'model' => $request->model,
-                'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_completion_tokens' => $request->maxTokens,
+                'model' => $request->model(),
+                'messages' => (new MessageMap($request->messages(), $request->systemPrompt() ?? ''))(),
+                'max_completion_tokens' => $request->maxTokens(),
             ], array_filter([
-                'temperature' => $request->temperature,
-                'top_p' => $request->topP,
+                'temperature' => $request->temperature(),
+                'top_p' => $request->topP(),
                 'response_format' => ['type' => 'json_object'],
             ]))
         );
@@ -86,7 +86,7 @@ class Structured
     {
         return $request->addMessage(new SystemMessage(sprintf(
             "Respond with JSON that matches the following schema: \n %s",
-            json_encode($request->schema->toArray(), JSON_PRETTY_PRINT)
+            json_encode($request->schema()->toArray(), JSON_PRETTY_PRINT)
         )));
     }
 }
