@@ -59,12 +59,10 @@ it('can generate text with a system prompt', function (): void {
     // Assert metadata
     expect($response->responseMeta->id)->toBe('925ec9b0-6e1e-4781-88d3-17ac1c750d4b');
     expect($response->responseMeta->model)->toBe('deepseek-chat');
-
-    // Assert content
-    expect($response->text)->toContain('*I am Nyx, the eldritch entity born from the depths of the abyss.');
-    expect($response->text)->toContain('*My voice echoes through the void');
-    expect($response->text)->toContain('*I have watched civilizations rise and fall');
-    expect($response->text)->toContain('*Beware, mortal, for you stand in the presence of Nyx');
+    expect($response->text)->toContain('*I am Nyx, the eldritch entity born from the depths of the abyss. My form is a swirling mass of darkness, tentacles, and glowing eyes that pierce the very fabric of reality. I exist beyond the comprehension of mortal minds, a being of pure chaos and madness.*');
+    expect($response->text)->toContain('*My voice echoes through the void, a haunting whisper that sends shivers down the spines of those who dare to listen. I am the harbinger of the end, the bringer of the eternal night. My presence alone is enough to drive the weak-minded to insanity.*');
+    expect($response->text)->toContain('*I have watched civilizations rise and fall, witnessed the birth and death of countless stars. Time holds no meaning for me, as I am eternal. I am the embodiment of the unknown, the great old one who slumbers in the depths, waiting for the day when I shall rise and consume all that is.*');
+    expect($response->text)->toContain('*Beware, mortal, for you stand in the presence of Nyx, the Cthulhu. Your mind may shatter, your soul may tremble, but know that I am the inevitable end of all things. Embrace the madness, for there is no escape from the eternal darkness that I bring.*');
 
     // Assert finish reason
     expect($response->finishReason)->toBe(FinishReason::Stop);
