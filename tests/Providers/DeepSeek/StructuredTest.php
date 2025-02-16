@@ -7,6 +7,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\BooleanSchema;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {
@@ -30,13 +31,23 @@ it('returns structured output', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
+    // Assert response type
+    expect($response)->toBeInstanceOf(StructuredResponse::class);
+
+    // Assert structured data
     expect($response->structured)->toBeArray();
     expect($response->structured)->toHaveKeys([
         'weather',
         'game_time',
         'coat_required',
     ]);
-    expect($response->structured['weather'])->toBeString();
-    expect($response->structured['game_time'])->toBeString();
-    expect($response->structured['coat_required'])->toBeBool();
+    expect($response->structured['weather'])->toBeString()->toBe('75º');
+    expect($response->structured['game_time'])->toBeString()->toBe('3pm');
+    expect($response->structured['coat_required'])->toBeBool()->toBeFalse();
+
+    // Assert metadata
+    expect($response->responseMeta->id)->toBe('1920de37-0bb1-4cf8-9c4e-d73ad8d73d6a');
+    expect($response->responseMeta->model)->toBe('deepseek-chat');
+    expect($response->usage->promptTokens)->toBe(187);
+    expect($response->usage->completionTokens)->toBe(26);
 });
