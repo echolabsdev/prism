@@ -12,7 +12,6 @@ use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
 use EchoLabs\Prism\Exceptions\PrismRequestTooLargeException;
 use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
 use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
@@ -22,43 +21,27 @@ use Throwable;
 
 abstract class AnthropicHandlerAbstract
 {
-    protected PrismRequest $request;
-
     protected Response $httpResponse;
 
-    public function __construct(protected PendingRequest $client) {}
+    public function __construct(protected PendingRequest $client, protected PrismRequest $request) {}
 
     /**
      * @return array<string, mixed>
      */
     abstract public static function buildHttpRequestPayload(PrismRequest $request): array;
 
-    public function handle(PrismRequest $request): ProviderResponse
+    protected function sendRequest(): void
     {
-        $this->request = $request;
-
         try {
-            $this->request = $this->prepareRequest();
-            $this->httpResponse = $this->sendRequest();
+            $this->httpResponse = $this->client->post(
+                'messages',
+                static::buildHttpRequestPayload($this->request)
+            );
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($this->request->model(), $e);
         }
 
         $this->handleResponseErrors();
-
-        return $this->buildProviderResponse();
-    }
-
-    abstract protected function prepareRequest(): PrismRequest;
-
-    abstract protected function buildProviderResponse(): ProviderResponse;
-
-    protected function sendRequest(): Response
-    {
-        return $this->client->post(
-            'messages',
-            static::buildHttpRequestPayload($this->request)
-        );
     }
 
     /**
