@@ -11,8 +11,6 @@ use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\StructuredMode;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 
 class Request implements PrismRequest
 {
@@ -105,7 +103,7 @@ class Request implements PrismRequest
         return $this->mode;
     }
 
-    public function addMessage(UserMessage|SystemMessage $message): self
+    public function addMessage(Message $message): self
     {
         $this->messages = array_merge($this->messages, [$message]);
 
