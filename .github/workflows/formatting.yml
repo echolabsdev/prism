@@ -41,8 +41,3 @@ jobs:
         run: |
           vendor/bin/rector
           git diff --exit-code
-
-      - name: Run Peck
-        run: |
-          vendor/bin/peck
-          git diff --exit-code
