@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
 use EchoLabs\Prism\Concerns\CallsTools;
+use EchoLabs\Prism\Concerns\DecodesObjects;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
@@ -21,7 +22,7 @@ use Throwable;
 
 class Structured
 {
-    use CallsTools;
+    use CallsTools, DecodesObjects;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -118,17 +119,5 @@ class Structured
         }
 
         return FinishReasonMap::map(data_get($data, 'done_reason', ''));
-    }
-
-    /**
-     * @return array<mixed>|null
-     */
-    protected function decodeObject(string $responseText): ?array
-    {
-        if (! json_validate($responseText)) {
-            return [];
-        }
-
-        return json_decode($responseText, true);
     }
 }
