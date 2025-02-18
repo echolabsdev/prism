@@ -87,10 +87,6 @@ class Text
      */
     protected function handleToolCalls(array $data, Request $request): Response
     {
-        if (! $this->shouldContinue($request)) {
-            return $this->responseBuilder->toResponse();
-        }
-
         $toolResults = $this->callTools(
             $request->tools(),
             $this->mapToolCalls(data_get($data, 'message.tool_calls', [])),
@@ -100,7 +96,11 @@ class Text
 
         $this->addStep($data, $request, $toolResults);
 
-        return $this->handle($request);
+        if ($this->shouldContinue($request)) {
+            return $this->handle($request);
+        }
+
+        return $this->responseBuilder->toResponse();
     }
 
     /**
