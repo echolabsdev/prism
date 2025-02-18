@@ -51,7 +51,6 @@ class Structured
 
     /**
      * @param  array<string, mixed>  $data
-     * @param  ToolResult[]  $toolResults
      */
     protected function addStep(array $data, Request $request): void
     {
