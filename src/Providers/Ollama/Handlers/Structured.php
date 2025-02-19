@@ -6,9 +6,9 @@ namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Concerns\DecodesObjects;
-use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\Ollama\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\Ollama\Concerns\ValidatesResponse;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\Structured\Response;
@@ -22,7 +22,10 @@ use Throwable;
 
 class Structured
 {
-    use CallsTools, DecodesObjects;
+    use CallsTools;
+    use DecodesObjects;
+    use MapsFinishReason;
+    use ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -94,30 +97,5 @@ class Structured
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function validateResponse(array $data): void
-    {
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(sprintf(
-                'Ollama Error: %s',
-                data_get($data, 'error', 'unknown'),
-            ));
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function mapFinishReason(array $data): FinishReason
-    {
-        if (! empty(data_get($data, 'message.tool_calls'))) {
-            return FinishReason::ToolCalls;
-        }
-
-        return FinishReasonMap::map(data_get($data, 'done_reason', ''));
     }
 }

@@ -7,7 +7,9 @@ namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\Ollama\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\Ollama\Concerns\MapsToolCalls;
+use EchoLabs\Prism\Providers\Ollama\Concerns\ValidatesResponse;
 use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Ollama\Maps\ToolMap;
 use EchoLabs\Prism\Text\Request;
@@ -17,7 +19,6 @@ use EchoLabs\Prism\Text\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -26,6 +27,9 @@ use Throwable;
 class Text
 {
     use CallsTools;
+    use MapsFinishReason;
+    use MapsToolCalls;
+    use ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -140,43 +144,5 @@ class Text
             messages: $request->messages(),
             additionalContent: [],
         ));
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function validateResponse(array $data): void
-    {
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(sprintf(
-                'Ollama Error: %s',
-                data_get($data, 'error', 'unknown'),
-            ));
-        }
-    }
-
-    /**
-     * @param  array<int, array<string, mixed>>  $toolCalls
-     * @return array<int, ToolCall>
-     */
-    protected function mapToolCalls(array $toolCalls): array
-    {
-        return array_map(fn (array $toolCall): ToolCall => new ToolCall(
-            id: data_get($toolCall, 'id', ''),
-            name: data_get($toolCall, 'function.name'),
-            arguments: data_get($toolCall, 'function.arguments'),
-        ), $toolCalls);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function mapFinishReason(array $data): FinishReason
-    {
-        if (! empty(data_get($data, 'message.tool_calls'))) {
-            return FinishReason::ToolCalls;
-        }
-
-        return FinishReasonMap::map(data_get($data, 'done_reason', ''));
     }
 }
