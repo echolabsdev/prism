@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
-use EchoLabs\Prism\Text\Step;
-use EchoLabs\Prism\Text\Response;
-use EchoLabs\Prism\Enums\Provider;
-use Illuminate\Support\Collection;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Text\ResponseBuilder;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\Contracts\PrismRequest;
+use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\Text\Request as TextRequest;
-use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
+use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
+use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
+use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\Text\Response;
+use EchoLabs\Prism\Text\ResponseBuilder;
+use EchoLabs\Prism\Text\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
+use EchoLabs\Prism\ValueObjects\Usage;
+use Illuminate\Support\Collection;
 
 /**
  * @template TRequest of TextRequest
@@ -117,6 +118,9 @@ class Text extends AnthropicHandlerAbstract
         return $this->responseBuilder->toResponse();
     }
 
+    /**
+     * @param  ToolResult[]  $toolResults
+     */
     protected function addStep(array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
@@ -133,7 +137,7 @@ class Text extends AnthropicHandlerAbstract
     }
 
     protected function shouldContinue(): bool
-    {       
+    {
         return $this->responseBuilder->steps->count() < $this->request->maxSteps();
     }
 
