@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Concerns;
 
-use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use Illuminate\Contracts\View\View;
 
@@ -42,11 +41,7 @@ trait HasPrompts
      */
     public function withSystemPrompts(array $messages): self
     {
-        if (count($this->systemPrompts) > 0) {
-            throw new PrismException('System prompts have already been set. Remove previous calls to withSystemPrompt or withSystemPrompts.');
-        }
-
-        $this->systemPrompts = $messages;
+        $this->systemPrompts = array_merge($this->systemPrompts, $messages);
 
         return $this;
     }

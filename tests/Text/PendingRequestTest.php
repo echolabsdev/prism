@@ -274,18 +274,6 @@ test('it can set system prompts', function (): void {
         );
 });
 
-test('throws an exception if using withSystemPrompts with system prompts already set', function (): void {
-    $request = $this->pendingRequest
-        ->using(Provider::OpenAI, 'gpt-4')
-        ->withSystemPrompt('Prompt 1')
-        ->withSystemPrompts([
-            new SystemMessage('Prompt 1'),
-            new SystemMessage('Prompt 2'),
-        ]);
-
-    $generated = $request->toRequest();
-})->throws(PrismException::class, 'System prompts have already been set. Remove previous calls to withSystemPrompt or withSystemPrompts.');
-
 test('it throws exception when using both prompt and messages', function (): void {
     $this->pendingRequest
         ->using(Provider::OpenAI, 'gpt-4')
