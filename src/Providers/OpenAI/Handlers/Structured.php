@@ -5,57 +5,110 @@ namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\OpenAI\Support\StructuredModeResolver;
 use EchoLabs\Prism\Structured\Request;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
+use EchoLabs\Prism\Structured\ResponseBuilder;
+use EchoLabs\Prism\Structured\Step;
+use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Throwable;
 
 class Structured
 {
-    public function __construct(protected PendingRequest $client) {}
+    use MapsFinishReason;
+    use ValidatesResponses;
 
-    public function handle(Request $request): ProviderResponse
+    protected ResponseBuilder $responseBuilder;
+
+    public function __construct(protected PendingRequest $client)
     {
-        try {
-            return match ($request->mode()) {
-                StructuredMode::Auto => $this->handleAutoMode($request),
-                StructuredMode::Structured => $this->handleStructuredMode($request),
-                StructuredMode::Json => $this->handleJsonMode($request),
+        $this->responseBuilder = new ResponseBuilder;
+    }
 
-            };
-        } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model(), $e);
-        }
+    public function handle(Request $request): StructuredResponse
+    {
+        $data = match ($request->mode()) {
+            StructuredMode::Auto => $this->handleAutoMode($request),
+            StructuredMode::Structured => $this->handleStructuredMode($request),
+            StructuredMode::Json => $this->handleJsonMode($request),
 
+        };
+
+        $this->validateResponse($data);
+        $this->handleRefusal(data_get($data, 'choices.0.message', []));
+
+        $responseMessage = new AssistantMessage(
+            data_get($data, 'choices.0.message.content') ?? '',
+        );
+
+        $this->responseBuilder->addResponseMessage($responseMessage);
+
+        $request->addMessage($responseMessage);
+
+        $this->addStep($data, $request);
+
+        return $this->responseBuilder->toResponse();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function addStep(array $data, Request $request): void
+    {
+        $this->responseBuilder->addStep(new Step(
+            text: data_get($data, 'choices.0.message.content') ?? '',
+            finishReason: $this->mapFinishReason($data),
+            usage: new Usage(
+                data_get($data, 'usage.prompt_tokens'),
+                data_get($data, 'usage.completion_tokens'),
+            ),
+            responseMeta: new ResponseMeta(
+                id: data_get($data, 'id'),
+                model: data_get($data, 'model'),
+            ),
+            messages: $request->messages(),
+            additionalContent: [],
+            systemPrompts: $request->systemPrompts(),
+        ));
     }
 
     /**
      * @param  array{type: 'json_schema', json_schema: array<string, mixed>}|array{type: 'json_object'}  $responseFormat
+     * @return array<string, mixed>
      */
-    public function sendRequest(Request $request, array $responseFormat): Response
+    protected function sendRequest(Request $request, array $responseFormat): array
     {
-        return $this->client->post(
-            'chat/completions',
-            array_merge([
-                'model' => $request->model(),
-                'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
-                'max_completion_tokens' => $request->maxTokens(),
-            ], array_filter([
-                'temperature' => $request->temperature(),
-                'top_p' => $request->topP(),
-                'response_format' => $responseFormat,
-            ]))
-        );
+        try {
+            $response = $this->client->post(
+                'chat/completions',
+                array_merge([
+                    'model' => $request->model(),
+                    'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
+                    'max_completion_tokens' => $request->maxTokens(),
+                ], array_filter([
+                    'temperature' => $request->temperature(),
+                    'top_p' => $request->topP(),
+                    'response_format' => $responseFormat,
+                ]))
+            );
+
+            return $response->json();
+        } catch (Throwable $e) {
+            throw PrismException::providerRequestError($request->model(), $e);
+        }
     }
 
-    protected function handleAutoMode(Request $request): ProviderResponse
+    /**
+     * @return array<string, mixed>
+     */
+    protected function handleAutoMode(Request $request): array
     {
         $mode = StructuredModeResolver::forModel($request->model());
 
@@ -66,7 +119,10 @@ class Structured
         };
     }
 
-    protected function handleStructuredMode(Request $request): ProviderResponse
+    /**
+     * @return array<string, mixed>
+     */
+    protected function handleStructuredMode(Request $request): array
     {
         $mode = StructuredModeResolver::forModel($request->model());
 
@@ -74,7 +130,7 @@ class Structured
             throw new PrismException(sprintf('%s model does not support structured mode', $request->model()));
         }
 
-        $response = $this->sendRequest($request, [
+        return $this->sendRequest($request, [
             'type' => 'json_schema',
             'json_schema' => array_filter([
                 'name' => $request->schema()->name(),
@@ -82,59 +138,18 @@ class Structured
                 'strict' => (bool) $request->providerMeta(Provider::OpenAI, 'schema.strict'),
             ]),
         ]);
-
-        $this->validateResponse($response);
-
-        return $this->createResponse($response);
     }
 
-    protected function handleJsonMode(Request $request): ProviderResponse
+    /**
+     * @return array<string, mixed>
+     */
+    protected function handleJsonMode(Request $request): array
     {
         $request = $this->appendMessageForJsonMode($request);
 
-        $response = $this->sendRequest($request, [
+        return $this->sendRequest($request, [
             'type' => 'json_object',
         ]);
-
-        $this->validateResponse($response);
-
-        return $this->createResponse($response);
-    }
-
-    protected function validateResponse(Response $response): void
-    {
-        $data = $response->json();
-
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'OpenAI Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
-        }
-
-        $this->handleRefusal(data_get($data, 'choices.0.message', []));
-    }
-
-    protected function createResponse(Response $response): ProviderResponse
-    {
-        $data = $response->json();
-
-        return new ProviderResponse(
-            text: data_get($data, 'choices.0.message.content') ?? '',
-            toolCalls: [],
-            usage: new Usage(
-                data_get($data, 'usage.prompt_tokens'),
-                data_get($data, 'usage.completion_tokens'),
-            ),
-            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
-            responseMeta: new ResponseMeta(
-                id: data_get($data, 'id'),
-                model: data_get($data, 'model'),
-            )
-        );
     }
 
     /**

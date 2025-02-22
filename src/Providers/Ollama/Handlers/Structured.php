@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
-use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Concerns\MapsFinishReason;
 use EchoLabs\Prism\Providers\Ollama\Concerns\ValidatesResponse;
@@ -21,7 +20,6 @@ use Throwable;
 
 class Structured
 {
-    use CallsTools;
     use MapsFinishReason;
     use ValidatesResponse;
 
