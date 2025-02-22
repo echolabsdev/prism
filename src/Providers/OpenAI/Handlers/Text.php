@@ -7,7 +7,8 @@ namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolCallMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
@@ -27,6 +28,8 @@ use Throwable;
 class Text
 {
     use CallsTools;
+    use MapsFinishReason;
+    use ValidatesResponses;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -94,14 +97,6 @@ class Text
     }
 
     /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function mapFinishReason(array $data): FinishReason
-    {
-        return FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', ''));
-    }
-
-    /**
      * @return array<string, mixed>
      */
     protected function sendRequest(Request $request): array
@@ -124,22 +119,6 @@ class Text
             return $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function validateResponse(array $data): void
-    {
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'OpenAI Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
         }
     }
 

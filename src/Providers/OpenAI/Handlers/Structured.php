@@ -5,7 +5,8 @@ namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Enums\StructuredMode;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\OpenAI\Support\StructuredModeResolver;
 use EchoLabs\Prism\Structured\Request;
@@ -21,6 +22,9 @@ use Throwable;
 
 class Structured
 {
+    use MapsFinishReason;
+    use ValidatesResponses;
+
     protected ResponseBuilder $responseBuilder;
 
     public function __construct(protected PendingRequest $client)
@@ -38,6 +42,7 @@ class Structured
         };
 
         $this->validateResponse($data);
+        $this->handleRefusal(data_get($data, 'choices.0.message', []));
 
         $responseMessage = new AssistantMessage(
             data_get($data, 'choices.0.message.content') ?? '',
@@ -59,7 +64,7 @@ class Structured
     {
         $this->responseBuilder->addStep(new Step(
             text: data_get($data, 'choices.0.message.content') ?? '',
-            finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
+            finishReason: $this->mapFinishReason($data),
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
@@ -145,24 +150,6 @@ class Structured
         return $this->sendRequest($request, [
             'type' => 'json_object',
         ]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function validateResponse(array $data): void
-    {
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'OpenAI Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
-        }
-
-        $this->handleRefusal(data_get($data, 'choices.0.message', []));
     }
 
     /**
