@@ -11,6 +11,7 @@ use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Contracts\Schema;
 use EchoLabs\Prism\Enums\StructuredMode;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 
 class Request implements PrismRequest
 {
