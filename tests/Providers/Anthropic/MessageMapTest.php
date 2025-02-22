@@ -29,18 +29,6 @@ it('maps user messages', function (): void {
     ]]);
 });
 
-it('filters system messages out when calling map', function (): void {
-    expect(MessageMap::map([
-        new UserMessage('Who are you?'),
-        new SystemMessage('I am Groot.'),
-    ]))->toBe([[
-        'role' => 'user',
-        'content' => [
-            ['type' => 'text', 'text' => 'Who are you?'],
-        ],
-    ]]);
-});
-
 it('maps user messages with images from path', function (): void {
     $mappedMessage = MessageMap::map([
         new UserMessage('Who are you?', [
@@ -242,17 +230,17 @@ it('maps tool result messages', function (): void {
 });
 
 it('maps system messages', function (): void {
-    expect(MessageMap::mapSystemMessages(
-        [new SystemMessage('Who are you?'), new UserMessage('I am rocket.')],
-        'I am Thanos. Me first.'
-    ))->toBe([
+    expect(MessageMap::mapSystemMessages([
+        new SystemMessage('I am Thanos.'),
+        new SystemMessage('But call me Bob.'),
+    ]))->toBe([
         [
             'type' => 'text',
-            'text' => 'I am Thanos. Me first.',
+            'text' => 'I am Thanos.',
         ],
         [
             'type' => 'text',
-            'text' => 'Who are you?',
+            'text' => 'But call me Bob.',
         ],
     ]);
 });
@@ -350,7 +338,7 @@ it('sets the cache type on an AssistantMessage if cacheType providerMeta is set 
 it('sets the cache type on a SystemMessage if cacheType providerMeta is set on message', function (mixed $cacheType): void {
     expect(MessageMap::mapSystemMessages([
         (new SystemMessage(content: 'Who are you?'))->withProviderMeta(Provider::Anthropic, ['cacheType' => $cacheType]),
-    ], null))->toBe([
+    ]))->toBe([
         [
             'type' => 'text',
             'text' => 'Who are you?',

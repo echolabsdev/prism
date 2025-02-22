@@ -216,7 +216,7 @@ test('it can set string system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt())
+    expect($generated->systemPrompts()[0]->content)
         ->toBe('System instruction');
 });
 
@@ -230,7 +230,7 @@ test('it can set view system prompt', function (): void {
 
     $generated = $request->toRequest();
 
-    expect($generated->systemPrompt())
+    expect($generated->systemPrompts()[0]->content)
         ->toBe('System instruction');
 });
 
@@ -253,6 +253,24 @@ test('it can set messages', function (): void {
             fn ($message) => $message->toBeInstanceOf(SystemMessage::class),
             fn ($message) => $message->toBeInstanceOf(UserMessage::class),
             fn ($message) => $message->toBeInstanceOf(AssistantMessage::class),
+        );
+});
+
+test('it can set system prompts', function (): void {
+    $request = $this->pendingRequest
+        ->using(Provider::OpenAI, 'gpt-4')
+        ->withSystemPrompts([
+            new SystemMessage('Prompt 1'),
+            new SystemMessage('Prompt 2'),
+        ]);
+
+    $generated = $request->toRequest();
+
+    expect($generated->systemPrompts())
+        ->toHaveCount(2)
+        ->sequence(
+            fn ($message): bool => $message->content === 'Prompt 1',
+            fn ($message): bool => $message->content === 'Prompt 2',
         );
 });
 

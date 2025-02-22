@@ -307,7 +307,7 @@ test('it correctly builds message chain with tools', function (): void {
         );
 });
 
-test('it adds the system message user message and assistant response to first step', function (): void {
+test('it adds the user message and assistant response to first step', function (): void {
     $request = (new PendingRequest)
         ->using('test-provider', 'test-model')
         ->withSystemPrompt('System Prompt')
@@ -317,24 +317,46 @@ test('it adds the system message user message and assistant response to first st
 
     expect($response)->toBeInstanceOf(Response::class);
 
-    /** @var SystemMessage */
-    $system_message = $response->steps[0]->messages[0];
-
-    expect($system_message)->toBeInstanceOf(SystemMessage::class)
-        ->and($system_message->content)
-        ->toBe('System Prompt');
-
     /** @var UserMessage */
-    $user_message = $response->steps[0]->messages[1];
+    $user_message = $response->steps[0]->messages[0];
 
     expect($user_message)->toBeInstanceOf(UserMessage::class)
         ->and($user_message->text())
         ->toBe('User Prompt');
 
     /** @var AssistantMessage */
-    $assistant_message = $response->steps[0]->messages[2];
+    $assistant_message = $response->steps[0]->messages[1];
 
     expect($assistant_message)->toBeInstanceOf(AssistantMessage::class)
         ->and($assistant_message->content)
         ->toBe("I'm nyx!");
+});
+
+test('it adds system prompts first step', function (): void {
+    $request = (new PendingRequest)
+        ->using('test-provider', 'test-model')
+        ->withSystemPrompts([
+            new SystemMessage('System Prompt 1'),
+            new SystemMessage('System Prompt 2'),
+        ])
+        ->withPrompt('User Prompt');
+
+    $response = $request->generate();
+
+    expect($response)->toBeInstanceOf(Response::class);
+    expect($response->steps[0]->systemPrompts)->toHaveCount(2);
+
+    /** @var SystemMessage */
+    $messageOne = $response->steps[0]->systemPrompts[0];
+
+    expect($messageOne)->toBeInstanceOf(SystemMessage::class)
+        ->and($messageOne->content)
+        ->toBe('System Prompt 1');
+
+    /** @var SystemMessage */
+    $messageTwo = $response->steps[0]->systemPrompts[1];
+
+    expect($messageTwo)->toBeInstanceOf(SystemMessage::class)
+        ->and($messageTwo->content)
+        ->toBe('System Prompt 2');
 });
