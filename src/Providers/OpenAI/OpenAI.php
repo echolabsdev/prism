@@ -12,9 +12,9 @@ use EchoLabs\Prism\Providers\OpenAI\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Structured;
 use EchoLabs\Prism\Providers\OpenAI\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -39,7 +39,7 @@ readonly class OpenAI implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         $handler = new Structured($this->client(
             $request->clientOptions(),
