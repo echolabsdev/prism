@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
@@ -17,6 +18,7 @@ readonly class Step
      * @param  ToolCall[]  $toolCalls
      * @param  ToolResult[]  $toolResults
      * @param  Message[]  $messages
+     * @param  SystemMessage[]  $systemPrompts
      * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
@@ -27,6 +29,7 @@ readonly class Step
         public readonly Usage $usage,
         public readonly ResponseMeta $responseMeta,
         public readonly array $messages,
+        public readonly array $systemPrompts,
         public readonly array $additionalContent = []
     ) {}
 }

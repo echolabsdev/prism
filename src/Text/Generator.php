@@ -52,6 +52,7 @@ class Generator
             usage: $response->usage,
             responseMeta: $response->responseMeta,
             messages: $request->messages(),
+            systemPrompts: $request->systemPrompts(),
             additionalContent: $response->additionalContent,
         ));
 

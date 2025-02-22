@@ -11,12 +11,14 @@ use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\PrismRequest;
 use EchoLabs\Prism\Enums\ToolChoice;
 use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 
 class Request implements PrismRequest
 {
     use ChecksSelf, HasProviderMeta;
 
     /**
+     * @param  SystemMessage[]  $systemPrompts
      * @param  array<int, Message>  $messages
      * @param  array<int, Tool>  $tools
      * @param  array<string, mixed>  $clientOptions
@@ -25,7 +27,7 @@ class Request implements PrismRequest
      */
     public function __construct(
         protected string $model,
-        protected ?string $systemPrompt,
+        protected array $systemPrompts,
         protected ?string $prompt,
         protected array $messages,
         protected int $maxSteps,
@@ -103,11 +105,15 @@ class Request implements PrismRequest
         return $this->prompt;
     }
 
-    public function systemPrompt(): ?string
+    /**
+     * @return SystemMessage[]
+     */
+    public function systemPrompts(): array
     {
-        return $this->systemPrompt;
+        return $this->systemPrompts;
     }
 
+    #[\Override]
     public function model(): string
     {
         return $this->model;

@@ -40,7 +40,7 @@ class Structured extends AnthropicHandlerAbstract
             'messages' => MessageMap::map($request->messages(), $request->providerMeta(Provider::Anthropic)),
             'max_tokens' => $request->maxTokens(),
         ], array_filter([
-            'system' => MessageMap::mapSystemMessages($request->messages(), $request->systemPrompt()),
+            'system' => MessageMap::mapSystemMessages($request->systemPrompts()),
             'temperature' => $request->temperature(),
             'top_p' => $request->topP(),
         ]));
