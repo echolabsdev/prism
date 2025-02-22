@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\Ollama\Handlers;
 
 use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Concerns\DecodesObjects;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Concerns\MapsFinishReason;
 use EchoLabs\Prism\Providers\Ollama\Concerns\ValidatesResponse;
@@ -23,7 +22,6 @@ use Throwable;
 class Structured
 {
     use CallsTools;
-    use DecodesObjects;
     use MapsFinishReason;
     use ValidatesResponse;
 
@@ -60,7 +58,6 @@ class Structured
     {
         $this->responseBuilder->addStep(new Step(
             text: data_get($data, 'message.content') ?? '',
-            object: $this->decodeObject(data_get($data, 'message.content') ?? ''),
             finishReason: $this->mapFinishReason($data),
             usage: new Usage(
                 data_get($data, 'prompt_eval_count', 0),

@@ -13,14 +13,12 @@ use EchoLabs\Prism\ValueObjects\Usage;
 readonly class Step
 {
     /**
-     * @param  array<mixed>|null  $object
      * @param  Message[]  $messages
      * @param  SystemMessage[]  $systemPrompts
      * @param  array<string,mixed>  $additionalContent
      */
     public function __construct(
         public readonly string $text,
-        public readonly ?array $object,
         public readonly FinishReason $finishReason,
         public readonly Usage $usage,
         public readonly ResponseMeta $responseMeta,
