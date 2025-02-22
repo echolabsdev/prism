@@ -15,7 +15,6 @@ test('throws a PrismStructuredDecodingException if the response is not valid jso
     $builder->addStep(new Step(
         text: 'This is not valid json',
         systemPrompts: [],
-        object: null,
         finishReason: FinishReason::Stop,
         usage: new Usage(
             promptTokens: 0,
@@ -29,5 +28,4 @@ test('throws a PrismStructuredDecodingException if the response is not valid jso
     ));
 
     $builder->toResponse();
-
 })->throws(PrismStructuredDecodingException::class);

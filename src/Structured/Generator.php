@@ -36,7 +36,6 @@ class Generator
 
         $this->responseBuilder->addStep(new Step(
             text: $response->text,
-            object: $this->decodeObject($response->text),
             finishReason: $response->finishReason,
             usage: $response->usage,
             responseMeta: $response->responseMeta,
@@ -46,14 +45,6 @@ class Generator
         ));
 
         return $this->responseBuilder->toResponse();
-    }
-
-    /**
-     * @return array<mixed>|null
-     */
-    protected function decodeObject(string $responseText): ?array
-    {
-        return json_decode($responseText, true);
     }
 
     protected function sendProviderRequest(Request $request): ProviderResponse
