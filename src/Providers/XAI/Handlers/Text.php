@@ -7,7 +7,8 @@ namespace EchoLabs\Prism\Providers\XAI\Handlers;
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\XAI\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\XAI\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\XAI\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Providers\XAI\Maps\MessageMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\XAI\Maps\ToolMap;
@@ -21,89 +22,103 @@ use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
+use Throwable;
 
 class Text
 {
     use CallsTools;
+    use MapsFinishReason;
+    use ValidatesResponses;
 
-    public function __construct(protected PendingRequest $client) {}
+    protected ResponseBuilder $responseBuilder;
+
+    public function __construct(protected PendingRequest $client)
+    {
+        $this->responseBuilder = new ResponseBuilder;
+    }
 
     public function handle(Request $request): TextResponse
     {
-        $responseBuilder = new ResponseBuilder;
-        $currentRequest = $request;
-        $stepCount = 0;
+        $data = $this->sendRequest($request);
 
-        do {
-            $stepCount++;
-            $response = $this->sendRequest($currentRequest);
-            $data = $response->json();
+        $this->validateResponse($data);
 
-            if (! $data || data_get($data, 'error')) {
-                throw PrismException::providerResponseError(vsprintf(
-                    'xAI Error:  [%s] %s',
-                    [
-                        data_get($data, 'error.type', 'unknown'),
-                        data_get($data, 'error.message', 'unknown'),
-                    ]
-                ));
-            }
+        $responseMessage = new AssistantMessage(
+            data_get($data, 'choices.0.message.content') ?? '',
+            $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', [])),
+        );
 
-            $text = data_get($data, 'choices.0.message.content') ?? '';
-            $finishReason = FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', ''));
-            $toolCalls = $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', []));
-            $toolResults = [];
+        $this->responseBuilder->addResponseMessage($responseMessage);
 
-            $responseMessage = new AssistantMessage($text, $toolCalls, []);
-            $responseBuilder->addResponseMessage($responseMessage);
-            $currentRequest = $currentRequest->addMessage($responseMessage);
+        $request->addMessage($responseMessage);
 
-            if ($finishReason === FinishReason::ToolCalls) {
-                $toolResults = $this->callTools($currentRequest->tools, $toolCalls);
-                $toolResultMessage = new ToolResultMessage($toolResults);
-                $currentRequest = $currentRequest->addMessage($toolResultMessage);
-            }
-
-            $step = new Step(
-                text: $text,
-                finishReason: $finishReason,
-                toolCalls: $toolCalls,
-                toolResults: $toolResults,
-                usage: new Usage(
-                    data_get($data, 'usage.prompt_tokens'),
-                    data_get($data, 'usage.completion_tokens'),
-                ),
-                responseMeta: new ResponseMeta(
-                    id: data_get($data, 'id'),
-                    model: data_get($data, 'model'),
-                ),
-                messages: $currentRequest->messages,
-                additionalContent: [],
-            );
-
-            $responseBuilder->addStep($step);
-
-        } while ($stepCount < $request->maxSteps && $finishReason === FinishReason::ToolCalls);
-
-        return $responseBuilder->toResponse();
+        return match ($this->mapFinishReason($data)) {
+            FinishReason::ToolCalls => $this->handleToolCalls($data, $request),
+            FinishReason::Stop => $this->handleStop($data, $request),
+            default => throw new PrismException('XAI: unknown finish reason'),
+        };
     }
 
-    public function sendRequest(Request $request): Response
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function handleToolCalls(array $data, Request $request): TextResponse
     {
-        return $this->client->post(
-            'chat/completions',
-            array_merge([
-                'model' => $request->model(),
-                'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
-                'max_tokens' => $request->maxTokens() ?? 2048,
-            ], array_filter([
-                'temperature' => $request->temperature(),
-                'top_p' => $request->topP(),
-                'tools' => ToolMap::map($request->tools()),
-                'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
-            ]))
+        $toolResults = $this->callTools(
+            $request->tools(),
+            $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', [])),
         );
+
+        $request->addMessage(new ToolResultMessage($toolResults));
+
+        $this->addStep($data, $request, $toolResults);
+
+        if ($this->shouldContinue($request)) {
+            return $this->handle($request);
+        }
+
+        return $this->responseBuilder->toResponse();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function handleStop(array $data, Request $request): TextResponse
+    {
+        $this->addStep($data, $request);
+
+        return $this->responseBuilder->toResponse();
+    }
+
+    protected function shouldContinue(Request $request): bool
+    {
+        return $this->responseBuilder->steps->count() < $request->maxSteps();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function sendRequest(Request $request): array
+    {
+        try {
+            $response = $this->client->post(
+                'chat/completions',
+                array_merge([
+                    'model' => $request->model(),
+                    'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
+                    'max_tokens' => $request->maxTokens() ?? 2048,
+                ], array_filter([
+                    'temperature' => $request->temperature(),
+                    'top_p' => $request->topP(),
+                    'tools' => ToolMap::map($request->tools()),
+                    'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
+                ]))
+            );
+
+            return $response->json();
+        } catch (Throwable $e) {
+            throw PrismException::providerRequestError($request->model(), $e);
+        }
     }
 
     /**
@@ -117,5 +132,30 @@ class Text
             name: data_get($toolCall, 'function.name'),
             arguments: data_get($toolCall, 'function.arguments'),
         ), $toolCalls);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  ToolResult[]  $toolResults
+     */
+    protected function addStep(array $data, Request $request, array $toolResults = []): void
+    {
+        $this->responseBuilder->addStep(new Step(
+            text: data_get($data, 'choices.0.message.content') ?? '',
+            finishReason: $this->mapFinishReason($data),
+            toolCalls: $this->mapToolCalls(data_get($data, 'choices.0.message.tool_calls', [])),
+            toolResults: $toolResults,
+            usage: new Usage(
+                data_get($data, 'usage.prompt_tokens'),
+                data_get($data, 'usage.completion_tokens'),
+            ),
+            responseMeta: new ResponseMeta(
+                id: data_get($data, 'id'),
+                model: data_get($data, 'model'),
+            ),
+            messages: $request->messages(),
+            additionalContent: [],
+            systemPrompts: $request->systemPrompts(),
+        ));
     }
 }
