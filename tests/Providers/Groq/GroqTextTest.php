@@ -70,7 +70,7 @@ describe('Text generation for Groq', function (): void {
         ];
 
         $response = Prism::text()
-            ->using('groq', 'llama3-groq-70b-8192-tool-use-preview')
+            ->using('groq', 'llama-3.3-70b-versatile')
             ->withTools($tools)
             ->withMaxSteps(3)
             ->withPrompt('What time is the tigers game today in Detroit and should I wear a coat?')
@@ -79,27 +79,28 @@ describe('Text generation for Groq', function (): void {
         // Assert tool calls in the first step
         $firstStep = $response->steps[0];
         expect($firstStep->toolCalls)->toHaveCount(2);
-        expect($firstStep->toolCalls[0]->name)->toBe('search');
-        expect($firstStep->toolCalls[0]->arguments())->toBe([
-            'query' => 'tigers game today in Detroit',
-        ]);
 
-        expect($firstStep->toolCalls[1]->name)->toBe('weather');
-        expect($firstStep->toolCalls[1]->arguments())->toBe([
+        expect($firstStep->toolCalls[0]->name)->toBe('weather');
+        expect($firstStep->toolCalls[0]->arguments())->toBe([
             'city' => 'Detroit',
         ]);
 
+        expect($firstStep->toolCalls[1]->name)->toBe('search');
+        expect($firstStep->toolCalls[1]->arguments())->toBe([
+            'query' => 'Tigers game time today in Detroit',
+        ]);
+
         // Assert usage
-        expect($response->usage->promptTokens)->toBe(344);
-        expect($response->usage->completionTokens)->toBe(114);
+        expect($response->usage->promptTokens)->toBe(1096);
+        expect($response->usage->completionTokens)->toBe(97);
 
         // Assert response
-        expect($response->responseMeta->id)->toBe('chatcmpl-e4daf477-4536-4f23-9c3e-de490185423f');
-        expect($response->responseMeta->model)->toBe('llama3-groq-70b-8192-tool-use-preview');
+        expect($response->responseMeta->id)->toBe('chatcmpl-8288c3f5-e381-4ca1-8472-f926970b8392');
+        expect($response->responseMeta->model)->toBe('llama-3.3-70b-versatile');
 
         // Assert final text content
         expect($response->text)->toBe(
-            "The Tigers game is at 3pm in Detroit. Given the weather is 75° and sunny, it's likely to be warm, so you might not need a coat. However, it's always a good idea to check the weather closer to the game time as it can change."
+            "Based on the weather, you won't need a coat for the Tigers game today in Detroit. It's going to be 75° and sunny. The game starts at 3 pm."
         );
     });
 
@@ -118,7 +119,7 @@ describe('Text generation for Groq', function (): void {
         ];
 
         $response = Prism::text()
-            ->using(Provider::Groq, 'llama3-groq-70b-8192-tool-use-preview')
+            ->using(Provider::Groq, 'llama-3.3-70b-versatile')
             ->withPrompt('Do something')
             ->withTools($tools)
             ->withToolChoice('weather')
