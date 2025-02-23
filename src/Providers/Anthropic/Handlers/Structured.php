@@ -36,7 +36,7 @@ class Structured extends AnthropicHandlerAbstract
         $this->responseBuilder = new ResponseBuilder;
     }
 
-    public function generate(): Response
+    public function handle(): Response
     {
         $this->appendMessageForJsonMode();
 

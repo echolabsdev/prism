@@ -66,7 +66,7 @@ class Text extends AnthropicHandlerAbstract
 
         return match ($this->tempResponse->finishReason) {
             FinishReason::ToolCalls => $this->handleToolCalls(),
-            FinishReason::Stop => $this->handleStop(),
+            FinishReason::Stop, FinishReason::Length => $this->handleStop(),
             default => throw new PrismException('Anthropic: unknown finish reason'),
         };
     }

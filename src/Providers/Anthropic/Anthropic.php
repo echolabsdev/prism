@@ -49,7 +49,7 @@ readonly class Anthropic implements Provider
             $request
         );
 
-        return $handler->generate();
+        return $handler->handle();
     }
 
     #[\Override]
