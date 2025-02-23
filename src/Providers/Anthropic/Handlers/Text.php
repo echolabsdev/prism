@@ -33,15 +33,15 @@ class Text extends AnthropicHandlerAbstract
         }
 
         return array_merge([
-            'model' => $request->model,
-            'messages' => MessageMap::map($request->messages, $request->providerMeta(Provider::Anthropic)),
-            'max_tokens' => $request->maxTokens,
+            'model' => $request->model(),
+            'messages' => MessageMap::map($request->messages(), $request->providerMeta(Provider::Anthropic)),
+            'max_tokens' => $request->maxTokens(),
         ], array_filter([
-            'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
-            'temperature' => $request->temperature,
-            'top_p' => $request->topP,
-            'tools' => ToolMap::map($request->tools),
-            'tool_choice' => ToolChoiceMap::map($request->toolChoice),
+            'system' => MessageMap::mapSystemMessages($request->systemPrompts()),
+            'temperature' => $request->temperature(),
+            'top_p' => $request->topP(),
+            'tools' => ToolMap::map($request->tools()),
+            'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
         ]));
     }
 

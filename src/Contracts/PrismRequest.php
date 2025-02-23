@@ -10,4 +10,6 @@ interface PrismRequest
      * @param  class-string  $classString
      */
     public function is(string $classString): bool;
+
+    public function model(): string;
 }

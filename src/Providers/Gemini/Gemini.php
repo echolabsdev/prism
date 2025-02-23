@@ -26,7 +26,7 @@ readonly class Gemini implements Provider
     public function text(TextRequest $request): ProviderResponse
     {
         $handler = new Text(
-            $this->client($request->clientOptions, $request->clientRetry),
+            $this->client($request->clientOptions(), $request->clientRetry()),
             $this->apiKey
         );
 
@@ -43,8 +43,8 @@ readonly class Gemini implements Provider
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
         $handler = new Embeddings($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);
