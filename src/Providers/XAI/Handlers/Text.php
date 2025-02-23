@@ -20,6 +20,7 @@ use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Throwable;
@@ -136,7 +137,7 @@ class Text
 
     /**
      * @param  array<string, mixed>  $data
-     * @param  ToolResult[]  $toolResults
+     * @param  array<int, ToolResult>  $toolResults
      */
     protected function addStep(array $data, Request $request, array $toolResults = []): void
     {
