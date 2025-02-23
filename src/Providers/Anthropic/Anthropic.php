@@ -10,8 +10,9 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Structured;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\Text\Response;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -24,25 +25,31 @@ readonly class Anthropic implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request): Response
     {
-        $handler = new Text($this->client(
-            $request->clientOptions(),
-            $request->clientRetry()
-        ));
+        $handler = new Text(
+            $this->client(
+                $request->clientOptions(),
+                $request->clientRetry()
+            ),
+            $request
+        );
 
-        return $handler->handle($request);
+        return $handler->handle();
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
-        $handler = new Structured($this->client(
-            $request->clientOptions(),
-            $request->clientRetry()
-        ));
+        $handler = new Structured(
+            $this->client(
+                $request->clientOptions(),
+                $request->clientRetry()
+            ),
+            $request
+        );
 
-        return $handler->handle($request);
+        return $handler->handle();
     }
 
     #[\Override]

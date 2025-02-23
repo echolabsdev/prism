@@ -9,11 +9,14 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response;
+use EchoLabs\Prism\Structured\ResponseBuilder;
+use EchoLabs\Prism\Structured\Step;
+use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
-use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Collection;
 
 class Structured extends AnthropicHandlerAbstract
 {
@@ -22,7 +25,46 @@ class Structured extends AnthropicHandlerAbstract
      */
     protected PrismRequest $request; // Redeclared for type hinting
 
-    public function __construct(protected PendingRequest $client) {}
+    protected Response $tempResponse;
+
+    protected ResponseBuilder $responseBuilder;
+
+    public function __construct(mixed ...$args)
+    {
+        parent::__construct(...$args);
+
+        $this->responseBuilder = new ResponseBuilder;
+    }
+
+    public function handle(): Response
+    {
+        $this->appendMessageForJsonMode();
+
+        $this->sendRequest();
+
+        $this->prepareTempResponse();
+
+        $responseMessage = new AssistantMessage(
+            $this->tempResponse->text,
+            [],
+            $this->tempResponse->additionalContent
+        );
+
+        $this->request->addMessage($responseMessage);
+        $this->responseBuilder->addResponseMessage($responseMessage);
+
+        $this->responseBuilder->addStep(new Step(
+            text: $this->tempResponse->text,
+            finishReason: $this->tempResponse->finishReason,
+            usage: $this->tempResponse->usage,
+            responseMeta: $this->tempResponse->responseMeta,
+            messages: $this->request->messages(),
+            systemPrompts: $this->request->systemPrompts(),
+            additionalContent: $this->tempResponse->additionalContent,
+        ));
+
+        return $this->responseBuilder->toResponse();
+    }
 
     /**
      * @param  StructuredRequest  $request
@@ -46,30 +88,22 @@ class Structured extends AnthropicHandlerAbstract
         ]));
     }
 
-    /**
-     * @return StructuredRequest
-     */
-    #[\Override]
-    protected function prepareRequest(): PrismRequest
-    {
-        return $this->appendMessageForJsonMode();
-    }
-
-    #[\Override]
-    protected function buildProviderResponse(): ProviderResponse
+    protected function prepareTempResponse(): void
     {
         $data = $this->httpResponse->json();
 
-        return new ProviderResponse(
+        $this->tempResponse = new Response(
+            steps: new Collection,
+            responseMessages: new Collection,
             text: $this->extractText($data),
-            toolCalls: [],
+            structured: [],
+            finishReason: FinishReasonMap::map(data_get($data, 'stop_reason', '')),
             usage: new Usage(
                 promptTokens: data_get($data, 'usage.input_tokens'),
                 completionTokens: data_get($data, 'usage.output_tokens'),
                 cacheWriteInputTokens: data_get($data, 'usage.cache_creation_input_tokens', null),
                 cacheReadInputTokens: data_get($data, 'usage.cache_read_input_tokens', null)
             ),
-            finishReason: FinishReasonMap::map(data_get($data, 'stop_reason', '')),
             responseMeta: new ResponseMeta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
@@ -81,12 +115,9 @@ class Structured extends AnthropicHandlerAbstract
         );
     }
 
-    /**
-     * @return StructuredRequest
-     */
-    protected function appendMessageForJsonMode(): PrismRequest
+    protected function appendMessageForJsonMode(): void
     {
-        return $this->request->addMessage(new UserMessage(sprintf(
+        $this->request->addMessage(new UserMessage(sprintf(
             "Respond with ONLY JSON that matches the following schema: \n %s %s",
             json_encode($this->request->schema()->toArray(), JSON_PRETTY_PRINT),
             ($this->request->providerMeta(Provider::Anthropic)['citations'] ?? false)
