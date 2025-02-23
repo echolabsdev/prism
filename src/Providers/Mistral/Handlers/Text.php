@@ -95,6 +95,7 @@ class Text
         if ($request->maxSteps() === 0) {
             return true;
         }
+
         return $this->responseBuilder->steps->count() < $request->maxSteps();
     }
 
@@ -153,7 +154,7 @@ class Text
             return [];
         }
 
-        return array_map(fn($toolCall): \EchoLabs\Prism\ValueObjects\ToolCall => new ToolCall(
+        return array_map(fn ($toolCall): \EchoLabs\Prism\ValueObjects\ToolCall => new ToolCall(
             id: data_get($toolCall, 'id'),
             name: data_get($toolCall, 'function.name'),
             arguments: data_get($toolCall, 'function.arguments'),
