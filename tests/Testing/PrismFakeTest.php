@@ -12,18 +12,23 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 
 it('fake responses using the prism fake for text', function (): void {
     $fake = Prism::fake([
-        new ProviderResponse(
+        new TextResponse(
             text: 'The meaning of life is 42',
+            steps: collect([]),
+            responseMessages: collect([]),
+            messages: collect([]),
             toolCalls: [],
+            toolResults: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
             responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')
@@ -45,12 +50,15 @@ it('fake responses using the prism fake for text', function (): void {
 
 it('fake responses using the prism fake for structured', function (): void {
     $fake = Prism::fake([
-        new ProviderResponse(
+        new StructuredResponse(
+            steps: collect([]),
             text: json_encode(['foo' => 'bar']),
-            toolCalls: [],
+            responseMessages: collect([]),
+            structured: ['foo' => 'bar'],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')
+            responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet'),
+            additionalContent: [],
         ),
     ]);
 
@@ -104,9 +112,13 @@ it("throws an exception when it can't runs out of responses", function (): void 
     $this->expectExceptionMessage('Could not find a response for the request');
 
     Prism::fake([
-        new ProviderResponse(
+        new TextResponse(
+            steps: collect([]),
+            messages: collect([]),
+            responseMessages: collect([]),
             text: 'The meaning of life is 42',
             toolCalls: [],
+            toolResults: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
             responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')
@@ -126,9 +138,13 @@ it("throws an exception when it can't runs out of responses", function (): void 
 
 it('asserts provider config', function (): void {
     $fake = Prism::fake([
-        new ProviderResponse(
+        new TextResponse(
+            steps: collect([]),
+            messages: collect([]),
+            responseMessages: collect([]),
             text: 'The meaning of life is 42',
             toolCalls: [],
+            toolResults: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
             responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')

@@ -9,7 +9,9 @@ use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
@@ -25,37 +27,43 @@ class TestProvider implements Provider
     /** @var array<mixed> */
     public array $clientRetry;
 
-    /** @var array<int, ProviderResponse|EmbeddingResponse> */
+    /** @var array<int, StructuredResponse|TextResponse|EmbeddingResponse> */
     public array $responses = [];
 
     public $callCount = 0;
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request): TextResponse
     {
         $this->callCount++;
 
         $this->request = $request;
 
-        return $this->responses[$this->callCount - 1] ?? new ProviderResponse(
+        return $this->responses[$this->callCount - 1] ?? new TextResponse(
             text: "I'm nyx!",
+            steps: collect([]),
+            responseMessages: collect([]),
             toolCalls: [],
+            toolResults: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620')
+            responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620'),
+            messages: collect([]),
         );
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         $this->callCount++;
 
         $this->request = $request;
 
-        return $this->responses[$this->callCount - 1] ?? new ProviderResponse(
+        return $this->responses[$this->callCount - 1] ?? new StructuredResponse(
             text: json_encode([]),
-            toolCalls: [],
+            structured: [],
+            steps: collect([]),
+            responseMessages: collect([]),
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
             responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620')
@@ -75,7 +83,7 @@ class TestProvider implements Provider
         );
     }
 
-    public function withResponse(ProviderResponse $response): Provider
+    public function withResponse(StructuredResponse|TextResponse $response): Provider
     {
         $this->responses[] = $response;
 

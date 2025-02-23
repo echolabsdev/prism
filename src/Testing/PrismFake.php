@@ -10,9 +10,10 @@ use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
@@ -29,21 +30,26 @@ class PrismFake implements Provider
     protected array $providerConfig = [];
 
     /**
-     * @param  array<int, ProviderResponse|EmbeddingResponse>  $responses
+     * @param  array<int, TextResponse|StructuredResponse|EmbeddingResponse>  $responses
      */
     public function __construct(protected array $responses = []) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request): TextResponse
     {
         $this->recorded[] = $request;
 
-        return $this->nextProviderResponse() ?? new ProviderResponse(
+        return $this->nextTextResponse() ?? new TextResponse(
+            steps: collect([]),
+            responseMessages: collect([]),
             text: '',
-            toolCalls: [],
-            usage: new Usage(0, 0),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('fake', 'fake')
+            toolCalls: [],
+            toolResults: [],
+            usage: new Usage(0, 0),
+            responseMeta: new ResponseMeta('fake', 'fake'),
+            messages: collect([]),
+            additionalContent: [],
         );
     }
 
@@ -59,16 +65,19 @@ class PrismFake implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         $this->recorded[] = $request;
 
-        return $this->nextProviderResponse() ?? new ProviderResponse(
+        return $this->nextStructuredResponse() ?? new StructuredResponse(
+            steps: collect([]),
+            responseMessages: collect([]),
             text: '',
-            toolCalls: [],
-            usage: new Usage(0, 0),
+            structured: [],
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('fake', 'fake')
+            usage: new Usage(0, 0),
+            responseMeta: new ResponseMeta('fake', 'fake'),
+            additionalContent: [],
         );
     }
 
@@ -121,13 +130,32 @@ class PrismFake implements Provider
         PHPUnit::assertSame($expectedCount, $actualCount, "Expected {$expectedCount} calls, got {$actualCount}");
     }
 
-    protected function nextProviderResponse(): ?ProviderResponse
+    protected function nextTextResponse(): ?TextResponse
     {
         if (! isset($this->responses)) {
             return null;
         }
 
-        /** @var ProviderResponse[] $responses */
+        /** @var array<int, TextResponse> $responses */
+        $responses = $this->responses;
+        $sequence = $this->responseSequence;
+
+        if (! isset($responses[$sequence])) {
+            throw new Exception('Could not find a response for the request');
+        }
+
+        $this->responseSequence++;
+
+        return $responses[$sequence];
+    }
+
+    protected function nextStructuredResponse(): ?StructuredResponse
+    {
+        if (! isset($this->responses)) {
+            return null;
+        }
+
+        /** @var array<int, StructuredResponse> $responses */
         $responses = $this->responses;
         $sequence = $this->responseSequence;
 
