@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Gemini;
 
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Gemini\Maps\MessageMap;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use EchoLabs\Prism\ValueObjects\ToolCall;
@@ -17,7 +19,7 @@ it('maps user messages', function (): void {
         messages: [
             new UserMessage('Who are you?'),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([
@@ -37,7 +39,7 @@ it('maps user messages with images from path', function (): void {
                 Image::fromPath('tests/Fixtures/test-image.png'),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     $mappedMessage = $messageMap();
@@ -55,7 +57,7 @@ it('maps user messages with images from base64', function (): void {
                 Image::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-image.png')), 'image/png'),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     $mappedMessage = $messageMap();
@@ -71,7 +73,7 @@ it('maps assistant message', function (): void {
         messages: [
             new AssistantMessage('I am Nyx'),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([
@@ -97,7 +99,7 @@ it('maps assistant message with tool calls', function (): void {
                 ),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([
@@ -132,7 +134,7 @@ it('maps tool result messages', function (): void {
                 ),
             ]),
         ],
-        systemPrompt: ''
+        systemPrompts: []
     );
 
     expect($messageMap())->toBe([
@@ -156,7 +158,9 @@ it('maps tool result messages', function (): void {
 it('maps system prompt', function (): void {
     $messageMap = new MessageMap(
         messages: [],
-        systemPrompt: 'MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'
+        systemPrompts: [
+            new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'),
+        ]
     );
 
     expect($messageMap())->toBe([
@@ -167,3 +171,15 @@ it('maps system prompt', function (): void {
         ],
     ]);
 });
+
+it('throws an exception of multiple system prompts are given', function (): void {
+    $messageMap = new MessageMap(
+        messages: [],
+        systemPrompts: [
+            new SystemMessage('MODEL ADOPTS ROLE of [PERSONA: Nyx the Cthulhu]'),
+            new SystemMessage('But my friends call my Nyx.'),
+        ]
+    );
+
+    $messageMap();
+})->throws(PrismException::class, 'Gemini only supports one system instruction.');

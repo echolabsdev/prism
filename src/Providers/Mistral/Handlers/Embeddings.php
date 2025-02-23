@@ -21,7 +21,7 @@ class Embeddings
         try {
             $response = $this->sendRequest($request);
         } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
+            throw PrismException::providerRequestError($request->model(), $e);
         }
 
         $data = $response->json();
@@ -47,8 +47,8 @@ class Embeddings
         return $this->client->post(
             'embeddings',
             [
-                'model' => $request->model,
-                'input' => $request->input,
+                'model' => $request->model(),
+                'input' => $request->input(),
             ]
         );
     }

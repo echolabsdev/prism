@@ -36,13 +36,13 @@ class Structured extends AnthropicHandlerAbstract
         }
 
         return array_merge([
-            'model' => $request->model,
-            'messages' => MessageMap::map($request->messages, $request->providerMeta(Provider::Anthropic)),
-            'max_tokens' => $request->maxTokens,
+            'model' => $request->model(),
+            'messages' => MessageMap::map($request->messages(), $request->providerMeta(Provider::Anthropic)),
+            'max_tokens' => $request->maxTokens(),
         ], array_filter([
-            'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
-            'temperature' => $request->temperature,
-            'top_p' => $request->topP,
+            'system' => MessageMap::mapSystemMessages($request->systemPrompts()),
+            'temperature' => $request->temperature(),
+            'top_p' => $request->topP(),
         ]));
     }
 
@@ -88,7 +88,7 @@ class Structured extends AnthropicHandlerAbstract
     {
         return $this->request->addMessage(new UserMessage(sprintf(
             "Respond with ONLY JSON that matches the following schema: \n %s %s",
-            json_encode($this->request->schema->toArray(), JSON_PRETTY_PRINT),
+            json_encode($this->request->schema()->toArray(), JSON_PRETTY_PRINT),
             ($this->request->providerMeta(Provider::Anthropic)['citations'] ?? false)
                 ? "\n\n Return the JSON as a single text block with a single set of citations."
                 : ''

@@ -38,7 +38,7 @@ class Generator
         $request = $request->addMessage($responseMessage);
 
         if ($response->finishReason === FinishReason::ToolCalls) {
-            $toolResults = $this->callTools($request->tools, $response->toolCalls);
+            $toolResults = $this->callTools($request->tools(), $response->toolCalls);
             $message = new ToolResultMessage($toolResults);
 
             $request = $request->addMessage($message);
@@ -51,11 +51,12 @@ class Generator
             toolResults: $toolResults ?? [],
             usage: $response->usage,
             responseMeta: $response->responseMeta,
-            messages: $request->messages,
+            messages: $request->messages(),
+            systemPrompts: $request->systemPrompts(),
             additionalContent: $response->additionalContent,
         ));
 
-        if ($this->shouldContinue($request->maxSteps, $response)) {
+        if ($this->shouldContinue($request->maxSteps(), $response)) {
             return $this->generate($request);
         }
 
