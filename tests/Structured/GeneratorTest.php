@@ -35,7 +35,7 @@ it('generates structured responses', function (): void {
 
     $generator = new Generator($fakeProvider);
     $request = new Request(
-        systemPrompt: 'test prompt',
+        systemPrompts: [],
         model: 'test-model',
         prompt: 'generate data',
         messages: [],
@@ -91,7 +91,7 @@ it('handles invalid JSON responses', function (): void {
 
     $generator = new Generator($fakeProvider);
     $request = new Request(
-        systemPrompt: 'test prompt',
+        systemPrompts: [],
         model: 'test-model',
         prompt: 'generate data',
         messages: [],
@@ -135,7 +135,7 @@ it('tracks provider responses properly', function (): void {
 
     $generator = new Generator($fakeProvider);
     $request = new Request(
-        systemPrompt: 'test prompt',
+        systemPrompts: [],
         model: 'test-model',
         prompt: 'generate data',
         messages: [],
@@ -167,12 +167,12 @@ it('tracks provider responses properly', function (): void {
     $fakeProvider->assertCallCount(1);
     $fakeProvider->assertRequest(function (array $requests): void {
         expect($requests[0])->toBeInstanceOf(Request::class)
-            ->and($requests[0]->model)->toBe('test-model')
-            ->and($requests[0]->prompt)->toBe('generate data');
+            ->and($requests[0]->model())->toBe('test-model')
+            ->and($requests[0]->prompt())->toBe('generate data');
     });
 });
 
-test('it adds system message user message and assistant message response to first step', function (): void {
+test('it adds user message and assistant message response to first step', function (): void {
     Prism::fake([
         new ProviderResponse(
             text: json_encode(['I am a string']),
@@ -192,27 +192,59 @@ test('it adds system message user message and assistant message response to firs
     $response = $request->generate();
 
     expect($response)->toBeInstanceOf(Response::class);
-    expect($response->steps[0]->messages)->toHaveCount(3);
-
-    /** @var SystemMessage */
-    $system_message = $response->steps[0]->messages[0];
-
-    expect($system_message)->toBeInstanceOf(SystemMessage::class)
-        ->and($system_message->content)
-        ->toBe('System Prompt');
+    expect($response->steps[0]->messages)->toHaveCount(2);
 
     /** @var UserMessage */
-    $user_message = $response->steps[0]->messages[1];
+    $user_message = $response->steps[0]->messages[0];
 
     expect($user_message)->toBeInstanceOf(UserMessage::class)
         ->and($user_message->text())
         ->toBe('User Prompt');
 
     /** @var AssistantMessage */
-    $assistant_message = $response->steps[0]->messages[2];
+    $assistant_message = $response->steps[0]->messages[1];
 
     expect($assistant_message)->toBeInstanceOf(AssistantMessage::class)
         ->and($assistant_message->content)
         ->toBe(json_encode(['I am a string']));
+});
 
+test('it adds system prompts first step', function (): void {
+    Prism::fake([
+        new ProviderResponse(
+            text: json_encode(['I am a string']),
+            toolCalls: [],
+            usage: new Usage(5, 10),
+            finishReason: FinishReason::Stop,
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
+        ),
+    ]);
+
+    $request = Prism::structured()
+        ->using(Provider::Anthropic, 'test')
+        ->withSchema(new ArraySchema('test schema', 'testing', new StringSchema('stringy', 'string')))
+        ->withSystemPrompts([
+            new SystemMessage('System Prompt 1'),
+            new SystemMessage('System Prompt 2'),
+        ])
+        ->withPrompt('User Prompt');
+
+    $response = $request->generate();
+
+    expect($response)->toBeInstanceOf(Response::class);
+    expect($response->steps[0]->systemPrompts)->toHaveCount(2);
+
+    /** @var SystemMessage */
+    $messageOne = $response->steps[0]->systemPrompts[0];
+
+    expect($messageOne)->toBeInstanceOf(SystemMessage::class)
+        ->and($messageOne->content)
+        ->toBe('System Prompt 1');
+
+    /** @var SystemMessage */
+    $messageTwo = $response->steps[0]->systemPrompts[1];
+
+    expect($messageTwo)->toBeInstanceOf(SystemMessage::class)
+        ->and($messageTwo->content)
+        ->toBe('System Prompt 2');
 });

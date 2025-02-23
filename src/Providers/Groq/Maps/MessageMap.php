@@ -20,17 +20,16 @@ class MessageMap
 
     /**
      * @param  array<int, Message>  $messages
+     * @param  SystemMessage[]  $systemPrompts
      */
     public function __construct(
         protected array $messages,
-        protected string $systemPrompt
+        protected array $systemPrompts
     ) {
-        if ($systemPrompt !== '' && $systemPrompt !== '0') {
-            $this->messages = array_merge(
-                [new SystemMessage($systemPrompt)],
-                $this->messages
-            );
-        }
+        $this->messages = array_merge(
+            $this->systemPrompts,
+            $this->messages
+        );
     }
 
     /**

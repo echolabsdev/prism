@@ -28,8 +28,8 @@ readonly class DeepSeek implements Provider
     public function text(TextRequest $request): TextResponse
     {
         $handler = new Text($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);
@@ -39,8 +39,8 @@ readonly class DeepSeek implements Provider
     public function structured(StructuredRequest $request): StructuredResponse
     {
         $handler = new Structured($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);

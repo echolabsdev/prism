@@ -93,14 +93,14 @@ class Text
         return $this->client->post(
             'chat/completions',
             array_merge([
-                'model' => $request->model,
-                'messages' => (new MessageMap($request->messages, $request->systemPrompt ?? ''))(),
-                'max_completion_tokens' => $request->maxTokens,
+                'model' => $request->model(),
+                'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
+                'max_completion_tokens' => $request->maxTokens(),
             ], array_filter([
-                'temperature' => $request->temperature,
-                'top_p' => $request->topP,
-                'tools' => ToolMap::map($request->tools),
-                'tool_choice' => ToolChoiceMap::map($request->toolChoice),
+                'temperature' => $request->temperature(),
+                'top_p' => $request->topP(),
+                'tools' => ToolMap::map($request->tools()),
+                'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
             ]))
         );
     }

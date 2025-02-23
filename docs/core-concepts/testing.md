@@ -12,7 +12,7 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 it('can generate text', function () {
     // Create a fake provider response
@@ -45,7 +45,7 @@ When testing conversations or tool usage, you might need to simulate multiple re
 ```php
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 it('can handle tool calls', function () {
     $responses = [
@@ -84,7 +84,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 it('can use weather tool', function () {
     // Define the expected tool call and response sequence
@@ -155,7 +155,7 @@ use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 
