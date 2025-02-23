@@ -9,8 +9,9 @@ use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Providers\Groq\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -22,7 +23,7 @@ readonly class Groq implements Provider
     ) {}
 
     #[\Override]
-    public function text(Request $request): ProviderResponse
+    public function text(Request $request): TextResponse
     {
         $handler = new Text($this->client($request->clientOptions(), $request->clientRetry()));
 
@@ -30,7 +31,7 @@ readonly class Groq implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
     }
