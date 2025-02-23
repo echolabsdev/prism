@@ -3,6 +3,8 @@
 namespace EchoLabs\Prism\Providers\DeepSeek\Handlers;
 
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\DeepSeek\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\DeepSeek\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\MessageMap;
 use EchoLabs\Prism\Structured\Request;
@@ -15,8 +17,6 @@ use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Throwable;
-use EchoLabs\Prism\Providers\DeepSeek\Concerns\MapsFinishReason;
-use EchoLabs\Prism\Providers\DeepSeek\Concerns\ValidatesResponses;
 
 class Structured
 {
@@ -67,17 +67,17 @@ class Structured
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function validateResponse(array $data): void
     {
-        if (! $data) {
+        if ($data === []) {
             throw PrismException::providerResponseError('DeepSeek Error: Empty response');
         }
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function createResponse(Request $request, array $data): StructuredResponse
     {

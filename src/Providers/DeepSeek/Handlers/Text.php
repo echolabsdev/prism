@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace EchoLabs\Prism\Providers\DeepSeek\Handlers;
 
 use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Providers\DeepSeek\Concerns\MapsFinishReason;
-use EchoLabs\Prism\Providers\DeepSeek\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\DeepSeek\Maps\FinishReasonMap;
+use EchoLabs\Prism\Providers\DeepSeek\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\DeepSeek\Concerns\ValidatesResponses;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\MessageMap;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\ToolCallMap;
 use EchoLabs\Prism\Providers\DeepSeek\Maps\ToolChoiceMap;
@@ -23,7 +22,6 @@ use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Throwable;
 
 class Text
@@ -34,7 +32,7 @@ class Text
 
     protected ResponseBuilder $responseBuilder;
 
-    public function __construct(protected PendingRequest $client) 
+    public function __construct(protected PendingRequest $client)
     {
         $this->responseBuilder = new ResponseBuilder;
     }
@@ -63,7 +61,7 @@ class Text
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function handleToolCalls(array $data, Request $request): TextResponse
     {
@@ -84,7 +82,7 @@ class Text
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function handleStop(array $data, Request $request): TextResponse
     {
@@ -125,8 +123,8 @@ class Text
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @param array<int, ToolResult> $toolResults
+     * @param  array<string, mixed>  $data
+     * @param  array<int, ToolResult>  $toolResults
      */
     protected function addStep(array $data, Request $request, array $toolResults = []): void
     {

@@ -9,12 +9,12 @@ use EchoLabs\Prism\Exceptions\PrismException;
 trait ValidatesResponses
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     protected function validateResponse(array $data): void
     {
-        if (! $data) {
+        if ($data === []) {
             throw PrismException::providerResponseError('DeepSeek Error: Empty response');
         }
     }
-} 
+}
