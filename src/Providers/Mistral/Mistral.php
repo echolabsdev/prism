@@ -10,8 +10,9 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Providers\Mistral\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Mistral\Handlers\Text;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\Text\Response as TextResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -23,7 +24,7 @@ readonly class Mistral implements Provider
     ) {}
 
     #[\Override]
-    public function text(TextRequest $request): ProviderResponse
+    public function text(TextRequest $request): TextResponse
     {
         $handler = new Text(
             $this->client(
@@ -35,7 +36,7 @@ readonly class Mistral implements Provider
     }
 
     #[\Override]
-    public function structured(StructuredRequest $request): ProviderResponse
+    public function structured(StructuredRequest $request): StructuredResponse
     {
         throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
     }
