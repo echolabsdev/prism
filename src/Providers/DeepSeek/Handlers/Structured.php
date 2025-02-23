@@ -9,35 +9,48 @@ use EchoLabs\Prism\Structured\Request;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Structured\ResponseBuilder;
 use EchoLabs\Prism\Structured\Step;
+use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Throwable;
+use EchoLabs\Prism\Providers\DeepSeek\Concerns\MapsFinishReason;
+use EchoLabs\Prism\Providers\DeepSeek\Concerns\ValidatesResponses;
 
 class Structured
 {
-    public function __construct(protected PendingRequest $client) {}
+    use MapsFinishReason;
+    use ValidatesResponses;
+
+    protected ResponseBuilder $responseBuilder;
+
+    public function __construct(protected PendingRequest $client)
+    {
+        $this->responseBuilder = new ResponseBuilder;
+    }
 
     public function handle(Request $request): StructuredResponse
     {
         try {
             $request = $this->appendMessageForJsonMode($request);
 
-            $response = $this->sendRequest($request);
+            $data = $this->sendRequest($request);
 
-            $this->validateResponse($response);
+            $this->validateResponse($data);
 
-            return $this->createResponse($request, $response);
+            return $this->createResponse($request, $data);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
     }
 
-    public function sendRequest(Request $request): Response
+    /**
+     * @return array<string, mixed>
+     */
+    protected function sendRequest(Request $request): array
     {
-        return $this->client->post(
+        $response = $this->client->post(
             'chat/completions',
             array_merge([
                 'model' => $request->model(),
@@ -49,30 +62,33 @@ class Structured
                 'response_format' => ['type' => 'json_object'],
             ]))
         );
+
+        return $response->json();
     }
 
-    protected function validateResponse(Response $response): void
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function validateResponse(array $data): void
     {
-        $data = $response->json();
-
         if (! $data) {
-            throw PrismException::providerResponseError(vsprintf(
-                'DeepSeek Error: %s',
-                [
-                    (string) $response->getBody(),
-                ]
-            ));
+            throw PrismException::providerResponseError('DeepSeek Error: Empty response');
         }
     }
 
-    protected function createResponse(Request $request, Response $response): StructuredResponse
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function createResponse(Request $request, array $data): StructuredResponse
     {
-        $data = $response->json();
-        $responseBuilder = new ResponseBuilder;
+        $text = data_get($data, 'choices.0.message.content') ?? '';
+
+        $responseMessage = new AssistantMessage($text);
+        $this->responseBuilder->addResponseMessage($responseMessage);
+        $request->addMessage($responseMessage);
 
         $step = new Step(
-            text: data_get($data, 'choices.0.message.content') ?? '',
-            object: json_decode(data_get($data, 'choices.0.message.content') ?? '', true),
+            text: $text,
             finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', '')),
             usage: new Usage(
                 data_get($data, 'usage.prompt_tokens'),
@@ -82,17 +98,14 @@ class Structured
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
             ),
-            messages: $request->messages,
+            messages: $request->messages(),
             additionalContent: [],
+            systemPrompts: $request->systemPrompts(),
         );
 
-        $responseBuilder->addStep($step);
+        $this->responseBuilder->addStep($step);
 
-        foreach ($request->messages as $message) {
-            $responseBuilder->addResponseMessage($message);
-        }
-
-        return $responseBuilder->toResponse();
+        return $this->responseBuilder->toResponse();
     }
 
     protected function appendMessageForJsonMode(Request $request): Request
