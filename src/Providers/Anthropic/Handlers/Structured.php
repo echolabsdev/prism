@@ -55,7 +55,6 @@ class Structured extends AnthropicHandlerAbstract
 
         $this->responseBuilder->addStep(new Step(
             text: $this->tempResponse->text,
-            object: json_decode($this->tempResponse->text, true),
             finishReason: $this->tempResponse->finishReason,
             usage: $this->tempResponse->usage,
             responseMeta: $this->tempResponse->responseMeta,
