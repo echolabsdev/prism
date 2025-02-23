@@ -12,16 +12,21 @@ use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\Text\Response as TextResponse;
 
 it('can generate text', function () {
-    // Create a fake provider response
-    $fakeResponse = new ProviderResponse(
+    // Create a fake text response
+    $fakeResponse = new TextResponse(
         text: 'Hello, I am Claude!',
+        steps: collect([]),
+        responseMessages: collect([]),
         toolCalls: [],
+        toolResults: [],
         usage: new Usage(10, 20),
         finishReason: FinishReason::Stop,
-        responseMeta: new ResponseMeta('fake-1', 'fake-model')
+        responseMeta: new ResponseMeta('fake-1', 'fake-model'),
+        messages: collect([]),
+        additionalContent: []
     );
 
     // Set up the fake
@@ -43,14 +48,17 @@ it('can generate text', function () {
 When testing conversations or tool usage, you might need to simulate multiple responses:
 
 ```php
+use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ToolCall;
 
 it('can handle tool calls', function () {
     $responses = [
-        new ProviderResponse(
+        new TextResponse(
             text: '',
+            steps: collect([]),
+            responseMessages: collect([]),
             toolCalls: [
                 new ToolCall(
                     id: 'call_1',
@@ -58,16 +66,24 @@ it('can handle tool calls', function () {
                     arguments: ['query' => 'Latest news']
                 )
             ],
+            toolResults: [],
             usage: new Usage(15, 25),
             finishReason: FinishReason::ToolCalls,
-            responseMeta: new ResponseMeta('fake-1', 'fake-model')
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
+            messages: collect([]),
+            additionalContent: []
         ),
-        new ProviderResponse(
+        new TextResponse(
             text: 'Here are the latest news...',
+            steps: collect([]),
+            responseMessages: collect([]),
             toolCalls: [],
+            toolResults: [],
             usage: new Usage(20, 30),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('fake-2', 'fake-model')
+            responseMeta: new ResponseMeta('fake-2', 'fake-model'),
+            messages: collect([]),
+            additionalContent: []
         ),
     ];
 
@@ -82,16 +98,20 @@ When testing tools, you'll want to verify both the tool calls and their results.
 ```php
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Text\Response as TextResponse;
+use EchoLabs\Prism\Tool;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
+use EchoLabs\Prism\ValueObjects\ToolCall;
 
 it('can use weather tool', function () {
     // Define the expected tool call and response sequence
     $responses = [
         // First response: AI decides to use the weather tool
-        new ProviderResponse(
+        new TextResponse(
             text: '', // Empty text since the AI is using a tool
+            steps: collect([]),
+            responseMessages: collect([]),
             toolCalls: [
                 new ToolCall(
                     id: 'call_123',
@@ -99,17 +119,25 @@ it('can use weather tool', function () {
                     arguments: ['city' => 'Paris']
                 )
             ],
+            toolResults: [],
             usage: new Usage(15, 25),
             finishReason: FinishReason::ToolCalls,
-            responseMeta: new ResponseMeta('fake-1', 'fake-model')
+            responseMeta: new ResponseMeta('fake-1', 'fake-model'),
+            messages: collect([]),
+            additionalContent: []
         ),
         // Second response: AI uses the tool result to form a response
-        new ProviderResponse(
+        new TextResponse(
             text: 'Based on current conditions, the weather in Paris is sunny with a temperature of 72°F.',
+            steps: collect([]),
+            responseMessages: collect([]),
             toolCalls: [],
+            toolResults: [],
             usage: new Usage(20, 30),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('fake-2', 'fake-model')
+            responseMeta: new ResponseMeta('fake-2', 'fake-model'),
+            messages: collect([]),
+            additionalContent: []
         ),
     ];
 
@@ -152,10 +180,9 @@ it('can use weather tool', function () {
 
 ```php
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\ValueObjects\Usage;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\Schema\ObjectSchema;
 use EchoLabs\Prism\Schema\StringSchema;
 
@@ -170,15 +197,21 @@ it('can generate structured response', function () {
         requiredFields: ['name', 'bio']
     );
 
-    $fakeResponse = new ProviderResponse(
+    $fakeResponse = new StructuredResponse(
+        steps: collect([]),
+        responseMessages: collect([]),
         text: json_encode([
             'name' => 'Alice Tester',
             'bio' => 'Professional bug hunter and code wrangler'
         ]),
-        toolCalls: [],
-        usage: new Usage(10, 20),
+        structured: [
+            'name' => 'Alice Tester',
+            'bio' => 'Professional bug hunter and code wrangler'
+        ],
         finishReason: FinishReason::Stop,
-        responseMeta: new ResponseMeta('fake-1', 'fake-model')
+        usage: new Usage(10, 20),
+        responseMeta: new ResponseMeta('fake-1', 'fake-model'),
+        additionalContent: []
     );
 
     $fake = Prism::fake([$fakeResponse]);
@@ -190,15 +223,15 @@ it('can generate structured response', function () {
         ->generate();
 
     // Assertions
-    expect($response->object)->toBeArray();
-    expect($response->object['name'])->toBe('Alice Tester')
-    expect($response->object['bio'])->toBe('Professional bug hunter and code wrangler');
+    expect($response->structured)->toBeArray();
+    expect($response->structured['name'])->toBe('Alice Tester');
+    expect($response->structured['bio'])->toBe('Professional bug hunter and code wrangler');
 });
 ```
 
 ## Assertions
 
-Prism's fake implementation provides several helpful assertion methods:
+PrismFake provides several helpful assertion methods:
 
 ```php
 // Assert specific prompt was sent
