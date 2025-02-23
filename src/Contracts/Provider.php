@@ -10,13 +10,12 @@ use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 
 interface Provider
 {
-    public function text(TextRequest $request): ProviderResponse|TextResponse;
+    public function text(TextRequest $request): TextResponse;
 
-    public function structured(StructuredRequest $request): ProviderResponse|StructuredResponse;
+    public function structured(StructuredRequest $request): StructuredResponse;
 
     public function embeddings(EmbeddingsRequest $request): EmbeddingsResponse;
 }
