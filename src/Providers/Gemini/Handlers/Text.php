@@ -62,7 +62,7 @@ class Text
 
         return match ($finishReason) {
             FinishReason::ToolCalls => $this->handleToolCalls($data, $request),
-            FinishReason::Stop => $this->handleStop($data, $request),
+            FinishReason::Stop, FinishReason::Length => $this->handleStop($data, $request, $finishReason),
             default => throw new PrismException('Gemini: unhandled finish reason'),
         };
     }
@@ -117,9 +117,9 @@ class Text
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleStop(array $data, Request $request): TextResponse
+    protected function handleStop(array $data, Request $request, FinishReason $finishReason): TextResponse
     {
-        $this->addStep($data, $request, FinishReason::Stop);
+        $this->addStep($data, $request, $finishReason);
 
         return $this->responseBuilder->toResponse();
     }
