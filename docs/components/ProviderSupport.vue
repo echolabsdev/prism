@@ -198,7 +198,7 @@ export default {
         {
           name: "Gemini",
           text: Supported,
-          structured: Planned,
+          structured: Adapted,
           embeddings: Supported,
           image: Supported,
           tools: Supported,

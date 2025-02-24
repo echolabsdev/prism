@@ -8,6 +8,11 @@
 ],
 ```
 
-## Limitations
+### Structured Output
 
-- The structured output is not supported.
+- Gemini support for Structured Output is using JSON mode, by automatically appending instructions to your prompt that guide the model to output valid JSON matching your schema
+
+
+### Limitations
+
+- The Model Structured Output is still not supported.
