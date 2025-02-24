@@ -6,18 +6,19 @@ namespace EchoLabs\Prism\Providers\Ollama\Concerns;
 
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
+use Illuminate\Support\Fluent;
 
 trait MapsFinishReason
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param  Fluent<string, mixed>  $data
      */
-    protected function mapFinishReason(array $data): FinishReason
+    protected function mapFinishReason(Fluent $data): FinishReason
     {
-        if (! empty(data_get($data, 'message.tool_calls'))) {
+        if (! empty($data->has('message.tool_calls'))) {
             return FinishReason::ToolCalls;
         }
 
-        return FinishReasonMap::map(data_get($data, 'done_reason', ''));
+        return FinishReasonMap::map($data->get('done_reason', ''));
     }
 }

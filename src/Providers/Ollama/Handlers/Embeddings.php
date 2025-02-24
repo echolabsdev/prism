@@ -8,8 +8,9 @@ use EchoLabs\Prism\Embeddings\Request;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
+use Illuminate\Support\Fluent;
 use Throwable;
 
 class Embeddings
@@ -19,26 +20,30 @@ class Embeddings
     public function handle(Request $request): EmbeddingsResponse
     {
         try {
-            $response = $this->sendRequest($request);
-            $data = $response->json();
+            $data = $this->sendRequest($request);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
 
-        if (! $data || data_get($data, 'error')) {
+        if ($data->has('error')) {
             throw PrismException::providerResponseError(sprintf(
                 'Ollama Error: %s',
-                data_get($data, 'error', 'unknown'),
+                $data->get('error', 'unknown')
             ));
         }
 
         return new EmbeddingsResponse(
-            embeddings: data_get($data, 'embeddings', []),
-            usage: new EmbeddingsUsage(data_get($data, 'prompt_eval_count', null)),
+            embeddings: $data->get('embeddings', []),
+            usage: new EmbeddingsUsage($data->get('prompt_eval_count')),
         );
     }
 
-    protected function sendRequest(Request $request): Response
+    /**
+     * @return Fluent<string, mixed>
+     *
+     * @throws ConnectionException
+     */
+    protected function sendRequest(Request $request): Fluent
     {
         return $this->client->post(
             'api/embed',
@@ -46,6 +51,6 @@ class Embeddings
                 'model' => $request->model(),
                 'input' => $request->input(),
             ]
-        );
+        )->fluent();
     }
 }

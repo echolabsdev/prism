@@ -22,6 +22,7 @@ use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Fluent;
 use Throwable;
 
 class Text
@@ -45,7 +46,7 @@ class Text
         $this->validateResponse($data);
 
         $responseMessage = new AssistantMessage(
-            data_get($data, 'message.content') ?? '',
+            $data->get('message.content', ''),
             $this->mapToolCalls(data_get($data, 'message.tool_calls', [])),
         );
 
@@ -61,16 +62,16 @@ class Text
     }
 
     /**
-     * @return array<string, mixed>
+     * @return Fluent<string, mixed>
      */
-    protected function sendRequest(Request $request): array
+    protected function sendRequest(Request $request): Fluent
     {
         if (count($request->systemPrompts()) > 1) {
             throw new PrismException('Ollama does not support multiple system prompts using withSystemPrompt / withSystemPrompts. However, you can provide additional system prompts by including SystemMessages in with withMessages.');
         }
 
         try {
-            $response = $this
+            return $this
                 ->client
                 ->post('api/chat', [
                     'model' => $request->model(),
@@ -82,22 +83,22 @@ class Text
                         'temperature' => $request->temperature(),
                         'num_predict' => $request->maxTokens() ?? 2048,
                         'top_p' => $request->topP(),
-                    ])]);
-
-            return $response->json();
+                    ])])->fluent();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param  Fluent<string, mixed>  $data
+     *
+     * @throws PrismException
      */
-    protected function handleToolCalls(array $data, Request $request): Response
+    protected function handleToolCalls(Fluent $data, Request $request): Response
     {
         $toolResults = $this->callTools(
             $request->tools(),
-            $this->mapToolCalls(data_get($data, 'message.tool_calls', [])),
+            $this->mapToolCalls($data->get('message.tool_calls', [])),
         );
 
         $request->addMessage(new ToolResultMessage($toolResults));
@@ -112,9 +113,9 @@ class Text
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param  Fluent<string, mixed>  $data
      */
-    protected function handleStop(array $data, Request $request): Response
+    protected function handleStop(Fluent $data, Request $request): Response
     {
         $this->addStep($data, $request);
 
@@ -127,27 +128,27 @@ class Text
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param  Fluent<string, mixed>  $data
      * @param  ToolResult[]  $toolResults
      */
-    protected function addStep(array $data, Request $request, array $toolResults = []): void
+    protected function addStep(Fluent $data, Request $request, array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
-            text: data_get($data, 'message.content') ?? '',
+            text: $data->get('message.content', ''),
             finishReason: $this->mapFinishReason($data),
-            toolCalls: $this->mapToolCalls(data_get($data, 'message.tool_calls', []) ?? []),
+            toolCalls: $this->mapToolCalls($data->get('message.tool_calls', [])),
             toolResults: $toolResults,
             usage: new Usage(
-                data_get($data, 'prompt_eval_count', 0),
-                data_get($data, 'eval_count', 0),
+                $data->get('prompt_eval_count', 0),
+                $data->get('eval_count', 0),
             ),
             responseMeta: new ResponseMeta(
                 id: '',
                 model: $request->model(),
             ),
             messages: $request->messages(),
-            additionalContent: [],
             systemPrompts: $request->systemPrompts(),
+            additionalContent: [],
         ));
     }
 }
