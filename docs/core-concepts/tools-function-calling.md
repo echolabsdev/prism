@@ -7,6 +7,8 @@ Need your AI assistant to check the weather, search a database, or call your API
 Think of tools as special functions that your AI assistant can use when it needs to perform specific tasks. Just like how Laravel's facades provide a clean interface to complex functionality, Prism tools give your AI a clean way to interact with external services and data sources.
 
 ```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Facades\Tool;
 
 $weatherTool = Tool::as('weather')
@@ -16,7 +18,33 @@ $weatherTool = Tool::as('weather')
         // Your weather API logic here
         return "The weather in {$city} is sunny and 72°F.";
     });
+
+$response = Prism::text()
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+    ->withMaxSteps(2)
+    ->withPrompt('What is the weather like in Paris?')
+    ->withTools([$weatherTool])
+    ->generate();
 ```
+
+## Max Steps
+
+Prism defaults to allowing a single step. To use Tools, you'll need to increase this using `withMaxSteps`:
+
+```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
+Prism::text()
+    ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+    // Increase max steps to at least 2
+    ->withMaxSteps(2)
+    ->withPrompt('What is the weather like in Paris?')
+    ->withTools([$weatherTool])
+    ->generate();
+```
+
+You should use a higher number of max steps if you expect your initial prompt to make multiple tool calls.
 
 ## Creating Basic Tools
 
@@ -236,6 +264,7 @@ use EchoLabs\Prism\Enums\ToolChoice;
 
 $prism = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+    ->withMaxSteps(2)
     ->withPrompt('How is the weather in Paris?')
     ->withTools([$weatherTool])
     // Let the AI decide whether to use tools
@@ -259,6 +288,7 @@ use EchoLabs\Prism\Enums\Provider;
 
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+    ->withMaxSteps(2)
     ->withPrompt('What is the weather like in Paris?')
     ->withTools([$weatherTool])
     ->generate();
