@@ -7,11 +7,14 @@ namespace EchoLabs\Prism\Providers\Groq;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Groq\Handlers\Text;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\Text\Response as TextResponse;
+use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -33,13 +36,19 @@ readonly class Groq implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): StructuredResponse
     {
-        throw new \Exception(sprintf('%s does not support structured mode', class_basename($this)));
+        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     #[\Override]
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
-        throw new \Exception(sprintf('%s does not support embeddings', class_basename($this)));
+        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+    }
+
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     /**

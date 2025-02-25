@@ -11,10 +11,12 @@ use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\DeepSeek\Handlers\Structured;
 use EchoLabs\Prism\Providers\DeepSeek\Handlers\Text;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
+use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -50,6 +52,12 @@ readonly class DeepSeek implements Provider
     public function embeddings(EmbeddingsRequest $request): EmbeddingsResponse
     {
         throw PrismException::unsupportedProviderAction(__FUNCTION__, class_basename($this));
+    }
+
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     /**
