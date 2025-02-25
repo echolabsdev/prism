@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Stream;
 
 use EchoLabs\Prism\Text\ResponseBuilder as TextResponseBuilder;
 
-class ResponseBuilder extends TextResponseBuilder
+readonly class ResponseBuilder extends TextResponseBuilder
 {
     //
 }

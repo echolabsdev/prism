@@ -67,8 +67,8 @@ readonly class OpenAI implements Provider
     public function stream(StreamRequest $request): Generator
     {
         $handler = new Stream($this->client(
-            $request->clientOptions,
-            $request->clientRetry
+            $request->clientOptions(),
+            $request->clientRetry()
         ));
 
         return $handler->handle($request);

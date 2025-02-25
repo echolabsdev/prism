@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Stream;
 
 use EchoLabs\Prism\Text\Response as TextResponse;
 
-class Response extends TextResponse
+readonly class Response extends TextResponse
 {
     //
 }

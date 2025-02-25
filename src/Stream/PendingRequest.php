@@ -14,7 +14,6 @@ use EchoLabs\Prism\Concerns\HasPrompts;
 use EchoLabs\Prism\Concerns\HasProviderMeta;
 use EchoLabs\Prism\Concerns\HasTools;
 use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Stream\Generator as StreamGenerator;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Generator;
 
@@ -32,7 +31,7 @@ class PendingRequest
 
     public function generate(): Generator
     {
-        return (new StreamGenerator($this->provider))->generate($this->toRequest());
+        return $this->provider->stream($this->toRequest());
     }
 
     public function toRequest(): Request
@@ -41,15 +40,17 @@ class PendingRequest
             throw PrismException::promptOrMessages();
         }
 
+        $messages = $this->messages;
+
         if ($this->prompt) {
-            $this->messages[] = new UserMessage($this->prompt);
+            $messages[] = new UserMessage($this->prompt);
         }
 
         return new Request(
             model: $this->model,
-            systemPrompt: $this->systemPrompt,
+            systemPrompts: $this->systemPrompts,
             prompt: $this->prompt,
-            messages: $this->messages,
+            messages: $messages,
             temperature: $this->temperature,
             maxTokens: $this->maxTokens,
             maxSteps: $this->maxSteps,

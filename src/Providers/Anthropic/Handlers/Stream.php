@@ -89,7 +89,7 @@ class Stream
                     'max_tokens' => $request->maxTokens ?? 2048,
                     'stream' => true,
                 ], array_filter([
-                    'system' => MessageMap::mapSystemMessages($request->messages, $request->systemPrompt),
+                    'system' => MessageMap::mapSystemMessages($request->messages),
                     'temperature' => $request->temperature,
                     'top_p' => $request->topP,
                     'tools' => ToolMap::map($request->tools),
