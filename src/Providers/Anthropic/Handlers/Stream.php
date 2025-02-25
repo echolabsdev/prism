@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
 
-use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
 use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
@@ -14,9 +13,7 @@ use EchoLabs\Prism\ValueObjects\ToolCall;
 use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Str;
 use Psr\Http\Message\StreamInterface;
-use Throwable;
 
 class Stream
 {
@@ -27,56 +24,10 @@ class Stream
      */
     public function handle(Request $request): Generator
     {
-        try {
-            $response = $this->sendRequest($request);
-
-            while (! $response->getBody()->eof()) {
-                $line = $this->readLine($response->getBody());
-
-                // NOTE: This should mean an error
-                if (json_validate($line)) {
-                    $data = json_decode($line, true);
-
-                    if (data_get($data, 'type') === 'error') {
-                        throw new PrismException(
-                            sprintf('Anthropic Error: %s', data_get($data, 'error.message'))
-                        );
-                    }
-
-                    continue;
-                }
-
-                ray('raw_line', $line);
-
-                if (! str_starts_with($line, 'data:')) {
-                    continue;
-                }
-
-                $line = trim(substr($line, strlen('data: ')));
-
-                if (Str::contains($line, 'DONE')) {
-                    continue;
-                }
-
-                ray('parsed_line_data', $line);
-
-                $data = json_decode(
-                    $line,
-                    true,
-                    flags: JSON_THROW_ON_ERROR
-                );
-
-                ray('raw_json_data', $data);
-
-                yield $line;
-            }
-
-        } catch (Throwable $e) {
-            throw PrismException::providerRequestError($request->model, $e);
-        }
+        //
     }
 
-    public function sendRequest(Request $request): Response
+    protected function sendRequest(Request $request): Response
     {
         return $this
             ->client
