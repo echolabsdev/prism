@@ -31,103 +31,168 @@ class Stream
     public function __construct(protected PendingRequest $client) {}
 
     /**
-     * @return Generator<ProviderResponse>
+     * @return Generator<Chunk>
      */
     public function handle(Request $request): Generator
     {
-        ray('called');
         $response = $this->sendRequest($request);
+        yield from $this->processStream($response, $request);
+    }
 
-        // TODO: response validation?
+    /**
+     * @return Generator<Chunk>
+     */
+    protected function processStream(Response $response, Request $request, int $depth = 0): Generator
+    {
+        // Prevent infinite recursion with tool calls
+        if ($depth >= $request->maxSteps()) {
+            throw new PrismException('Maximum tool call chain depth exceeded');
+        }
 
         $text = '';
         $toolCalls = [];
 
         while (! $response->getBody()->eof()) {
-            $line = $this->readLine($response->getBody());
+            $data = $this->parseNextDataLine($response->getBody());
 
-            if (! str_starts_with($line, 'data:')) {
+            // Skip empty data or DONE markers
+            if ($data === null) {
                 continue;
             }
 
-            $line = trim(substr($line, strlen('data: ')));
-
-            if (Str::contains($line, 'DONE')) {
-                continue;
-            }
-
-            $data = json_decode(
-                $line,
-                true,
-                flags: JSON_THROW_ON_ERROR
-            );
-
-            // ray('raw_data', $data);
-
-            if (data_get($data, 'choices.0.delta.tool_calls')) {
-                foreach (data_get($data, 'choices.0.delta.tool_calls') as $index => $toolCall) {
-                    if ($name = data_get($toolCall, 'function.name')) {
-                        $toolCalls[$index]['name'] = $name;
-                        $toolCalls[$index]['arguments'] = '';
-                        $toolCalls[$index]['id'] = data_get($toolCall, 'id');
-                    }
-
-                    if ($arguments = data_get($toolCall, 'function.arguments')) {
-                        $toolCalls[$index]['arguments'] .= $arguments;
-                    }
-                }
+            // Process tool calls
+            if ($this->hasToolCalls($data)) {
+                $toolCalls = $this->extractToolCalls($data, $toolCalls);
 
                 continue;
             }
 
+            // Handle tool call completion
             if ($this->mapFinishReason($data) === FinishReason::ToolCalls) {
-                $toolCalls = collect($toolCalls)
-                    ->map(fn ($toolCall): ToolCall => new ToolCall(
-                        data_get($toolCall, 'id'),
-                        data_get($toolCall, 'name'),
-                        data_get($toolCall, 'arguments'),
-                    ));
-
-                $toolResults = $this->callTools($request->tools(), $toolCalls->toArray());
-
-                $request->addMessage(new AssistantMessage(
-                    $text,
-                    $toolCalls->toArray(),
-                ));
-                $request->addMessage(new ToolResultMessage($toolResults));
-
-                yield new Chunk(
-                    text: '',
-                    toolCalls: $toolCalls->toArray(),
-                    toolResults: $toolResults,
-                );
-
-                yield from $this->handle($request);
+                yield from $this->handleToolCalls($request, $text, $toolCalls, $depth);
 
                 return;
             }
 
-            if ($this->mapFinishReason($data) === FinishReason::Stop) {
-                $text .= data_get($data, 'choices.0.delta.content', '');
+            // Process regular content
+            $content = data_get($data, 'choices.0.delta.content', '') ?? '';
+            $text .= $content;
 
-                yield new Chunk(
-                    text: data_get($data, 'choices.0.delta.content', ''),
-                    finishReason: FinishReasonMap::map(data_get($data, 'choices.0.finish_reason')),
-                );
+            $finishReason = $this->mapFinishReason($data);
 
-                continue;
-            }
-
-            $text .= data_get($data, 'choices.0.delta.content', '');
             yield new Chunk(
-                text: data_get($data, 'choices.0.delta.content', '') ?? '',
-                finishReason: null
+                text: $content,
+                finishReason: $finishReason !== FinishReason::Unknown ? $finishReason : null
             );
         }
     }
 
     /**
-     * @param  array<int, mixed>  $data
+     * @return array<string, mixed>|null Parsed JSON data or null if line should be skipped
+     */
+    protected function parseNextDataLine(StreamInterface $stream): ?array
+    {
+        $line = $this->readLine($stream);
+
+        if (! str_starts_with($line, 'data:')) {
+            return null;
+        }
+
+        $line = trim(substr($line, strlen('data: ')));
+
+        if (Str::contains($line, 'DONE')) {
+            return null;
+        }
+
+        try {
+            return json_decode($line, true, flags: JSON_THROW_ON_ERROR);
+        } catch (Throwable $e) {
+            throw PrismException::providerResponseError(
+                "Failed to parse streaming response: {$e->getMessage()}"
+            );
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<int, array<string, mixed>>  $toolCalls
+     * @return array<int, array<string, mixed>>
+     */
+    protected function extractToolCalls(array $data, array $toolCalls): array
+    {
+        foreach (data_get($data, 'choices.0.delta.tool_calls', []) as $index => $toolCall) {
+            if ($name = data_get($toolCall, 'function.name')) {
+                $toolCalls[$index]['name'] = $name;
+                $toolCalls[$index]['arguments'] = '';
+                $toolCalls[$index]['id'] = data_get($toolCall, 'id');
+            }
+
+            if ($arguments = data_get($toolCall, 'function.arguments')) {
+                $toolCalls[$index]['arguments'] .= $arguments;
+            }
+        }
+
+        return $toolCalls;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $toolCalls
+     * @return Generator<ProviderResponse>
+     */
+    protected function handleToolCalls(
+        Request $request,
+        string $text,
+        array $toolCalls,
+        int $depth
+    ): Generator {
+        // Convert collected tool call data to ToolCall objects
+        $toolCalls = $this->mapToolCalls($toolCalls);
+
+        // Call the tools and get results
+        $toolResults = $this->callTools($request->tools(), $toolCalls);
+
+        $request->addMessage(new AssistantMessage($text, $toolCalls));
+        $request->addMessage(new ToolResultMessage($toolResults));
+
+        // Yield the tool call chunk
+        yield new Chunk(
+            text: '',
+            toolCalls: $toolCalls,
+            toolResults: $toolResults,
+        );
+
+        // Continue the conversation with tool results
+        $nextResponse = $this->sendRequest($request);
+        yield from $this->processStream($nextResponse, $request, $depth + 1);
+    }
+
+    /**
+     * Convert raw tool call data to ToolCall objects.
+     *
+     * @param  array<int, array<string, mixed>>  $toolCalls
+     * @return array<int, ToolCall>
+     */
+    protected function mapToolCalls(array $toolCalls): array
+    {
+        return collect($toolCalls)
+            ->map(fn ($toolCall): ToolCall => new ToolCall(
+                data_get($toolCall, 'id'),
+                data_get($toolCall, 'name'),
+                data_get($toolCall, 'arguments'),
+            ))
+            ->toArray();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function hasToolCalls(array $data): bool
+    {
+        return (bool) data_get($data, 'choices.0.delta.tool_calls');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
      */
     protected function mapFinishReason(array $data): FinishReason
     {
@@ -164,10 +229,14 @@ class Stream
         $buffer = '';
 
         while (! $stream->eof()) {
-            if ('' === ($byte = $stream->read(1))) {
+            $byte = $stream->read(1);
+
+            if ($byte === '') {
                 return $buffer;
             }
+
             $buffer .= $byte;
+
             if ($byte === "\n") {
                 break;
             }
