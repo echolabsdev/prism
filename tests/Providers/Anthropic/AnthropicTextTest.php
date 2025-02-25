@@ -216,157 +216,228 @@ it('adds rate limit data to the responseMeta', function (): void {
     expect($response->responseMeta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
 });
 
-it('applies the citations request level providerMeta to all documents', function (): void {
-    Prism::fake();
+describe('Anthropic citations', function (): void {
+    it('applies the citations request level providerMeta to all documents', function (): void {
+        Prism::fake();
 
-    $request = Prism::text()
-        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
-        ->withMessages([
-            (new UserMessage(
-                content: 'What color is the grass and sky?',
-                additionalContent: [
-                    Document::fromText('The grass is green. The sky is blue.'),
-                ]
-            )),
-        ])
-        ->withProviderMeta(Provider::Anthropic, ['citations' => true]);
+        $request = Prism::text()
+            ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+            ->withMessages([
+                (new UserMessage(
+                    content: 'What color is the grass and sky?',
+                    additionalContent: [
+                        Document::fromText('The grass is green. The sky is blue.'),
+                    ]
+                )),
+            ])
+            ->withProviderMeta(Provider::Anthropic, ['citations' => true]);
 
-    $payload = Text::buildHttpRequestPayload($request->toRequest());
+        $payload = Text::buildHttpRequestPayload($request->toRequest());
 
-    expect($payload['messages'])->toBe([[
-        'role' => 'user',
-        'content' => [
-            [
-                'type' => 'text',
-                'text' => 'What color is the grass and sky?',
-            ],
-            [
-                'type' => 'document',
-                'source' => [
+        expect($payload['messages'])->toBe([[
+            'role' => 'user',
+            'content' => [
+                [
                     'type' => 'text',
-                    'media_type' => 'text/plain',
-                    'data' => 'The grass is green. The sky is blue.',
+                    'text' => 'What color is the grass and sky?',
                 ],
-                'citations' => ['enabled' => true],
+                [
+                    'type' => 'document',
+                    'source' => [
+                        'type' => 'text',
+                        'media_type' => 'text/plain',
+                        'data' => 'The grass is green. The sky is blue.',
+                    ],
+                    'citations' => ['enabled' => true],
+                ],
             ],
-        ],
-    ]]);
+        ]]);
+    });
+
+    it('saves message parts with citations to additionalContent on response steps and assistant message for PDF documents', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-pdf-citations');
+
+        $response = Prism::text()
+            ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+            ->withMessages([
+                (new UserMessage(
+                    content: 'What color is the grass and sky?',
+                    additionalContent: [
+                        Document::fromPath('tests/Fixtures/test-pdf.pdf'),
+                    ]
+                )),
+            ])
+            ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+            ->generate();
+
+        expect($response->text)->toEqual('According to the text, the grass is green and the sky is blue.');
+
+        expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+        /** @var MessagePartWithCitations */
+        $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+
+        expect($messagePart->text)->toBe('the grass is green');
+        expect($messagePart->citations)->toHaveCount(1);
+        expect($messagePart->citations[0]->type)->toBe('page_location');
+        expect($messagePart->citations[0]->citedText)->toBe('The grass is green. ');
+        expect($messagePart->citations[0]->startIndex)->toBe(1);
+        expect($messagePart->citations[0]->endIndex)->toBe(2);
+        expect($messagePart->citations[0]->documentIndex)->toBe(0);
+        expect($messagePart->citations[0]->documentTitle)->toBe('All aboout the grass and the sky');
+
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+        expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+    });
+
+    it('saves message parts with citations to additionalContent on response steps and assistant message for text documents', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-text-document-citations');
+
+        $response = Prism::text()
+            ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+            ->withMessages([
+                (new UserMessage(
+                    content: 'What color is the grass and sky?',
+                    additionalContent: [
+                        Document::fromText('The grass is green. The sky is blue.'),
+                    ]
+                )),
+            ])
+            ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+            ->generate();
+
+        expect($response->text)->toBe("According to the documents:\nThe grass is green and the sky is blue.");
+
+        expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+        /** @var MessagePartWithCitations */
+        $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+
+        expect($messagePart->text)->toBe('The grass is green');
+        expect($messagePart->citations)->toHaveCount(1);
+        expect($messagePart->citations[0]->type)->toBe('char_location');
+        expect($messagePart->citations[0]->citedText)->toBe('The grass is green. ');
+        expect($messagePart->citations[0]->startIndex)->toBe(0);
+        expect($messagePart->citations[0]->endIndex)->toBe(20);
+        expect($messagePart->citations[0]->documentIndex)->toBe(0);
+        expect($messagePart->citations[0]->documentTitle)->toBe('All aboout the grass and the sky');
+
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+        expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+    });
+
+    it('saves message parts with citations to additionalContent on response steps and assistant message for custom content documents', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-custom-content-document-citations');
+
+        $response = Prism::text()
+            ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
+            ->withMessages([
+                (new UserMessage(
+                    content: 'What color is the grass and sky?',
+                    additionalContent: [
+                        Document::fromChunks(['The grass is green.', 'The sky is blue.']),
+                    ]
+                )),
+            ])
+            ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+            ->generate();
+
+        expect($response->text)->toBe('According to the documents, the grass is green and the sky is blue.');
+
+        expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+        /** @var MessagePartWithCitations */
+        $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+
+        expect($messagePart->text)->toBe('the grass is green');
+        expect($messagePart->citations)->toHaveCount(1);
+        expect($messagePart->citations[0]->type)->toBe('content_block_location');
+        expect($messagePart->citations[0]->citedText)->toBe('The grass is green.');
+        expect($messagePart->citations[0]->startIndex)->toBe(0);
+        expect($messagePart->citations[0]->endIndex)->toBe(1);
+
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+
+        expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
+        expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+    });
 });
 
-it('saves message parts with citations to additionalContent on response steps and assistant message for PDF documents', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-pdf-citations');
+describe('Anthtropic extended thinking', function (): void {
+    it('can use extending thinking', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/text-with-extending-thinking');
 
-    $response = Prism::text()
-        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
-        ->withMessages([
-            (new UserMessage(
-                content: 'What color is the grass and sky?',
-                additionalContent: [
-                    Document::fromPath('tests/Fixtures/test-pdf.pdf'),
-                ]
-            )),
-        ])
-        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
-        ->generate();
+        $response = Prism::text()
+            ->using('anthropic', 'claude-3-7-sonnet-latest')
+            ->withPrompt('What is the meaning of life, the universe and everything in popular fiction?')
+            ->withProviderMeta(Provider::Anthropic, ['thinking' => ['enabled' => true]])
+            ->generate();
 
-    expect($response->text)->toEqual('According to the text, the grass is green and the sky is blue.');
+        $expected_thinking = "This is a reference to Douglas Adams' popular science fiction series \"The Hitchhiker's Guide to the Galaxy\" where the supercomputer Deep Thought was built to calculate \"the Answer to the Ultimate Question of Life, the Universe, and Everything.\" After 7.5 million years of computation, it famously determined the answer to be \"42\" - a deliberately anticlimactic and absurd response that has become a significant pop culture reference.\n\nBeyond the Hitchhiker's reference, the question of life's meaning appears in many works of fiction across different media, with various philosophical approaches.\n\nI should note this humorous 42 reference while also mentioning how other fictional works have approached this philosophical question.";
+        $expected_signature = 'EuYBCkQYAiJAQ7ZOmBu5pa8U03x/RN5+Gs3tyKXFYcruUfnC8X/4AKBpJmB8qX+nQQ9atvYOXLD/mUAClCRZEaxt2fyEvdxnhRIMfFi6CLULECysli0mGgy5JRaOXL06fVJndm8iMD2T+D8dSIFJuctCnVeFKZme2TfIPIH+UMFO33a0ojzUq2VYy8+RzKkH7WYK9+580ipQ4yDVegd/67LKRtfb574HOHqwlPcfEbeiJuFuHrayoqK8KS2ltGYRckVGH6lNH46zUyjGaD2z3nZeti8UjmgnfMWRpjUmv0TWWGtrCKRoHGQ=';
 
-    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+        expect($response->text)->toBe("In popular fiction, the most famous answer to this question comes from Douglas Adams' \"The Hitchhiker's Guide to the Galaxy,\" where a supercomputer named Deep Thought calculates for 7.5 million years and determines that the answer is simply \"42.\" This deliberately absurd response has become an iconic joke about the futility of seeking simple answers to profound existential questions.\n\nBeyond this humorous reference, fiction explores life's meaning in countless ways:\n- Finding purpose through love and human connection (seen in works like \"The Good Place\")\n- The pursuit of knowledge and understanding (as in \"Contact\" by Carl Sagan)\n- Creating your own meaning in an indifferent universe (explored in existentialist fiction)\n- Religious or spiritual fulfillment (depicted in works like \"Life of Pi\")\n\nWhat makes this question compelling in fiction is that there's never a definitive answer - just different perspectives that reflect our own search for meaning.");
+        expect($response->additionalContent['thinking'])->toBe($expected_thinking);
+        expect($response->additionalContent['thinking_signature'])->toBe($expected_signature);
 
-    /** @var MessagePartWithCitations */
-    $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
+        expect($response->steps->last()->messages[1])
+            ->additionalContent->thinking->toBe($expected_thinking)
+            ->additionalContent->thinking_signature->toBe($expected_signature);
+    });
 
-    expect($messagePart->text)->toBe('the grass is green');
-    expect($messagePart->citations)->toHaveCount(1);
-    expect($messagePart->citations[0]->type)->toBe('page_location');
-    expect($messagePart->citations[0]->citedText)->toBe('The grass is green. ');
-    expect($messagePart->citations[0]->startIndex)->toBe(1);
-    expect($messagePart->citations[0]->endIndex)->toBe(2);
-    expect($messagePart->citations[0]->documentIndex)->toBe(0);
-    expect($messagePart->citations[0]->documentTitle)->toBe('All aboout the grass and the sky');
+    it('can use extending thinking with tool calls', function (): void {
+        FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/text-with-extending-thinking-and-tool-calls');
 
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+        $tools = [
+            Tool::as('weather')
+                ->for('useful when you need to search for current weather conditions')
+                ->withStringParameter('city', 'the city you want the weather for')
+                ->using(fn (string $city): string => 'The weather will be 75° and sunny'),
+            Tool::as('search')
+                ->for('useful for searching curret events or data')
+                ->withStringParameter('query', 'The detailed search query')
+                ->using(fn (string $query): string => 'The tigers game is at 3pm in detroit'),
+        ];
 
-    expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+        $response = Prism::text()
+            ->using('anthropic', 'claude-3-7-sonnet-latest')
+            ->withTools($tools)
+            ->withMaxSteps(3)
+            ->withPrompt('What time is the tigers game today and should I wear a coat?')
+            ->withProviderMeta(Provider::Anthropic, ['thinking' => ['enabled' => true]])
+            ->generate();
+
+        $expected_thinking = "The user is asking about:\n1. The time of the Tigers game today (likely referring to a sports team, probably Detroit Tigers baseball)\n2. Whether they should wear a coat (which relates to weather conditions)\n\nFor the first question, I need to search for the Tigers game schedule for today. For the second question, I need to check the weather in the relevant location.\n\nHowever, I'm missing some information:\n- The user hasn't specified which Tigers team they're referring to (though Detroit Tigers is most likely)\n- The user hasn't specified their location, which I need for the weather check\n\nI'll need to search for the Tigers game information first, and then check the weather in the appropriate location (likely Detroit if it's a home game).";
+        $expected_signature = 'EuYBCkQYAiJAY1corUurDaKsURSV32GUvrp4ZySJDYJXGHIBx2aPaphiKr+Kcenv2gTcLxAvkU5zUxek2mX3GGkrp8XlN2qJAhIM7v4WGU9Wwfpn8qu1Ggzd9cK0sZX2z6qEbaciMKAfMsaYMc9zVHF1Y2qY+iC35WGiXAnEAZk+KBNGCo0V+t/U1bzJGhAigvTRKkDKpipQDXkfw+XdPzHh+VGFXut2TIPatMN5UrE1CvR+GtQT1cscbxBnuiXFwgs3B/QPlC2/l2VloajCHeYVaHqY3MIXiTyqe4HAyt51Go1Xt1ydVaY=';
+
+        expect($response->text)->toBe("The Detroit Tigers game is today at 3pm in Detroit. The weather in Detroit will be 75° and sunny, so you likely won't need a coat. It's a warm, pleasant day - just a light jacket or sweater might be enough if you tend to get cold at outdoor events, but generally, these are comfortable conditions.");
+
+        expect($response->steps->first()->messages[1])
+            ->additionalContent->thinking->toBe($expected_thinking)
+            ->additionalContent->thinking_signature->toBe($expected_signature);
+    });
 });
 
-it('saves message parts with citations to additionalContent on response steps and assistant message for text documents', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-text-document-citations');
+it('includes anthropic beta header if set in config', function (): void {
+    config()->set('prism.providers.anthropic.anthropic_beta', 'beta1,beta2');
 
-    $response = Prism::text()
-        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
-        ->withMessages([
-            (new UserMessage(
-                content: 'What color is the grass and sky?',
-                additionalContent: [
-                    Document::fromText('The grass is green. The sky is blue.'),
-                ]
-            )),
-        ])
-        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
+    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/text-with-extending-thinking');
+
+    Prism::text()
+        ->using('anthropic', 'claude-3-7-sonnet-latest')
+        ->withPrompt('What is the meaning of life, the universe and everything in popular fiction?')
+        ->withProviderMeta(Provider::Anthropic, ['thinking' => ['enabled' => true]])
         ->generate();
 
-    expect($response->text)->toBe("According to the documents:\nThe grass is green and the sky is blue.");
-
-    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
-
-    /** @var MessagePartWithCitations */
-    $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
-
-    expect($messagePart->text)->toBe('The grass is green');
-    expect($messagePart->citations)->toHaveCount(1);
-    expect($messagePart->citations[0]->type)->toBe('char_location');
-    expect($messagePart->citations[0]->citedText)->toBe('The grass is green. ');
-    expect($messagePart->citations[0]->startIndex)->toBe(0);
-    expect($messagePart->citations[0]->endIndex)->toBe(20);
-    expect($messagePart->citations[0]->documentIndex)->toBe(0);
-    expect($messagePart->citations[0]->documentTitle)->toBe('All aboout the grass and the sky');
-
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
-
-    expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
-});
-
-it('saves message parts with citations to additionalContent on response steps and assistant message for custom content documents', function (): void {
-    FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/generate-text-with-custom-content-document-citations');
-
-    $response = Prism::text()
-        ->using(Provider::Anthropic, 'claude-3-5-sonnet-latest')
-        ->withMessages([
-            (new UserMessage(
-                content: 'What color is the grass and sky?',
-                additionalContent: [
-                    Document::fromChunks(['The grass is green.', 'The sky is blue.']),
-                ]
-            )),
-        ])
-        ->withProviderMeta(Provider::Anthropic, ['citations' => true])
-        ->generate();
-
-    expect($response->text)->toBe('According to the documents, the grass is green and the sky is blue.');
-
-    expect($response->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
-
-    /** @var MessagePartWithCitations */
-    $messagePart = $response->additionalContent['messagePartsWithCitations'][1];
-
-    expect($messagePart->text)->toBe('the grass is green');
-    expect($messagePart->citations)->toHaveCount(1);
-    expect($messagePart->citations[0]->type)->toBe('content_block_location');
-    expect($messagePart->citations[0]->citedText)->toBe('The grass is green.');
-    expect($messagePart->citations[0]->startIndex)->toBe(0);
-    expect($messagePart->citations[0]->endIndex)->toBe(1);
-
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
-
-    expect($response->messages->last()->additionalContent['messagePartsWithCitations'])->toHaveCount(5);
-    expect($response->steps[0]->additionalContent['messagePartsWithCitations'][0])->toBeInstanceOf(MessagePartWithCitations::class);
+    Http::assertSent(fn (Request $request) => $request->hasHeader('anthropic-beta', 'beta1,beta2'));
 });

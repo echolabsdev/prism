@@ -120,6 +120,7 @@ class PrismManager
         return new Anthropic(
             $config['api_key'],
             $config['version'],
+            $config['anthropic_beta'] ?? null
         );
     }
 
