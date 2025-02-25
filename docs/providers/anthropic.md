@@ -5,6 +5,9 @@
 'anthropic' => [
     'api_key' => env('ANTHROPIC_API_KEY', ''),
     'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
+    'default_thinking_budget' => env('ANTHROPIC_DEFAULT_THINKING_BUDGET', 1024),
+    // Include beta strings as a comma separated list.
+    'anthropic_beta' => env('ANTHROPIC_BETA', null),
 ]
 ```
 ## Prompt caching
@@ -56,6 +59,90 @@ use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 Note that you must use the `withMessages()` method in order to enable prompt caching, rather than `withPrompt()` or `withSystemPrompt()`.
 
 Please ensure you read Anthropic's [prompt caching documentation](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching), which covers some important information on e.g. minimum cacheable tokens and message order consistency.
+
+## Extended thinking
+
+Claude Sonnet 3.7 supports an optional extended thinking mode, where it will reason before returning its answer. Please ensure your consider [Anthropic's own extended thinking documentation](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking) before using extended thinking with caching and/or tools, as there are some important limitations and behaviours to be aware of.
+
+### Enabling extended thinking and setting budget
+Prism supports thinking mode for text and structured with the same API:
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+
+Prism::text()
+    ->using('anthropic', 'claude-3-7-sonnet-latest')
+    ->withPrompt('What is the meaning of life, the universe and everything in popular fiction?')
+    // enable thinking
+    ->withProviderMeta(Provider::Anthropic, ['thinking' => ['enabled' => true]]) 
+    ->generate();
+```
+By default Prism will set the thinking budget to the value set in config, or where that isn't set, the minimum allowed (1024).
+
+You can overide the config (or its default) using `withProviderMeta`:
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+
+Prism::text()
+    ->using('anthropic', 'claude-3-7-sonnet-latest')
+    ->withPrompt('What is the meaning of life, the universe and everything in popular fiction?')
+    // Enable thinking and set a budget
+    ->withProviderMeta(Provider::Anthropic, [
+        'thinking' => [
+            'enabled' => true, 
+            'budgetTokens' => 2048
+        ]
+    ]);
+```
+Note that thinking tokens count towards output tokens, so you will be billed for them and your token budget must be less than the max tokens you have set for the request. 
+
+If you expect a long response, you should ensure there's enough tokens left for the response - i.e. does (maxTokens - thinkingBudget) leave a sufficient remainder.
+
+### Inspecting the thinking block
+
+Anthropic returns the thinking block with its response. 
+
+You can access it via the additionalContent property on either the Response or the relevant step.
+
+On the Response (easiest if not using tools):
+
+```php
+use EchoLabs\Enums\Provider;
+use EchoLabs\Prism\Prism;
+
+Prism::text()
+    ->using('anthropic', 'claude-3-7-sonnet-latest')
+    ->withPrompt('What is the meaning of life, the universe and everything in popular fiction?')
+    ->withProviderMeta(Provider::Anthropic, ['thinking' => ['enabled' => true]]) 
+    ->generate();
+
+$response->additionalContent['thinking'];
+```
+
+On the Step (necessary if using tools, as Anthropic returns the thinking block on the ToolCall step):
+
+```php
+$tools = [...];
+
+$response = Prism::text()
+    ->using('anthropic', 'claude-3-7-sonnet-latest')
+    ->withTools($tools)
+    ->withMaxSteps(3)
+    ->withPrompt('What time is the tigers game today and should I wear a coat?')
+    ->withProviderMeta(Provider::Anthropic, ['thinking' => ['enabled' => true]])
+    ->generate();
+
+$response->steps->first()->additionalContent->thinking;
+```
+
+### Extended output mode
+
+Claude Sonnet 3.7 also brings extended output mode which increase the output limit to 128k tokens. 
+
+This feature is currently in beta, so you will need to enable to by adding `output-128k-2025-02-19` to your Anthropic anthropic_beta config (see [Configuration](#configuration) above).
 
 ## Documents
 

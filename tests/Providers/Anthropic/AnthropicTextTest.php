@@ -373,7 +373,7 @@ describe('Anthropic citations', function (): void {
     });
 });
 
-describe('Anthtropic extended thinking', function (): void {
+describe('Anthropic extended thinking', function (): void {
     it('can use extending thinking', function (): void {
         FixtureResponse::fakeResponseSequence('v1/messages', 'anthropic/text-with-extending-thinking');
 
@@ -393,6 +393,22 @@ describe('Anthtropic extended thinking', function (): void {
         expect($response->steps->last()->messages[1])
             ->additionalContent->thinking->toBe($expected_thinking)
             ->additionalContent->thinking_signature->toBe($expected_signature);
+    });
+
+    it('can override budget tokens', function (): void {
+        $response = Prism::text()
+            ->using('anthropic', 'claude-3-7-sonnet-latest')
+            ->withPrompt('What is the meaning of life, the universe and everything in popular fiction?')
+            ->withProviderMeta(Provider::Anthropic, [
+                'thinking' => [
+                    'enabled' => true,
+                    'budgetTokens' => 2048,
+                ],
+            ]);
+
+        $payload = Text::buildHttpRequestPayload($response->toRequest());
+
+        expect(data_get($payload, 'thinking.budget_tokens'))->toBe(2048);
     });
 
     it('can use extending thinking with tool calls', function (): void {
@@ -421,6 +437,10 @@ describe('Anthtropic extended thinking', function (): void {
         $expected_signature = 'EuYBCkQYAiJAY1corUurDaKsURSV32GUvrp4ZySJDYJXGHIBx2aPaphiKr+Kcenv2gTcLxAvkU5zUxek2mX3GGkrp8XlN2qJAhIM7v4WGU9Wwfpn8qu1Ggzd9cK0sZX2z6qEbaciMKAfMsaYMc9zVHF1Y2qY+iC35WGiXAnEAZk+KBNGCo0V+t/U1bzJGhAigvTRKkDKpipQDXkfw+XdPzHh+VGFXut2TIPatMN5UrE1CvR+GtQT1cscbxBnuiXFwgs3B/QPlC2/l2VloajCHeYVaHqY3MIXiTyqe4HAyt51Go1Xt1ydVaY=';
 
         expect($response->text)->toBe("The Detroit Tigers game is today at 3pm in Detroit. The weather in Detroit will be 75° and sunny, so you likely won't need a coat. It's a warm, pleasant day - just a light jacket or sweater might be enough if you tend to get cold at outdoor events, but generally, these are comfortable conditions.");
+
+        expect($response->steps->first())
+            ->additionalContent->thinking->toBe($expected_thinking)
+            ->additionalContent->thinking_signature->toBe($expected_signature);
 
         expect($response->steps->first()->messages[1])
             ->additionalContent->thinking->toBe($expected_thinking)
