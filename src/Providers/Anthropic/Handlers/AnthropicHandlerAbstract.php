@@ -113,7 +113,7 @@ abstract class AnthropicHandlerAbstract
             return [];
         }
 
-        $thinking = array_find(
+        $thinking = Arr::first(
             data_get($data, 'content', []),
             fn ($content): bool => data_get($content, 'type') === 'thinking'
         );
