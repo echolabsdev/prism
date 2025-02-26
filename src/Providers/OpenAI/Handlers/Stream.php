@@ -36,6 +36,7 @@ class Stream
     public function handle(Request $request): Generator
     {
         $response = $this->sendRequest($request);
+
         yield from $this->processStream($response, $request);
     }
 
@@ -48,7 +49,6 @@ class Stream
         if ($depth >= $request->maxSteps()) {
             throw new PrismException('Maximum tool call chain depth exceeded');
         }
-
         $text = '';
         $toolCalls = [];
 
@@ -204,7 +204,7 @@ class Stream
         try {
             return $this
                 ->client
-                ->withOptions(['stream' => true])
+                // ->withOptions(['stream' => true])
                 ->post(
                     'chat/completions',
                     array_merge([
