@@ -84,6 +84,10 @@ foreach ($response as $chunk) {
 echo "Final response: " . $fullResponse;
 ```
 
+## Configuration Options
+
+Streaming supports the same configuration options as regular [text generation](/core-concepts/text-generation#generation-parameters).
+
 ## Handling Streaming in Web Applications
 
 Here's how to integrate streaming in a Laravel controller:
