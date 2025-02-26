@@ -58,7 +58,7 @@ readonly class Anthropic implements Provider
     #[\Override]
     public function stream(StreamRequest $request): Generator
     {
-        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     #[\Override]

@@ -41,7 +41,7 @@ readonly class Mistral implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): StructuredResponse
     {
-        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     #[\Override]
@@ -58,7 +58,7 @@ readonly class Mistral implements Provider
     #[\Override]
     public function stream(StreamRequest $request): Generator
     {
-        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     /**

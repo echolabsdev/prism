@@ -36,19 +36,19 @@ readonly class XAI implements Provider
     #[\Override]
     public function structured(StructuredRequest $request): StructuredResponse
     {
-        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     #[\Override]
     public function embeddings(EmbeddingRequest $request): EmbeddingResponse
     {
-        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     #[\Override]
     public function stream(StreamRequest $request): Generator
     {
-        PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     /**

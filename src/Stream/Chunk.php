@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\Stream;
 
 use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\ValueObjects\ToolCall;
+use EchoLabs\Prism\ValueObjects\ToolResult;
 
 readonly class Chunk
 {

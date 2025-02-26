@@ -118,7 +118,7 @@ class FixtureResponse
 
         // Find all recorded .sse files for this test
         $files = collect(is_dir($basePath) ? scandir($basePath) : [])
-            ->filter(fn($file): int|false => preg_match('/^'.preg_quote(basename($name), '/').'-\d+\.sse$/', (string) $file))
+            ->filter(fn($file): int|false => preg_match('/^'.preg_quote(basename($name), '/').'-\d+\.sse$/', $file))
             ->map(fn ($file): string => $basePath.'/'.$file)
             ->values()
             ->toArray();

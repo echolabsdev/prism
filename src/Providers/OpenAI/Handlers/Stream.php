@@ -15,7 +15,6 @@ use EchoLabs\Prism\Stream\Chunk;
 use EchoLabs\Prism\Text\Request;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use Generator;
 use Illuminate\Http\Client\PendingRequest;
@@ -137,7 +136,7 @@ class Stream
 
     /**
      * @param  array<int, array<string, mixed>>  $toolCalls
-     * @return Generator<ProviderResponse>
+     * @return Generator<Chunk>
      */
     protected function handleToolCalls(
         Request $request,
