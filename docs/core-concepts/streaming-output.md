@@ -58,7 +58,7 @@ $response = Prism::stream()
     ->using('openai', 'gpt-4o')
     ->withTools([$weatherTool])
     ->withMaxSteps(3) // Control maximum number of back-and-forth steps
-    ->withPrompt('What's the weather like in San Francisco today?')
+    ->withPrompt('What\'s the weather like in San Francisco today?')
     ->generate();
 
 $fullResponse = '';
