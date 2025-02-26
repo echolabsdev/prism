@@ -249,6 +249,15 @@ export default {
           tools: Supported,
           documents: Unsupported,
         },
+        {
+          name: "Cohere",
+          text: Supported,
+          structured: Supported,
+          embeddings: Supported,
+          image: Supported,
+          tools: Supported,
+          documents: Planned,
+        },
       ],
     };
   },
