@@ -8,6 +8,8 @@ use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
@@ -16,6 +18,7 @@ use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
 use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
+use Generator;
 
 class TestProvider implements Provider
 {
@@ -81,6 +84,12 @@ class TestProvider implements Provider
             embeddings: [],
             usage: new EmbeddingsUsage(10),
         );
+    }
+
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     public function withResponse(StructuredResponse|TextResponse $response): Provider
