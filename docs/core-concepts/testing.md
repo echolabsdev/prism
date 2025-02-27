@@ -91,6 +91,58 @@ it('can handle tool calls', function () {
 });
 ```
 
+## Using the ResponseBuilder
+
+If you need to test a richer response object, e.g. with Steps, you may find it easier to use the ResponseBuilder:
+
+```php
+use EchoLabs\Prism\Text\ResponseBuilder;
+use EchoLabs\Prism\Text\Step;
+use EchoLabs\Prism\ValueObjects\Usage;
+use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\ToolCall;
+
+Prism::fake([
+    (new ResponseBuilder)
+        ->addStep(new Step(
+            text: "Step 1 response text",
+            finishReason: FinishReason::Stop,
+            toolCalls: [/** tool calls */],
+            toolResults: [/** tool results */],
+            usage: new Usage(1000, 750),
+            responseMeta: new ResponseMeta(id: 123, model: 'test-model'),
+            messages: [
+                new UserMessage('Test message 1', [
+                    new Document(
+                        document: '', 
+                        mimeType: 'text/plain', 
+                        dataFormat: 'text', 
+                        documentTitle: 'Test document', 
+                        documentContext: 'Test context'
+                    ),
+                ]),
+                new AssistantMessage('Test message 2')
+            ],
+            systemPrompts: [
+                new SystemMessage('Test system')
+            ],
+            additionalContent: ['test' => 'additional']
+        ))
+        ->addStep(new Step(
+            text: "Step 2 response text",
+            finishReason: FinishReason::Stop,
+            toolCalls: [/** tool calls */],
+            toolResults: [/** tool results */],
+            usage: new Usage(1000, 750),
+            responseMeta: new ResponseMeta(id: 123, model: 'test-model'),
+            messages: [/** Second step messages */],
+            systemPrompts: [/** Second step system prompts */],
+            additionalContent: [/** Second step additional data */]
+        ))
+        ->toResponse()
+]);
+```
+
 ## Testing Tools
 
 When testing tools, you'll want to verify both the tool calls and their results. Here's a complete example:
