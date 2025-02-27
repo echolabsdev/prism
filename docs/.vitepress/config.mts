@@ -101,6 +101,10 @@ export default defineConfig({
                 link: "/core-concepts/text-generation",
               },
               {
+                text: "Streaming Ouput",
+                link: "/core-concepts/streaming-output",
+              },
+              {
                 text: "Tool & Function Calling",
                 link: "/core-concepts/tools-function-calling",
               },
@@ -169,7 +173,7 @@ export default defineConfig({
               {
                 text: "Error Handling",
                 link: "/advanced/error-handling",
-              },                
+              },
               {
                 text: "Custom Providers",
                 link: "/advanced/custom-providers",
@@ -177,7 +181,7 @@ export default defineConfig({
               {
                 text: "Handling Rate Limits",
                 link: "/advanced/rate-limits",
-              }
+              },
             ],
           },
           {
