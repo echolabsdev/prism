@@ -125,6 +125,14 @@ class MessageMap
 
         $content = [];
 
+        if (isset($message->additionalContent['thinking']) && isset($message->additionalContent['thinking_signature'])) {
+            $content[] = [
+                'type' => 'thinking',
+                'thinking' => $message->additionalContent['thinking'],
+                'signature' => $message->additionalContent['thinking_signature'],
+            ];
+        }
+
         if (isset($message->additionalContent['messagePartsWithCitations'])) {
             foreach ($message->additionalContent['messagePartsWithCitations'] as $part) {
                 $content[] = array_filter([
