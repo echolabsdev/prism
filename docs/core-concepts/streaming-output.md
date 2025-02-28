@@ -31,7 +31,7 @@ Each chunk from the stream contains a piece of the generated content:
 foreach ($response as $chunk) {
     // The text fragment in this chunk
     echo $chunk->text;
-    
+
     // Check if this is the final chunk
     if ($chunk->finishReason) {
         echo "Generation complete: " . $chunk->finishReason->name;
@@ -65,14 +65,14 @@ $fullResponse = '';
 foreach ($response as $chunk) {
     // Append each chunk to build the complete response
     $fullResponse .= $chunk->text;
-    
+
     // Check for tool calls
     if ($chunk->toolCalls) {
         foreach ($chunk->toolCalls as $call) {
             echo "Tool called: " . $call->name;
         }
     }
-    
+
     // Check for tool results
     if ($chunk->toolResults) {
         foreach ($chunk->toolResults as $result) {
@@ -92,6 +92,8 @@ Streaming supports the same configuration options as regular [text generation](/
 
 Here's how to integrate streaming in a Laravel controller:
 
+Alternatively, you might consider using Laravel's [Broadcasting feature](https://laravel.com/docs/11.x/broadcasting) to send the chunks to your frontend.
+
 ```php
 use EchoLabs\Prism\Prism;
 use Illuminate\Http\Response;
@@ -103,7 +105,7 @@ public function streamResponse()
             ->using('openai', 'gpt-4')
             ->withPrompt('Explain quantum computing step by step.')
             ->generate();
-            
+
         foreach ($stream as $chunk) {
             echo $chunk->text;
             ob_flush();
@@ -115,6 +117,25 @@ public function streamResponse()
         'X-Accel-Buffering' => 'no', // Prevents Nginx from buffering
     ]);
 }
+```
+
+### Laravel 12 Event Streams
+
+Stream the output via Laravel 12 event streams ([docs](https://laravel.com/docs/12.x/responses#event-streams)).
+
+```php
+Route::get('/chat', function () {
+    return response()->eventStream(function () {
+        $stream = Prism::stream()
+            ->using('openai', 'gpt-4')
+            ->withPrompt('Explain quantum computing step by step.')
+            ->generate();
+
+        foreach ($stream as $response) {
+            yield $response->choices[0];
+        }
+    });
+});
 ```
 
 Streaming gives your users a more responsive experience by showing AI-generated content as it's created, rather than making them wait for the complete response. This approach feels more natural and keeps users engaged, especially for longer responses or complex interactions with tools.

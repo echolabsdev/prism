@@ -6,6 +6,7 @@ namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
 
 use EchoLabs\Prism\Concerns\CallsTools;
 use EchoLabs\Prism\Enums\FinishReason;
+use EchoLabs\Prism\Exceptions\PrismChunkDecodeException;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
 use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
@@ -106,9 +107,7 @@ class Stream
         try {
             return json_decode($line, true, flags: JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
-            throw PrismException::providerResponseError(
-                "Failed to parse streaming response: {$e->getMessage()}"
-            );
+            throw new PrismChunkDecodeException('OpenAI', $e);
         }
     }
 
