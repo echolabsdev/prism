@@ -7,12 +7,15 @@ namespace EchoLabs\Prism\Providers\Anthropic;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Structured;
 use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response;
+use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -50,6 +53,12 @@ readonly class Anthropic implements Provider
         );
 
         return $handler->handle();
+    }
+
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     #[\Override]

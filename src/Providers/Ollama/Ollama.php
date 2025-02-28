@@ -7,13 +7,16 @@ namespace EchoLabs\Prism\Providers\Ollama;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Structured;
 use EchoLabs\Prism\Providers\Ollama\Handlers\Text;
+use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
+use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -55,6 +58,12 @@ readonly class Ollama implements Provider
         ));
 
         return $handler->handle($request);
+    }
+
+    #[\Override]
+    public function stream(StreamRequest $request): Generator
+    {
+        throw PrismException::unsupportedProviderAction(__METHOD__, class_basename($this));
     }
 
     /**
