@@ -8,6 +8,7 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Prism;
 use EchoLabs\Prism\Tool;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
@@ -232,6 +233,80 @@ describe('Image support with Gemini', function (): void {
             expect($message[1]['inline_data']['mime_type'])->toBe('image/png');
             expect($message[1]['inline_data']['data'])->toBe(
                 base64_encode(file_get_contents($image))
+            );
+
+            return true;
+        });
+    });
+});
+
+describe('Document support for Gemini', function (): void {
+    it('can read process pdf documents', function (): void {
+        FixtureResponse::fakeResponseSequence('*', 'gemini/text-with-pdf-documents');
+
+        $response = Prism::text()
+            ->using(Provider::Gemini, 'gemini-2.0-flash')
+            ->withMessages([
+                new UserMessage(
+                    content: 'What is this document about?',
+                    additionalContent: [
+                        Document::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')), 'application/pdf'),
+                    ]
+                ),
+            ])
+            ->generate();
+
+        expect($response->text)->toBe("The document is about the answer to the Ultimate Question of Life, the Universe, and Everything, which is stated to be 42. This is a reference to the science fiction series \"The Hitchhiker's Guide to the Galaxy\" by Douglas Adams.\n");
+
+        Http::assertSent(function (Request $request): bool {
+            $message = $request->data()['contents'][0]['parts'];
+
+            expect($message[1])->toBe([
+                'text' => 'What is this document about?',
+            ]);
+
+            expect($message[0]['inline_data'])->toHaveKeys(['mime_type', 'data']);
+
+            expect($message[0]['inline_data']['mime_type'])->toBe('application/pdf');
+
+            expect($message[0]['inline_data']['data'])->toBe(
+                base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf'))
+            );
+
+            return true;
+        });
+    });
+
+    it('can read process text documents', function (): void {
+        FixtureResponse::fakeResponseSequence('*', 'gemini/text-with-text-documents');
+
+        $response = Prism::text()
+            ->using(Provider::Gemini, 'gemini-2.0-flash')
+            ->withMessages([
+                new UserMessage(
+                    content: 'What is this document about?',
+                    additionalContent: [
+                        Document::fromText(file_get_contents('tests/Fixtures/test-text.txt')),
+                    ]
+                ),
+            ])
+            ->generate();
+
+        expect($response->text)->toBe("This document is about the number 42 and its significance, likely referencing the book \"The Hitchhiker's Guide to the Galaxy\" by Douglas Adams. In that book, a supercomputer called Deep Thought calculates that 42 is the answer to the Ultimate Question of Life, the Universe, and Everything. However, frustratingly, no one knows what the actual question *is*.\n\nTherefore, the document could be:\n\n*   **An explanation of the concept of 42 within the context of *The Hitchhiker's Guide to the Galaxy***: This is the most likely scenario.\n*   **A humorous exploration of possible interpretations of 42**: Playing on the ambiguity of the answer.\n*   **A coincidence**: The document could be about something completely unrelated to the book, and the mention of 42 is just a bizarre coincidence. However, given the specific phrasing (\"The Answer to the Ultimate Question...\"), this is very unlikely.\n*   **A piece of fan fiction or creative writing**: Using the 42 concept as a jumping-off point.\n\nIn short, it's almost certainly related to *The Hitchhiker's Guide to the Galaxy* and the significance of the number 42 within that fictional universe.\n");
+
+        Http::assertSent(function (Request $request): bool {
+            $message = $request->data()['contents'][0]['parts'];
+
+            expect($message[1])->toBe([
+                'text' => 'What is this document about?',
+            ]);
+
+            expect($message[0]['inline_data'])->toHaveKeys(['mime_type', 'data']);
+
+            expect($message[0]['inline_data']['mime_type'])->toBe('text/plain');
+
+            expect($message[0]['inline_data']['data'])->toBe(
+                base64_encode(file_get_contents('tests/Fixtures/test-text.txt'))
             );
 
             return true;

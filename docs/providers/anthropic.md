@@ -59,58 +59,15 @@ Please ensure you read Anthropic's [prompt caching documentation](https://docs.a
 
 ## Documents
 
-### PDF Documents
+Anthropic supports PDF, text and markdown documents. Note that Anthropic uses vision to process PDFs under the hood, and consequently there are some limitations detailed in their [feature documentation](https://docs.anthropic.com/en/docs/build-with-claude/pdf-support).
 
-Prism supports Anthropic PDF processing on UserMessages via the `$additionalContent` parameter:
+See the [Documents](/input-modalities/documents.html) on how to get started using them.
 
-```php
-use EchoLabs\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
-
-Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
-    ->withMessages([
-        new UserMessage('Here is the document from base64', [
-            Document::fromBase64(base64_encode(file_get_contents('tests/Fixtures/test-pdf.pdf')), 'application/pdf'),
-        ]),
-        new UserMessage('Here is the document from a local path', [
-            Document::fromPath('tests/Fixtures/test-pdf.pdf'),
-        ]),
-    ])
-    ->generate();
-
-```
-Anthropic use vision to process PDFs, and consequently there are some limitations detailed in their [feature documentation](https://docs.anthropic.com/en/docs/build-with-claude/pdf-support).
-
-### Txt and md Documents
-
-Prism supports txt/md documents on UserMessages via the `$additionalContent` parameter:
-
-```php
-use EchoLabs\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
-
-Prism::text()
-    ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')
-    ->withMessages([
-        new UserMessage('Here is the document from a text string (e.g. from your database)', [
-            Document::fromText('Hello world!'),
-        ]),
-        new UserMessage('Here is the document from a local path', [
-            Document::fromPath('tests/Fixtures/test-txt.txt'),
-        ]),
-    ])
-    ->generate();
-
-```
+Anthropic also supports "custom content documents", separately documented below, which are primarily for use with citations.
 
 ### Custom content documents
 
-Prism supports Anthropic's "custom content documents", which is primarily for use with citations (see below) where you need citations to reference your own chunking strategy.
+Custom content documents are primarily for use with citations (see below), if you need citations to reference your own chunking strategy.
 
 ```php
 use EchoLabs\Enums\Provider;

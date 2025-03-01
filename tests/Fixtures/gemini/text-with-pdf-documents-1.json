@@ -1,0 +1,38 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "The document is about the answer to the Ultimate Question of Life, the Universe, and Everything, which is stated to be 42. This is a reference to the science fiction series \"The Hitchhiker's Guide to the Galaxy\" by Douglas Adams.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "avgLogprobs": -0.15755779338332843
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 1296,
+    "candidatesTokenCount": 53,
+    "totalTokenCount": 1349,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 6
+      },
+      {
+        "modality": "DOCUMENT",
+        "tokenCount": 1290
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 53
+      }
+    ]
+  },
+  "modelVersion": "gemini-2.0-flash"
+}
