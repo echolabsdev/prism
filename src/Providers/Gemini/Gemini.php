@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Providers\Gemini;
 
+use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Contracts\Provider;
 use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\Providers\Gemini\Handlers\Cache;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Embeddings;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Structured;
 use EchoLabs\Prism\Providers\Gemini\Handlers\Text;
+use EchoLabs\Prism\Providers\Gemini\ValueObjects\GeminiCachedObject;
 use EchoLabs\Prism\Stream\Request as StreamRequest;
 use EchoLabs\Prism\Structured\Request as StructuredRequest;
 use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
+use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
@@ -67,16 +71,51 @@ readonly class Gemini implements Provider
     }
 
     /**
+     * @param  Message[]  $messages
+     * @param  array<SystemMessage|string>  $systemPrompts
+     */
+    public function cache(string $model, array $messages = [], array $systemPrompts = [], ?int $ttl = null): GeminiCachedObject
+    {
+        if ($messages === [] && $systemPrompts === []) {
+            throw new PrismException('At least one message or system prompt must be provided');
+        }
+
+        $systemPrompts = array_map(
+            fn ($prompt): \EchoLabs\Prism\ValueObjects\Messages\SystemMessage => $prompt instanceof SystemMessage ? $prompt : new SystemMessage($prompt),
+            $systemPrompts
+        );
+
+        $handler = new Cache(
+            client: $this->client(
+                baseUrl: 'https://generativelanguage.googleapis.com/v1beta'
+            ),
+            model: $model,
+            messages: $messages,
+            systemPrompts: $systemPrompts,
+            ttl: $ttl
+        );
+
+        return $handler->handle();
+    }
+
+    /**
      * @param  array<string, mixed>  $options
      * @param  array<mixed>  $retry
      */
-    protected function client(array $options = [], array $retry = []): PendingRequest
+    protected function client(array $options = [], array $retry = [], ?string $baseUrl = null): PendingRequest
     {
-        return Http::withOptions($options)
+        $baseUrl ??= $this->url;
+
+        $client = Http::withOptions($options)
             ->withHeaders([
                 'x-goog-api-key' => $this->apiKey,
             ])
-            ->retry(...$retry)
-            ->baseUrl($this->url);
+            ->baseUrl($baseUrl);
+
+        if ($retry !== []) {
+            return $client->retry(...$retry);
+        }
+
+        return $client;
     }
 }
