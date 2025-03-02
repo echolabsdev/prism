@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Mistral\Handlers;
 use EchoLabs\Prism\Embeddings\Request;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\ValueObjects\Embedding;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -37,7 +38,7 @@ class Embeddings
         }
 
         return new EmbeddingsResponse(
-            embeddings: data_get($data, 'data.0.embedding', []),
+            embeddings: array_map(fn (array $item): \EchoLabs\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
         );
     }
@@ -48,7 +49,7 @@ class Embeddings
             'embeddings',
             [
                 'model' => $request->model(),
-                'input' => $request->input(),
+                'input' => $request->inputs(),
             ]
         );
     }

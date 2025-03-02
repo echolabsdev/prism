@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Gemini\Handlers;
 use EchoLabs\Prism\Embeddings\Request;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
 use EchoLabs\Prism\Exceptions\PrismException;
+use EchoLabs\Prism\ValueObjects\Embedding;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -18,6 +19,10 @@ class Embeddings
 
     public function handle(Request $request): EmbeddingsResponse
     {
+        if (count($request->inputs()) > 1) {
+            throw new PrismException('Gemini Error: Prism currently only supports one input at a time with Gemini.');
+        }
+
         try {
             $response = $this->sendRequest($request);
         } catch (Throwable $e) {
@@ -33,7 +38,7 @@ class Embeddings
         }
 
         return new EmbeddingsResponse(
-            embeddings: $data['embedding']['values'] ?? [],
+            embeddings: [Embedding::fromArray(data_get($data, 'embedding.values', []))],
             usage: new EmbeddingsUsage(0) // Gemini doesn't provide token usage info
         );
     }
@@ -46,7 +51,7 @@ class Embeddings
                 'model' => $request->model(),
                 'content' => [
                     'parts' => [
-                        ['text' => $request->input()],
+                        ['text' => $request->inputs()],
                     ],
                 ],
             ]

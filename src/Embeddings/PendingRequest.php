@@ -15,11 +15,22 @@ class PendingRequest
     use ConfiguresProviders;
     use HasProviderMeta;
 
-    protected string $input = '';
+    /** @var array<string> */
+    protected array $inputs = [];
 
     public function fromInput(string $input): self
     {
-        $this->input = $input;
+        $this->inputs[] = $input;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<string>  $inputs
+     */
+    public function fromArray(array $inputs): self
+    {
+        $this->inputs = array_merge($this->inputs, $inputs);
 
         return $this;
     }
@@ -36,7 +47,7 @@ class PendingRequest
             throw new PrismException(sprintf('%s contents could not be read', $path));
         }
 
-        $this->input = $contents;
+        $this->inputs[] = $contents;
 
         return $this;
     }
@@ -50,7 +61,7 @@ class PendingRequest
     {
         return new Request(
             model: $this->model,
-            input: $this->input,
+            inputs: $this->inputs,
             clientOptions: $this->clientOptions,
             clientRetry: $this->clientRetry,
             providerMeta: $this->providerMeta

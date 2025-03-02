@@ -13,7 +13,7 @@ class Generator
 
     public function generate(Request $request): Response
     {
-        if ($request->input() === '' || $request->input() === '0') {
+        if ($request->inputs() === []) {
             throw new PrismException('Embeddings input is required');
         }
 
