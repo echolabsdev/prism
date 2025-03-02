@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Tests\Providers\Gemini;
 
 use EchoLabs\Prism\Enums\Provider;
+use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\ValueObjects\Embedding;
+use Illuminate\Support\Facades\Http;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
@@ -20,8 +23,11 @@ it('returns embeddings from input', function (): void {
         ->fromInput('Embed this sentence.')
         ->generate();
 
+    $embeddings = json_decode(file_get_contents('tests/Fixtures/gemini/embeddings-input-1.json'), true);
+    $embedding = Embedding::fromArray(data_get($embeddings, 'embedding.values'));
+
     expect($response->embeddings)->toBeArray();
-    expect($response->embeddings)->not->toBeEmpty();
+    expect($response->embeddings[0]->embedding)->toBe($embedding->embedding);
     expect($response->usage->tokens)->toBe(0); // Gemini doesn't provide token usage
 });
 
@@ -33,7 +39,20 @@ it('returns embeddings from file', function (): void {
         ->fromFile('tests/Fixtures/test-embedding-file.md')
         ->generate();
 
+    $embeddings = json_decode(file_get_contents('tests/Fixtures/gemini/embeddings-file-1.json'), true);
+    $embedding = Embedding::fromArray(data_get($embeddings, 'embedding.values'));
+
     expect($response->embeddings)->toBeArray();
-    expect($response->embeddings)->not->toBeEmpty();
+    expect($response->embeddings[0]->embedding)->toBe($embedding->embedding);
     expect($response->usage->tokens)->toBe(0); // Gemini doesn't provide token usage
 });
+
+it('throws an exception with multiple inputs', function (): void {
+    Http::preventStrayRequests();
+
+    $response = Prism::embeddings()
+        ->using(Provider::Gemini, 'text-embedding-004')
+        ->fromInput('1')
+        ->fromInput('2')
+        ->generate();
+})->throws(PrismException::class, 'Gemini Error: Prism currently only supports one input at a time with Gemini.');

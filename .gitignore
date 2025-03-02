@@ -5,3 +5,4 @@ task/
 .idea/
 scratch
 phpunit.xml
+*.code-workspace

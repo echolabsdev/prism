@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\Embeddings;
 
+use EchoLabs\Prism\ValueObjects\Embedding;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 
 readonly class Response
 {
     /**
-     * @param  array<int, int|string|float>  $embeddings
+     * @param  Embedding[]  $embeddings
      */
     public function __construct(
         public array $embeddings,

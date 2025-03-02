@@ -14,13 +14,14 @@ class Request implements PrismRequest
     use ChecksSelf, HasProviderMeta;
 
     /**
+     * @param  array<string>  $inputs
      * @param  array<string, mixed>  $clientOptions
      * @param  array{0: array<int, int>|int, 1?: Closure|int, 2?: ?callable, 3?: bool}  $clientRetry
      * @param  array<string, mixed>  $providerMeta
      */
     public function __construct(
         protected string $model,
-        protected string $input,
+        protected array $inputs,
         protected array $clientOptions,
         protected array $clientRetry,
         array $providerMeta = [],
@@ -44,9 +45,12 @@ class Request implements PrismRequest
         return $this->clientOptions;
     }
 
-    public function input(): string
+    /**
+     * @return array<string> $inputs
+     */
+    public function inputs(): array
     {
-        return $this->input;
+        return $this->inputs;
     }
 
     #[\Override]
