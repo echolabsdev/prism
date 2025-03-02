@@ -82,17 +82,24 @@ class Text extends AnthropicHandlerAbstract
             throw new \InvalidArgumentException('Request must be an instance of '.TextRequest::class);
         }
 
-        return array_merge([
+        return array_filter([
             'model' => $request->model(),
-            'messages' => MessageMap::map($request->messages(), $request->providerMeta(Provider::Anthropic)),
-            'max_tokens' => $request->maxTokens(),
-        ], array_filter([
             'system' => MessageMap::mapSystemMessages($request->systemPrompts()),
+            'messages' => MessageMap::map($request->messages(), $request->providerMeta(Provider::Anthropic)),
+            'thinking' => $request->providerMeta(Provider::Anthropic, 'thinking.enabled') === true
+                ? [
+                    'type' => 'enabled',
+                    'budget_tokens' => is_int($request->providerMeta(Provider::Anthropic, 'thinking.budgetTokens'))
+                        ? $request->providerMeta(Provider::Anthropic, 'thinking.budgetTokens')
+                        : config('prism.anthropic.default_thinking_budget', 1024),
+                ]
+                : null,
+            'max_tokens' => $request->maxTokens(),
             'temperature' => $request->temperature(),
             'top_p' => $request->topP(),
             'tools' => ToolMap::map($request->tools()),
             'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
-        ]));
+        ]);
     }
 
     protected function handleToolCalls(): Response
@@ -166,6 +173,7 @@ class Text extends AnthropicHandlerAbstract
             ),
             additionalContent: array_filter([
                 'messagePartsWithCitations' => $this->extractCitations($data),
+                ...$this->extractThinking($data),
             ])
         );
     }

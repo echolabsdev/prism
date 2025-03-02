@@ -104,6 +104,27 @@ abstract class AnthropicHandlerAbstract
     }
 
     /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function extractThinking(array $data): array
+    {
+        if ($this->request->providerMeta(Provider::Anthropic, 'thinking.enabled') !== true) {
+            return [];
+        }
+
+        $thinking = Arr::first(
+            data_get($data, 'content', []),
+            fn ($content): bool => data_get($content, 'type') === 'thinking'
+        );
+
+        return [
+            'thinking' => data_get($thinking, 'thinking'),
+            'thinking_signature' => data_get($thinking, 'signature'),
+        ];
+    }
+
+    /**
      * @return ProviderRateLimit[]
      */
     protected function processRateLimits(): array

@@ -1,0 +1,20 @@
+{
+    "id": "msg_016nfnVdmr4Mu8zXqSB1d5xd",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-3-7-sonnet-20250219",
+    "content": [
+        {
+            "type": "text",
+            "text": "The Detroit Tigers game is today at 3pm in Detroit. The weather in Detroit will be 75° and sunny, so you likely won't need a coat. It's a warm, pleasant day - just a light jacket or sweater might be enough if you tend to get cold at outdoor events, but generally, these are comfortable conditions."
+        }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "usage": {
+        "input_tokens": 854,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 74
+    }
+}
