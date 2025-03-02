@@ -7,6 +7,7 @@ namespace EchoLabs\Prism\Providers\Gemini\Maps;
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
+use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
 use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
@@ -99,14 +100,8 @@ class MessageMap
             $parts[] = ['text' => $message->text()];
         }
 
-        $imageParts = array_map(fn (Image $image): array => [
-            'inline_data' => [
-                'mime_type' => $image->mimeType,
-                'data' => $this->getImageData($image),
-            ],
-        ], $message->images());
-
-        $parts = array_merge($parts, $imageParts);
+        // Gemini docs suggest including text prompt after documents, but before images.
+        $parts = array_merge($this->mapDocuments($message->documents()), $parts, $this->mapImages($message->images()));
 
         $this->contents['contents'][] = [
             'role' => 'user',
@@ -137,6 +132,20 @@ class MessageMap
         ];
     }
 
+    /**
+     * @param  Image[]  $images
+     * @return array<string,array<string,mixed>>
+     */
+    protected function mapImages(array $images): array
+    {
+        return array_map(fn (Image $image): array => [
+            'inline_data' => [
+                'mime_type' => $image->mimeType,
+                'data' => $this->getImageData($image),
+            ],
+        ], $images);
+    }
+
     protected function getImageData(Image $image): string
     {
         if ($image->isUrl()) {
@@ -147,5 +156,26 @@ class MessageMap
         }
 
         return $image->image;
+    }
+
+    /**
+     * @param  Document[]  $documents
+     * @return array<string,array<string,mixed>>
+     */
+    protected function mapDocuments(array $documents): array
+    {
+        return array_map(function (Document $document): array {
+
+            if ($document->dataFormat === 'content') {
+                throw new PrismException('Gemini does not support custom content documents.');
+            }
+
+            return [
+                'inline_data' => [
+                    'mime_type' => $document->mimeType,
+                    'data' => $document->dataFormat === 'base64' ? $document->document : base64_encode($document->document), // @phpstan-ignore argument.type
+                ],
+            ];
+        }, $documents);
     }
 }

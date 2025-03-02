@@ -202,7 +202,7 @@ export default {
           embeddings: Supported,
           image: Supported,
           tools: Supported,
-          documents: Unsupported,
+          documents: Supported,
         },
         {
           name: "Groq",

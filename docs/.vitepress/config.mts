@@ -131,6 +131,19 @@ export default defineConfig({
             ],
           },
           {
+            text: "Input modalities",
+            items: [
+                {
+                    text: "Images",
+                    link: "/input-modalities/images",
+                },
+                {
+                    text: "Documents",
+                    link: "/input-modalities/documents",
+                },
+            ]
+          },
+          {
             text: "Providers",
             items: [
               {
