@@ -9,7 +9,7 @@ use EchoLabs\Prism\Schema\ObjectSchema;
 use Illuminate\Support\Facades\Http;
 
 it('throws an exception for text', function (): void {
-    Http::fake()->preventingStrayRequests();
+    Http::fake()->preventStrayRequests();
 
     Prism::text()
         ->using(Provider::VoyageAI, 'test-model')
@@ -18,7 +18,7 @@ it('throws an exception for text', function (): void {
 })->throws(PrismException::class, 'EchoLabs\Prism\Providers\VoyageAI\VoyageAI::text is not supported by VoyageAI');
 
 it('throws an exception for structured', function (): void {
-    Http::fake()->preventingStrayRequests();
+    Http::fake()->preventStrayRequests();
 
     Prism::structured()
         ->using(Provider::VoyageAI, 'test-model')
