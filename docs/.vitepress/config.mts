@@ -175,6 +175,10 @@ export default defineConfig({
                 link: "/providers/openai",
               },
               {
+                text: "Voyage AI",
+                link: "/providers/voyageai",
+              },              
+              {
                 text: "XAI",
                 link: "/providers/xai",
               },

@@ -4,7 +4,7 @@ Transform your text into powerful vector representations! Embeddings let you add
 
 ## Quick Start
 
-Here's how to generate embeddings with just a few lines of code:
+Here's how to generate an embedding with just a few lines of code:
 
 ```php
 use EchoLabs\Prism\Prism;
@@ -16,7 +16,38 @@ $response = Prism::embeddings()
     ->generate();
 
 // Get your embeddings vector
-$embeddings = $response->embeddings;
+$embeddings = $response->embeddings[0]->embedding;
+
+// Check token usage
+echo $response->usage->tokens;
+```
+
+## Generating multiple embeddings
+
+You can generate multiple embeddings at once with all providers that support embeddings, other than Gemini:
+
+```php
+use EchoLabs\Prism\Prism;
+use EchoLabs\Prism\Enums\Provider;
+
+$response = Prism::embeddings()
+    ->using(Provider::OpenAI, 'text-embedding-3-large')
+    // First embedding
+    ->fromInput('Your text goes here')
+    // Second embedding
+    ->fromInput('Your second text goes here')
+    // Third and fourth embeddings
+    ->fromArray([
+        'Third',
+        'Fourth'
+    ])
+    ->generate();
+
+/** @var Embedding $embedding */
+foreach ($embeddings as $embedding) {
+    // Do something with your embeddings
+    $embedding->embedding;
+}
 
 // Check token usage
 echo $response->usage->tokens;
@@ -76,8 +107,19 @@ $response = Prism::embeddings()
 The embeddings response gives you everything you need:
 
 ```php
-// Get the embeddings vector
-$vector = $response->embeddings;
+namespace EchoLabs\Prism\ValueObjects\Embedding;
+
+// Get an array of Embedding value objects
+$embeddings = $response->embeddings;
+
+// Just get first embedding
+$firstVectorSet = $embeddings[0]->embedding;
+
+// Loop over all embeddings
+/** @var Embedding $embedding */
+foreach ($embeddings as $embedding) {
+    $vectorSet = $embedding->embedding;
+}
 
 // Check token usage
 $tokenCount = $response->usage->tokens;

@@ -14,6 +14,7 @@ use EchoLabs\Prism\Providers\Groq\Groq;
 use EchoLabs\Prism\Providers\Mistral\Mistral;
 use EchoLabs\Prism\Providers\Ollama\Ollama;
 use EchoLabs\Prism\Providers\OpenAI\OpenAI;
+use EchoLabs\Prism\Providers\VoyageAI\VoyageAI;
 use EchoLabs\Prism\Providers\XAI\XAI;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
@@ -131,6 +132,17 @@ class PrismManager
     {
         return new DeepSeek(
             apiKey: $config['api_key'] ?? '',
+        );
+    }
+
+    /**
+     * @param  array<string, string>  $config
+     */
+    protected function createVoyageaiProvider(array $config): VoyageAI
+    {
+        return new VoyageAI(
+            apiKey: $config['api_key'] ?? '',
+            baseUrl: $config['url'] ?? ''
         );
     }
 

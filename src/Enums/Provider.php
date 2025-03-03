@@ -14,4 +14,5 @@ enum Provider: string
     case Groq = 'groq';
     case XAI = 'xai';
     case Gemini = 'gemini';
+    case VoyageAI = 'voyageai';
 }
