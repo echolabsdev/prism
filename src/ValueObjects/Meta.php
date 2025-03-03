@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EchoLabs\Prism\ValueObjects;
 
-readonly class ResponseMeta
+readonly class Meta
 {
     /**
      * @param  ProviderRateLimit[]  $rateLimits

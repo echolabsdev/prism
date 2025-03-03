@@ -12,7 +12,7 @@ use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Structured\ResponseBuilder;
 use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
@@ -63,7 +63,7 @@ class Structured
                     data_get($data, 'usageMetadata.promptTokenCount', 0),
                     data_get($data, 'usageMetadata.candidatesTokenCount', 0)
                 ),
-                responseMeta: new ResponseMeta(
+                meta: new Meta(
                     id: data_get($data, 'id', ''),
                     model: data_get($data, 'modelVersion'),
                 ),

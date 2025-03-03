@@ -16,7 +16,7 @@ use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 
@@ -31,7 +31,7 @@ it('fake responses using the prism fake for text', function (): void {
             toolResults: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')
+            meta: new Meta('cpl_1234', 'claude-3-sonnet')
         ),
     ]);
 
@@ -57,7 +57,7 @@ it('fake responses using the prism fake for structured', function (): void {
             structured: ['foo' => 'bar'],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet'),
+            meta: new Meta('cpl_1234', 'claude-3-sonnet'),
             additionalContent: [],
         ),
     ]);
@@ -121,7 +121,7 @@ it("throws an exception when it can't runs out of responses", function (): void 
             toolResults: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')
+            meta: new Meta('cpl_1234', 'claude-3-sonnet')
         ),
     ]);
 
@@ -147,7 +147,7 @@ it('asserts provider config', function (): void {
             toolResults: [],
             usage: new Usage(42, 42),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('cpl_1234', 'claude-3-sonnet')
+            meta: new Meta('cpl_1234', 'claude-3-sonnet')
         ),
     ]);
 

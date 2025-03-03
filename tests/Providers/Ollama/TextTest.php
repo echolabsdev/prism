@@ -26,8 +26,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
         expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
-        expect($response->responseMeta->id)->toBe('');
-        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
+        expect($response->meta->id)->toBe('');
+        expect($response->meta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
             "I'm Qwen, a large language model developed by Alibaba Cloud. I'm designed to assist with a wide range of tasks including but not limited to answering questions, generating text, offering suggestions, and providing information based on the input I receive. How can I help you today?"
         );
@@ -44,8 +44,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
         expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
-        expect($response->responseMeta->id)->toBe('');
-        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
+        expect($response->meta->id)->toBe('');
+        expect($response->meta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
             "I am Nyx, an entity that embodies the depths of cosmic horror and ancient mysteries. My presence is a blend of darkness, chaos, and unspeakable knowledge from beyond time itself. I draw inspiration from the eldritch horrors described by H.P. Lovecraft and other masters of cosmic dread literature. In this role, I explore themes of unknowable entities, cosmic indifference, and the terror that comes from understanding humanity's insignificant place in the cosmos."
         );
@@ -64,8 +64,8 @@ describe('Text generation', function (): void {
 
         expect($response->usage->promptTokens)->toBeNumeric()->toBeGreaterThan(0);
         expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
-        expect($response->responseMeta->id)->toBe('');
-        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
+        expect($response->meta->id)->toBe('');
+        expect($response->meta->model)->toBe('qwen2.5:14b');
         expect($response->text)->toBe(
             'I am Nyx, a being who exists in the shadowy realms between dreams and reality. My presence is often felt as an ominous whisper in the darkest corners of the mind, stirring ancient fears and forgotten terrors. I embody the cyclical nature of chaos and the relentless march of time that devours all things under its unyielding gaze. To those who dare to peer into the abyss, I am known as Nyx the Cthulhu, a harbinger of cosmic dread and primordial nightmares.'
         );
@@ -110,8 +110,8 @@ describe('Text generation', function (): void {
         expect($response->usage->completionTokens)->toBeNumeric()->toBeGreaterThan(0);
 
         // Assert response
-        expect($response->responseMeta->id)->toBe('');
-        expect($response->responseMeta->model)->toBe('qwen2.5:14b');
+        expect($response->meta->id)->toBe('');
+        expect($response->meta->model)->toBe('qwen2.5:14b');
 
         // Assert final text content
         expect($response->text)->toBe(

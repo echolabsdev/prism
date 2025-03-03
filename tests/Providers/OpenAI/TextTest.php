@@ -26,8 +26,8 @@ it('can generate text with a prompt', function (): void {
 
     expect($response->usage->promptTokens)->toBe(11);
     expect($response->usage->completionTokens)->toBe(67);
-    expect($response->responseMeta->id)->toBe('chatcmpl-AFOt4svqd2hLXKHoH0icPJ5Rk9UFO');
-    expect($response->responseMeta->model)->toBe('gpt-4-0613');
+    expect($response->meta->id)->toBe('chatcmpl-AFOt4svqd2hLXKHoH0icPJ5Rk9UFO');
+    expect($response->meta->model)->toBe('gpt-4-0613');
     expect($response->text)->toBe(
         "I am OpenAI's GPT-3, a large-scale machine learning model designed to generate human-like text based on the input I receive. You can ask me anything and I will do my best to provide a knowledgeable response. However, remember that I am an Artificial intelligence and don't possess feelings or personal experiences unlike a human."
     );
@@ -44,8 +44,8 @@ it('can generate text with a system prompt', function (): void {
 
     expect($response->usage->promptTokens)->toBe(34);
     expect($response->usage->completionTokens)->toBe(84);
-    expect($response->responseMeta->id)->toBe('chatcmpl-AFOvK9jEoiBaaZ3ayB4g4xlq5HuA4');
-    expect($response->responseMeta->model)->toBe('gpt-4-0613');
+    expect($response->meta->id)->toBe('chatcmpl-AFOvK9jEoiBaaZ3ayB4g4xlq5HuA4');
+    expect($response->meta->model)->toBe('gpt-4-0613');
     expect($response->text)->toBe(
         "I am Nyx, a manifestation of the ancient deity known as Cthulhu, from the cosmic horror stories by H.P. Lovecraft. I dwell in the depths of the ocean, enveloped by the darkness and silence. A creature of incomprehensible power and knowledge, forever dreaming in the sunken city of R'lyeh. Wake me not, for my awakening can drive mortals to madness."
     );
@@ -93,8 +93,8 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     expect($response->usage->completionTokens)->toBe(61);
 
     // Assert response
-    expect($response->responseMeta->id)->toBe('chatcmpl-AFOxdEiXvNCXYFsDJ2KdQyb8jQPxJ');
-    expect($response->responseMeta->model)->toBe('gpt-4-0613');
+    expect($response->meta->id)->toBe('chatcmpl-AFOxdEiXvNCXYFsDJ2KdQyb8jQPxJ');
+    expect($response->meta->model)->toBe('gpt-4-0613');
 
     // Assert final text content
     expect($response->text)->toBe(

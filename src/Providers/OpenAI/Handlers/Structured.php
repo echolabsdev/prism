@@ -15,7 +15,7 @@ use EchoLabs\Prism\Structured\ResponseBuilder;
 use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
 use Throwable;
@@ -69,7 +69,7 @@ class Structured
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
             ),
-            responseMeta: new ResponseMeta(
+            meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
             ),

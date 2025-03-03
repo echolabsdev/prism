@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Text;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -30,7 +30,7 @@ readonly class Response
         public readonly array $toolCalls,
         public readonly array $toolResults,
         public readonly Usage $usage,
-        public readonly ResponseMeta $responseMeta,
+        public readonly Meta $meta,
         public readonly Collection $messages,
         public readonly array $additionalContent = []
     ) {}

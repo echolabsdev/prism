@@ -89,12 +89,12 @@ it('adds rate limit data to the responseMeta', function (): void {
         ->withPrompt('What time is the tigers game today and should I wear a coat?')
         ->generate();
 
-    expect($response->responseMeta->rateLimits)->toHaveCount(4);
-    expect($response->responseMeta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
-    expect($response->responseMeta->rateLimits[0]->name)->toEqual('requests');
-    expect($response->responseMeta->rateLimits[0]->limit)->toEqual(1000);
-    expect($response->responseMeta->rateLimits[0]->remaining)->toEqual(500);
-    expect($response->responseMeta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
+    expect($response->meta->rateLimits)->toHaveCount(4);
+    expect($response->meta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+    expect($response->meta->rateLimits[0]->name)->toEqual('requests');
+    expect($response->meta->rateLimits[0]->limit)->toEqual(1000);
+    expect($response->meta->rateLimits[0]->remaining)->toEqual(500);
+    expect($response->meta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
 });
 
 it('applies the citations request level providerMeta to all documents', function (): void {

@@ -14,7 +14,7 @@ use EchoLabs\Prism\Structured\ResponseBuilder;
 use EchoLabs\Prism\Structured\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
@@ -57,7 +57,7 @@ class Structured extends AnthropicHandlerAbstract
             text: $this->tempResponse->text,
             finishReason: $this->tempResponse->finishReason,
             usage: $this->tempResponse->usage,
-            responseMeta: $this->tempResponse->responseMeta,
+            meta: $this->tempResponse->meta,
             messages: $this->request->messages(),
             systemPrompts: $this->request->systemPrompts(),
             additionalContent: $this->tempResponse->additionalContent,
@@ -111,7 +111,7 @@ class Structured extends AnthropicHandlerAbstract
                 cacheWriteInputTokens: data_get($data, 'usage.cache_creation_input_tokens', null),
                 cacheReadInputTokens: data_get($data, 'usage.cache_read_input_tokens', null)
             ),
-            responseMeta: new ResponseMeta(
+            meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
                 rateLimits: $this->processRateLimits()

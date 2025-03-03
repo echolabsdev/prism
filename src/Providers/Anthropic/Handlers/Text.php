@@ -19,7 +19,7 @@ use EchoLabs\Prism\Text\ResponseBuilder;
 use EchoLabs\Prism\Text\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -136,7 +136,7 @@ class Text extends AnthropicHandlerAbstract
             toolCalls: $this->tempResponse->toolCalls,
             toolResults: $toolResults,
             usage: $this->tempResponse->usage,
-            responseMeta: $this->tempResponse->responseMeta,
+            meta: $this->tempResponse->meta,
             messages: $this->request->messages(),
             systemPrompts: $this->request->systemPrompts(),
             additionalContent: $this->tempResponse->additionalContent,
@@ -166,7 +166,7 @@ class Text extends AnthropicHandlerAbstract
                 cacheWriteInputTokens: data_get($data, 'usage.cache_creation_input_tokens'),
                 cacheReadInputTokens: data_get($data, 'usage.cache_read_input_tokens')
             ),
-            responseMeta: new ResponseMeta(
+            meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
                 rateLimits: $this->processRateLimits()

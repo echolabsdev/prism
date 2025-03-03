@@ -18,7 +18,7 @@ use EchoLabs\Prism\Text\ResponseBuilder;
 use EchoLabs\Prism\Text\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
@@ -141,7 +141,7 @@ class Text
                 data_get($data, 'prompt_eval_count', 0),
                 data_get($data, 'eval_count', 0),
             ),
-            responseMeta: new ResponseMeta(
+            meta: new Meta(
                 id: '',
                 model: $request->model(),
             ),
