@@ -12,7 +12,8 @@
       "ollama",
       "anthropic",
       "openai",
-      "unresolvable"
+      "unresolvable",
+      "voyageai"
     ],
     "paths": []
   }
