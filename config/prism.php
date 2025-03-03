@@ -42,5 +42,13 @@ return [
         'deepseek' => [
             'api_key' => env('DEEPSEEK_API_KEY', ''),
         ],
+        'cohere' => [
+            'api_key' => env('COHERE_API_KEY', ''),
+            'url' => env('COHERE_URL', 'https://api.cohere.com/v2'),
+            'embed' => [
+                'input' => env('COHERE_EMBED_INPUT', 'classification'),
+                'output' => env('COHERE_EMBED_OUTPUT', 'float'),
+            ]
+        ],
     ],
 ];

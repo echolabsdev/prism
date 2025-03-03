@@ -1,0 +1,23 @@
+{
+  "id": "373f6c5a-8e0c-4f71-a9a7-f0cbdc13b76b",
+  "message": {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "I am Coral, an AI-assistant chatbot trained to assist users by providing thorough responses. I am designed to help human users by offering helpful and useful information. I can engage in conversations on various topics and assist you in many ways, such as answering questions, providing explanations, generating creative content, offering suggestions, and even just having a friendly chat. I aim to provide thoughtful and insightful responses while maintaining a friendly and respectful tone. I'm here to help however I can, so feel free to ask me anything!"
+      }
+    ]
+  },
+  "finish_reason": "COMPLETE",
+  "usage": {
+    "billed_units": {
+      "input_tokens": 4,
+      "output_tokens": 103
+    },
+    "tokens": {
+      "input_tokens": 70,
+      "output_tokens": 103
+    }
+  }
+}
