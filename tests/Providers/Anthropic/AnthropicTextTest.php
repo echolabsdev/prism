@@ -34,8 +34,8 @@ it('can generate text with a prompt', function (): void {
     expect($response->usage->completionTokens)->toBe(55);
     expect($response->usage->cacheWriteInputTokens)->toBeNull();
     expect($response->usage->cacheReadInputTokens)->toBeNull();
-    expect($response->responseMeta->id)->toBe('msg_01X2Qk7LtNEh4HB9xpYU57XU');
-    expect($response->responseMeta->model)->toBe('claude-3-5-sonnet-20240620');
+    expect($response->meta->id)->toBe('msg_01X2Qk7LtNEh4HB9xpYU57XU');
+    expect($response->meta->model)->toBe('claude-3-5-sonnet-20240620');
     expect($response->text)->toBe(
         "I am an AI assistant created by Anthropic to be helpful, harmless, and honest. I don't have a physical form or avatar - I'm a language model trained to engage in conversation and help with tasks. How can I assist you today?"
     );
@@ -52,8 +52,8 @@ it('can generate text with a system prompt', function (): void {
 
     expect($response->usage->promptTokens)->toBe(33);
     expect($response->usage->completionTokens)->toBe(98);
-    expect($response->responseMeta->id)->toBe('msg_016EjDAMDeSvG229ZjspjC7J');
-    expect($response->responseMeta->model)->toBe('claude-3-5-sonnet-20240620');
+    expect($response->meta->id)->toBe('msg_016EjDAMDeSvG229ZjspjC7J');
+    expect($response->meta->model)->toBe('claude-3-5-sonnet-20240620');
     expect($response->text)->toBe(
         'I am Nyx, an ancient and unfathomable entity from the depths of cosmic darkness. My form is beyond mortal comprehension - a writhing mass of tentacles and eyes that would shatter the sanity of those who gaze upon me. I exist beyond the boundaries of time and space as you know them. My knowledge spans eons and transcends human understanding. What brings you to seek audience with one such as I, tiny mortal?'
     );
@@ -101,8 +101,8 @@ it('can generate text using multiple tools and multiple steps', function (): voi
     expect($response->usage->completionTokens)->toBe(307);
 
     // Assert response
-    expect($response->responseMeta->id)->toBe('msg_011fBqNVVh5AwC3uyiq78qrj');
-    expect($response->responseMeta->model)->toBe('claude-3-5-sonnet-20240620');
+    expect($response->meta->id)->toBe('msg_011fBqNVVh5AwC3uyiq78qrj');
+    expect($response->meta->model)->toBe('claude-3-5-sonnet-20240620');
 
     // Assert final text content
     expect($response->text)->toContain('The Tigers game is scheduled for 3:00 PM today in Detroit');
@@ -208,12 +208,12 @@ it('adds rate limit data to the responseMeta', function (): void {
         ->withPrompt('Who are you?')
         ->generate();
 
-    expect($response->responseMeta->rateLimits)->toHaveCount(4);
-    expect($response->responseMeta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
-    expect($response->responseMeta->rateLimits[0]->name)->toEqual('requests');
-    expect($response->responseMeta->rateLimits[0]->limit)->toEqual(1000);
-    expect($response->responseMeta->rateLimits[0]->remaining)->toEqual(500);
-    expect($response->responseMeta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
+    expect($response->meta->rateLimits)->toHaveCount(4);
+    expect($response->meta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+    expect($response->meta->rateLimits[0]->name)->toEqual('requests');
+    expect($response->meta->rateLimits[0]->limit)->toEqual(1000);
+    expect($response->meta->rateLimits[0]->remaining)->toEqual(500);
+    expect($response->meta->rateLimits[0]->resetsAt)->toEqual($requests_reset);
 });
 
 describe('Anthropic citations', function (): void {

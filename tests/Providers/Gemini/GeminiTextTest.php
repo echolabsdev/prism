@@ -34,8 +34,8 @@ describe('Text generation for Gemini', function (): void {
         )
             ->and($response->usage->promptTokens)->toBe(4)
             ->and($response->usage->completionTokens)->toBe(57)
-            ->and($response->responseMeta->id)->toBe('')
-            ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
+            ->and($response->meta->id)->toBe('')
+            ->and($response->meta->model)->toBe('gemini-1.5-flash')
             ->and($response->finishReason)->toBe(FinishReason::Stop);
     });
 
@@ -51,8 +51,8 @@ describe('Text generation for Gemini', function (): void {
         expect($response->text)->toBe('I am Prism, a helpful AI assistant created by echo labs.')
             ->and($response->usage->promptTokens)->toBe(17)
             ->and($response->usage->completionTokens)->toBe(14)
-            ->and($response->responseMeta->id)->toBe('')
-            ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
+            ->and($response->meta->id)->toBe('')
+            ->and($response->meta->model)->toBe('gemini-1.5-flash')
             ->and($response->finishReason)->toBe(FinishReason::Stop);
     });
 
@@ -96,8 +96,8 @@ describe('Text generation for Gemini', function (): void {
             ->and($response->usage->completionTokens)->toBe(42);
 
         // Assert response
-        expect($response->responseMeta->id)->toBe('')
-            ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
+        expect($response->meta->id)->toBe('')
+            ->and($response->meta->model)->toBe('gemini-1.5-flash')
             ->and($response->text)->toBe('The tigers game is at 3pm today in Detroit.  The weather will be 45° and cold, so you should wear a coat.');
     });
 
@@ -148,8 +148,8 @@ describe('Image support with Gemini', function (): void {
         expect($response->text)->toBe("That's an illustration of a **diamond**.  More specifically, it's a stylized, geometric representation of a diamond, often used as an icon or symbol")
             ->and($response->usage->promptTokens)->toBe(263)
             ->and($response->usage->completionTokens)->toBe(35)
-            ->and($response->responseMeta->id)->toBe('')
-            ->and($response->responseMeta->model)->toBe('gemini-1.5-flash')
+            ->and($response->meta->id)->toBe('')
+            ->and($response->meta->model)->toBe('gemini-1.5-flash')
             ->and($response->finishReason)->toBe(FinishReason::Stop);
 
         // Assert request format

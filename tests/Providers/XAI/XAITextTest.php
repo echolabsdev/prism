@@ -37,8 +37,8 @@ describe('Text generation for XAI', function (): void {
         expect($response->usage->completionTokens)->toBe(42);
 
         // Assert metadata
-        expect($response->responseMeta->id)->toBe('febc7de9-9991-4b08-942a-c7082174225a');
-        expect($response->responseMeta->model)->toBe('grok-beta');
+        expect($response->meta->id)->toBe('febc7de9-9991-4b08-942a-c7082174225a');
+        expect($response->meta->model)->toBe('grok-beta');
 
         // Assert content
         expect($response->text)->toBe(
@@ -71,8 +71,8 @@ describe('Text generation for XAI', function (): void {
         expect($response->usage->completionTokens)->toBe(84);
 
         // Assert metadata
-        expect($response->responseMeta->id)->toBe('f3b485d3-837b-4710-9ade-a37faa048d87');
-        expect($response->responseMeta->model)->toBe('grok-beta');
+        expect($response->meta->id)->toBe('f3b485d3-837b-4710-9ade-a37faa048d87');
+        expect($response->meta->model)->toBe('grok-beta');
 
         // Assert content
         expect($response->text)->toBe(
@@ -131,8 +131,8 @@ describe('Text generation for XAI', function (): void {
         expect($response->usage->completionTokens)->toBe(60);
 
         // Assert metadata
-        expect($response->responseMeta->id)->toBe('0aa220cd-9634-4ba5-9593-5366bb313663');
-        expect($response->responseMeta->model)->toBe('grok-beta');
+        expect($response->meta->id)->toBe('0aa220cd-9634-4ba5-9593-5366bb313663');
+        expect($response->meta->model)->toBe('grok-beta');
 
         // Assert content
         expect($response->text)->toBe(

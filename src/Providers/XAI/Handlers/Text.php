@@ -18,7 +18,7 @@ use EchoLabs\Prism\Text\ResponseBuilder;
 use EchoLabs\Prism\Text\Step;
 use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
 use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ToolCall;
 use EchoLabs\Prism\ValueObjects\ToolResult;
 use EchoLabs\Prism\ValueObjects\Usage;
@@ -150,7 +150,7 @@ class Text
                 data_get($data, 'usage.prompt_tokens'),
                 data_get($data, 'usage.completion_tokens'),
             ),
-            responseMeta: new ResponseMeta(
+            meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
             ),

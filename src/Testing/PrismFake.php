@@ -16,7 +16,7 @@ use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use Generator;
@@ -50,7 +50,7 @@ class PrismFake implements Provider
             toolCalls: [],
             toolResults: [],
             usage: new Usage(0, 0),
-            responseMeta: new ResponseMeta('fake', 'fake'),
+            meta: new Meta('fake', 'fake'),
             messages: collect([]),
             additionalContent: [],
         );
@@ -79,7 +79,7 @@ class PrismFake implements Provider
             structured: [],
             finishReason: FinishReason::Stop,
             usage: new Usage(0, 0),
-            responseMeta: new ResponseMeta('fake', 'fake'),
+            meta: new Meta('fake', 'fake'),
             additionalContent: [],
         );
     }

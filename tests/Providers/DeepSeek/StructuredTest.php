@@ -46,8 +46,8 @@ it('returns structured output', function (): void {
     expect($response->structured['coat_required'])->toBeBool()->toBeFalse();
 
     // Assert metadata
-    expect($response->responseMeta->id)->toBe('1920de37-0bb1-4cf8-9c4e-d73ad8d73d6a');
-    expect($response->responseMeta->model)->toBe('deepseek-chat');
+    expect($response->meta->id)->toBe('1920de37-0bb1-4cf8-9c4e-d73ad8d73d6a');
+    expect($response->meta->model)->toBe('deepseek-chat');
     expect($response->usage->promptTokens)->toBe(187);
     expect($response->usage->completionTokens)->toBe(26);
 });

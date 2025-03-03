@@ -49,7 +49,7 @@ readonly class ResponseBuilder
             toolCalls: $finalStep->toolCalls,
             toolResults: $finalStep->toolResults,
             usage: $this->calculateTotalUsage(),
-            responseMeta: $finalStep->responseMeta,
+            meta: $finalStep->meta,
             messages: collect($finalStep->messages),
             additionalContent: $finalStep->additionalContent,
         );

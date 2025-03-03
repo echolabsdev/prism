@@ -15,8 +15,8 @@ use EchoLabs\Prism\Structured\Response as StructuredResponse;
 use EchoLabs\Prism\Text\Request as TextRequest;
 use EchoLabs\Prism\Text\Response as TextResponse;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\ProviderResponse;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Generator;
 
@@ -50,7 +50,7 @@ class TestProvider implements Provider
             toolResults: [],
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620'),
+            meta: new Meta('123', 'claude-3-5-sonnet-20240620'),
             messages: collect([]),
         );
     }
@@ -69,7 +69,7 @@ class TestProvider implements Provider
             responseMessages: collect([]),
             usage: new Usage(10, 10),
             finishReason: FinishReason::Stop,
-            responseMeta: new ResponseMeta('123', 'claude-3-5-sonnet-20240620')
+            meta: new Meta('123', 'claude-3-5-sonnet-20240620')
         );
     }
 

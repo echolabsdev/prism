@@ -6,7 +6,7 @@ namespace EchoLabs\Prism\Structured;
 
 use EchoLabs\Prism\Contracts\Message;
 use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
 
@@ -25,7 +25,7 @@ readonly class Response
         public readonly ?array $structured,
         public readonly FinishReason $finishReason,
         public readonly Usage $usage,
-        public readonly ResponseMeta $responseMeta,
+        public readonly Meta $meta,
         public readonly array $additionalContent = []
     ) {}
 }

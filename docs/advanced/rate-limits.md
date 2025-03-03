@@ -115,7 +115,7 @@ $response = Prism::text()
     ->generate();
     
 /** @var ProviderRateLimit $rate_limit */ 
-foreach ($response->responseMeta->rateLimits as $rate_limit) {
+foreach ($response->meta->rateLimits as $rate_limit) {
     // Handle
 }
 

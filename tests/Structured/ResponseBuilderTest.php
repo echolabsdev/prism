@@ -6,7 +6,7 @@ use EchoLabs\Prism\Enums\FinishReason;
 use EchoLabs\Prism\Exceptions\PrismStructuredDecodingException;
 use EchoLabs\Prism\Structured\ResponseBuilder;
 use EchoLabs\Prism\Structured\Step;
-use EchoLabs\Prism\ValueObjects\ResponseMeta;
+use EchoLabs\Prism\ValueObjects\Meta;
 use EchoLabs\Prism\ValueObjects\Usage;
 
 test('throws a PrismStructuredDecodingException if the response is not valid json', function (): void {
@@ -20,7 +20,7 @@ test('throws a PrismStructuredDecodingException if the response is not valid jso
             promptTokens: 0,
             completionTokens: 0
         ),
-        responseMeta: new ResponseMeta(
+        meta: new Meta(
             id: '123',
             model: 'Test',
         ),
