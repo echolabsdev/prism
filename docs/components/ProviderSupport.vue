@@ -241,6 +241,15 @@ export default {
           documents: Unsupported,
         },
         {
+          name: "VoyageAI",
+          text: Unsupported,
+          structured: Unsupported,
+          embeddings: Supported,
+          image: Unsupported,
+          tools: Unsupported,
+          documents: Unsupported,
+        },       
+        {
           name: "xAI",
           text: Supported,
           structured: Unsupported,
