@@ -4,6 +4,7 @@ namespace EchoLabs\Prism\Providers\VoyageAI;
 
 use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
 use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
+use EchoLabs\Prism\Enums\Provider;
 use EchoLabs\Prism\Exceptions\PrismException;
 use EchoLabs\Prism\ValueObjects\Embedding;
 use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
@@ -38,13 +39,13 @@ class Embeddings
 
     protected function sendRequest(): void
     {
-        $providerMeta = $this->request->providerMeta('voyage');
+        $providerMeta = $this->request->providerMeta(Provider::VoyageAI);
 
         try {
             $this->httpResponse = $this->client->post('embeddings', array_filter([
                 'model' => $this->request->model(),
                 'input' => $this->request->inputs(),
-                'input_type' => $providerMeta['input_type'] ?? null,
+                'input_type' => $providerMeta['inputType'] ?? null,
                 'truncation' => $providerMeta['truncation'] ?? null,
             ]));
         } catch (\Exception $e) {

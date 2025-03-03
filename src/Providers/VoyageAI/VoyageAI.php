@@ -17,10 +17,9 @@ use Illuminate\Support\Facades\Http;
 
 class VoyageAI implements Provider
 {
-    const PROVIDER_KEY = 'voyage';
-
     public function __construct(
-        #[\SensitiveParameter] protected string $apiKey
+        #[\SensitiveParameter] protected string $apiKey,
+        protected string $baseUrl
     ) {}
 
     #[\Override]
@@ -61,6 +60,6 @@ class VoyageAI implements Provider
         return Http::withToken($this->apiKey)
             ->withOptions($options)
             ->retry(...$retry)
-            ->baseUrl('https://api.voyageai.com/v1');
+            ->baseUrl($this->baseUrl);
     }
 }

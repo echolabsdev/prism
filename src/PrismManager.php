@@ -142,6 +142,7 @@ class PrismManager
     {
         return new VoyageAI(
             apiKey: $config['api_key'] ?? '',
+            baseUrl: $config['url'] ?? ''
         );
     }
 

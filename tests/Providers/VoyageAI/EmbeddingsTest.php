@@ -40,3 +40,57 @@ it('returns multiple embeddings from input', function (): void {
     expect($response->embeddings[1]->embedding)->toEqual($embeddings[1]->embedding);
     expect($response->usage->tokens)->toBe(12);
 });
+
+it('returns embeddings with inputType set', function (): void {
+    FixtureResponse::fakeResponseSequence('*', 'voyageai/embeddings-with-input-type');
+
+    $response = Prism::embeddings()
+        ->using(Provider::VoyageAI, 'voyage-3-lite')
+        ->fromInput('The food was delicious and the waiter...')
+        ->withProviderMeta(Provider::VoyageAI, ['inputType' => 'query'])
+        ->generate();
+
+    $embeddings = json_decode(file_get_contents('tests/Fixtures/voyageai/embeddings-with-input-type-1.json'), true);
+    $embeddings = array_map(fn (array $item): Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
+
+    expect($response->embeddings)->toBeArray();
+    expect($response->embeddings[0]->embedding)->toEqual($embeddings[0]->embedding);
+    expect($response->usage->tokens)->toBe(7);
+});
+
+it('returns embeddings with truncation set', function (): void {
+    FixtureResponse::fakeResponseSequence('*', 'voyageai/embeddings-with-truncation');
+
+    $response = Prism::embeddings()
+        ->using(Provider::VoyageAI, 'voyage-3-lite')
+        ->fromInput('The food was delicious and the waiter...')
+        ->withProviderMeta(Provider::VoyageAI, ['truncation' => false])
+        ->generate();
+
+    $embeddings = json_decode(file_get_contents('tests/Fixtures/voyageai/embeddings-with-truncation-1.json'), true);
+    $embeddings = array_map(fn (array $item): Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
+
+    expect($response->embeddings)->toBeArray();
+    expect($response->embeddings[0]->embedding)->toEqual($embeddings[0]->embedding);
+    expect($response->usage->tokens)->toBe(8);
+});
+
+it('returns embeddings with inputType and truncation', function (): void {
+    FixtureResponse::fakeResponseSequence('*', 'voyageai/embeddings-with-input-type-and-truncation');
+
+    $response = Prism::embeddings()
+        ->using(Provider::VoyageAI, 'voyage-3-lite')
+        ->fromInput('The food was delicious and the waiter...')
+        ->withProviderMeta(Provider::VoyageAI, [
+            'inputType' => 'query',
+            'truncation' => false,
+        ])
+        ->generate();
+
+    $embeddings = json_decode(file_get_contents('tests/Fixtures/voyageai/embeddings-with-input-type-and-truncation-1.json'), true);
+    $embeddings = array_map(fn (array $item): Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
+
+    expect($response->embeddings)->toBeArray();
+    expect($response->embeddings[0]->embedding)->toEqual($embeddings[0]->embedding);
+    expect($response->usage->tokens)->toBe(7);
+});

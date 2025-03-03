@@ -44,6 +44,7 @@ return [
         ],
         'voyageai' => [
             'api_key' => env('VOYAGEAI_API_KEY', ''),
+            'url' => env('VOYAGEAI_URL', 'https://api.voyageai.com/v1'),
         ],
     ],
 ];
