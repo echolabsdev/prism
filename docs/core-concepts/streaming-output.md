@@ -92,7 +92,7 @@ Streaming supports the same configuration options as regular [text generation](/
 
 Here's how to integrate streaming in a Laravel controller:
 
-Alternatively, you might consider using Laravel's [Broadcasting feature](https://laravel.com/docs/11.x/broadcasting) to send the chunks to your frontend.
+Alternatively, you might consider using Laravel's [Broadcasting feature](https://laravel.com/docs/12.x/broadcasting) to send the chunks to your frontend.
 
 ```php
 use EchoLabs\Prism\Prism;
@@ -121,7 +121,7 @@ public function streamResponse()
 
 ### Laravel 12 Event Streams
 
-Stream the output via Laravel 12 event streams ([docs](https://laravel.com/docs/12.x/responses#event-streams)).
+Stream the output via Laravel event streams ([docs](https://laravel.com/docs/12.x/responses#event-streams)).
 
 ```php
 Route::get('/chat', function () {
@@ -132,7 +132,7 @@ Route::get('/chat', function () {
             ->generate();
 
         foreach ($stream as $response) {
-            yield $response->choices[0];
+            yield $response->text;
         }
     });
 });
