@@ -20,9 +20,9 @@ class SchemaMap
     public function toArray(): array
     {
         return array_merge([
-            'type' => $this->mapType(),
             ...array_filter([
                 ...$this->schema->toArray(),
+                'type' => $this->mapType(),
                 'additionalProperties' => null,
             ]),
         ], array_filter([
@@ -35,22 +35,20 @@ class SchemaMap
                     $property->name() => (new self($property))->toArray(),
                 ], []) :
                 null,
+            'nullable' => property_exists($this->schema, 'nullable')
+                ? $this->schema->nullable
+                : null,
         ]));
     }
 
     protected function mapType(): string
     {
-        switch ($this->schema::class) {
-            case ArraySchema::class:
-                return 'array';
-            case BooleanSchema::class:
-                return 'boolean';
-            case NumberSchema::class:
-                return 'number';
-            case ObjectSchema::class:
-                return 'object';
-            default:
-                return 'string';
-        }
+        return match ($this->schema::class) {
+            ArraySchema::class => 'array',
+            BooleanSchema::class => 'boolean',
+            NumberSchema::class => 'number',
+            ObjectSchema::class => 'object',
+            default => 'string',
+        };
     }
 }
