@@ -56,7 +56,7 @@ class Text
         return match ($this->mapFinishReason($data)) {
             FinishReason::ToolCalls => $this->handleToolCalls($data, $request),
             FinishReason::Stop => $this->handleStop($data, $request),
-            default => throw new PrismException('Ollama: unknown finish reason'),
+            default => throw new PrismException('OpenAI: unknown finish reason'),
         };
     }
 
