@@ -203,6 +203,7 @@ class Stream
             return $this
                 ->client
                 ->withOptions(['stream' => true])
+                ->throw()
                 ->post(
                     'chat/completions',
                     array_merge([
