@@ -25,14 +25,16 @@ class ToolChoiceMap
             ];
         }
 
-        if (! in_array($toolChoice, [ToolChoice::Auto, ToolChoice::Any])) {
+        if (! in_array($toolChoice, [ToolChoice::Auto, ToolChoice::Any, ToolChoice::None])) {
             throw new InvalidArgumentException('Invalid tool choice');
         }
 
-        return match ($toolChoice) {
-            ToolChoice::Auto => 'auto',
-            ToolChoice::Any => 'any',
-        };
-
+        return [
+            'type' => match ($toolChoice) {
+                ToolChoice::Auto => 'auto',
+                ToolChoice::Any => 'any',
+                ToolChoice::None => 'none',
+            },
+        ];
     }
 }
