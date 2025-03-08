@@ -9,14 +9,14 @@ use Illuminate\Support\Facades\Http;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\Prism;
-use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponse;
 use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
 arch()->expect([
     'Providers\OpenAI\Handlers\Text',
     'Providers\OpenAI\Handlers\Structured',
 ])
-    ->toUseTrait(ValidatesResponses::class);
+    ->toUseTrait(ValidatesResponse::class);
 
 it('throws a PrismRateLimitedException with a 429 response code', function (): void {
     Http::fake([

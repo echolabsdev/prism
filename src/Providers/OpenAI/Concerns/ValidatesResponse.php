@@ -12,7 +12,7 @@ use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
-trait ValidatesResponses
+trait ValidatesResponse
 {
     protected function validateResponse(Response $response): void
     {

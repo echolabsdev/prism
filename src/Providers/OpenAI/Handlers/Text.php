@@ -10,7 +10,7 @@ use PrismPHP\Prism\Concerns\CallsTools;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
-use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponse;
 use PrismPHP\Prism\Providers\OpenAI\Maps\MessageMap;
 use PrismPHP\Prism\Providers\OpenAI\Maps\ToolCallMap;
 use PrismPHP\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
@@ -30,7 +30,7 @@ class Text
 {
     use CallsTools;
     use MapsFinishReason;
-    use ValidatesResponses;
+    use ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;
 
