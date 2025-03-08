@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace PrismPHP\Prism\Providers\Mistral\Handlers;
 
-use Illuminate\Http\Client\PendingRequest;
+use Throwable;
 use Illuminate\Http\Client\Response;
 use PrismPHP\Prism\Embeddings\Request;
-use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
-use PrismPHP\Prism\Exceptions\PrismException;
+use Illuminate\Http\Client\PendingRequest;
 use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
-use Throwable;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
+use PrismPHP\Prism\Providers\Ollama\Concerns\ValidatesResponse;
 
 class Embeddings
 {
+    use ValidatesResponse;
+
     public function __construct(protected PendingRequest $client) {}
 
     public function handle(Request $request): EmbeddingsResponse
@@ -24,6 +27,8 @@ class Embeddings
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
+
+        $this->validateResponse($response);
 
         $data = $response->json();
 
@@ -40,6 +45,7 @@ class Embeddings
         return new EmbeddingsResponse(
             embeddings: array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
+            rateLimits: $this->processRateLimits($response),
         );
     }
 

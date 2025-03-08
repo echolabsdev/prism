@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Mistral;
 
-use Illuminate\Http\Client\Request;
-use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Prism;
+use Illuminate\Support\Carbon;
+use PrismPHP\Prism\Facades\Tool;
 use PrismPHP\Prism\Enums\Provider;
+use Illuminate\Http\Client\Request;
+use Tests\Fixtures\FixtureResponse;
+use Illuminate\Support\Facades\Http;
 use PrismPHP\Prism\Enums\ToolChoice;
 use PrismPHP\Prism\Exceptions\PrismException;
-use PrismPHP\Prism\Facades\Tool;
-use PrismPHP\Prism\Prism;
-use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
-use Tests\Fixtures\FixtureResponse;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
 
 beforeEach(function (): void {
     config()->set('prism.providers.mistral.api_key', env('MISTRAL_API_KEY', 'sk-1234'));
@@ -238,5 +240,28 @@ describe('Image support', function (): void {
 
             return true;
         });
+    });
+});
+
+it('sets the rate limits on meta', function (): void {
+    $this->freezeTime(function (Carbon $time): void {
+        $time = $time->toImmutable();
+
+        FixtureResponse::fakeResponseSequence('v1/chat/completions', 'mistral/generate-text-with-a-prompt', [
+            'ratelimitbysize-limit' => 500000,
+            'ratelimitbysize-remaining' => 499900,
+            'ratelimitbysize-reset' => 28,
+        ]);
+
+        $response = Prism::text()
+            ->using(Provider::Mistral, 'test-model')
+            ->withPrompt('Who are you?')
+            ->generate();
+
+        expect($response->meta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+        expect($response->meta->rateLimits[0]->name)->toEqual('tokens');
+        expect($response->meta->rateLimits[0]->limit)->toEqual(500000);
+        expect($response->meta->rateLimits[0]->remaining)->toEqual(499900);
+        expect($response->meta->rateLimits[0]->resetsAt->equalTo($time->addSeconds(28)))->toBeTrue();
     });
 });
