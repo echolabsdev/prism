@@ -70,3 +70,32 @@ it('sets the correct data on the PrismRateLimitedException', function (): void {
         }
     });
 });
+
+it('works with milleseconds', function (): void {
+    $this->freezeTime(function (Carbon $time): void {
+        $time = $time->toImmutable();
+        Http::fake([
+            '*' => Http::response(
+                status: 429,
+                headers: [
+                    'x-ratelimit-limit-requests' => 60,
+                    'x-ratelimit-remaining-requests' => 0,
+                    'x-ratelimit-reset-requests' => '70ms',
+                ]
+            ),
+        ])->preventStrayRequests();
+
+        try {
+            Prism::text()
+                ->using(Provider::OpenAI, 'fake-model')
+                ->withPrompt('Hello world!')
+                ->generate();
+        } catch (PrismRateLimitedException $e) {
+            expect($e->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+            expect($e->rateLimits[0]->name)->toEqual('requests');
+            expect($e->rateLimits[0]->limit)->toEqual(60);
+            expect($e->rateLimits[0]->remaining)->toEqual(0);
+            expect($e->rateLimits[0]->resetsAt->equalTo($time->addMilliseconds(70)))->toBeTrue();
+        }
+    });
+});
