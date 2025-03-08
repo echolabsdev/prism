@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Schema;
+namespace PrismPHP\Prism\Schema;
 
-use EchoLabs\Prism\Concerns\NullableSchema;
-use EchoLabs\Prism\Contracts\Schema;
+use PrismPHP\Prism\Concerns\NullableSchema;
+use PrismPHP\Prism\Contracts\Schema;
 
 class StringSchema implements Schema
 {

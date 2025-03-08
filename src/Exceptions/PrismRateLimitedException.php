@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Exceptions;
+namespace PrismPHP\Prism\Exceptions;
 
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
 class PrismRateLimitedException extends PrismException
 {

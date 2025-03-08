@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Structured;
+namespace PrismPHP\Prism\Structured;
 
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\Usage;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 readonly class Step
 {

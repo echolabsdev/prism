@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Providers\DeepSeek\Maps\ToolMap;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Providers\DeepSeek\Maps\ToolMap;
+use PrismPHP\Prism\Tool;
 
 it('maps tools', function (): void {
     $tool = (new Tool)

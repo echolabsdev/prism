@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Testing;
+namespace PrismPHP\Prism\Testing;
 
 use Closure;
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Stream\Request as StreamRequest;
-use EchoLabs\Prism\Structured\Request as StructuredRequest;
-use EchoLabs\Prism\Structured\Response as StructuredResponse;
-use EchoLabs\Prism\Text\Request as TextRequest;
-use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Exception;
 use Generator;
 use PHPUnit\Framework\Assert as PHPUnit;
+use PrismPHP\Prism\Contracts\Provider;
+use PrismPHP\Prism\Embeddings\Request as EmbeddingRequest;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingResponse;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Stream\Request as StreamRequest;
+use PrismPHP\Prism\Structured\Request as StructuredRequest;
+use PrismPHP\Prism\Structured\Response as StructuredResponse;
+use PrismPHP\Prism\Text\Request as TextRequest;
+use PrismPHP\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 class PrismFake implements Provider
 {

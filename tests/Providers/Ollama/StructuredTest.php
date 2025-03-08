@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Ollama;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Schema\ArraySchema;
-use EchoLabs\Prism\Schema\ObjectSchema;
-use EchoLabs\Prism\Schema\StringSchema;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Schema\ArraySchema;
+use PrismPHP\Prism\Schema\ObjectSchema;
+use PrismPHP\Prism\Schema\StringSchema;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {

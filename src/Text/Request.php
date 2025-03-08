@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Text;
+namespace PrismPHP\Prism\Text;
 
 use Closure;
-use EchoLabs\Prism\Concerns\ChecksSelf;
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Contracts\PrismRequest;
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Tool;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
+use PrismPHP\Prism\Concerns\ChecksSelf;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\Contracts\PrismRequest;
+use PrismPHP\Prism\Enums\ToolChoice;
+use PrismPHP\Prism\Tool;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
 
 class Request implements PrismRequest
 {

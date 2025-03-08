@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Stream;
+namespace PrismPHP\Prism\Stream;
 
-use EchoLabs\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\Text\Response as TextResponse;
 
 readonly class Response extends TextResponse
 {

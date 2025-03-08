@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Facades;
+namespace PrismPHP\Prism\Facades;
 
 use Closure;
-use EchoLabs\Prism\Contracts\Schema;
-use EchoLabs\Prism\Tool as BaseTool;
+use PrismPHP\Prism\Contracts\Schema;
+use PrismPHP\Prism\Tool as BaseTool;
 
 /**
  * @method static BaseTool as(string $name)

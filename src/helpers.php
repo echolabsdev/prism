@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Prism;
 use Illuminate\Support\Facades\App;
+use PrismPHP\Prism\Prism;
 
 if (! function_exists('prism')) {
 

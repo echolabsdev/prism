@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Gemini;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Embedding;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\ValueObjects\Embedding;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {

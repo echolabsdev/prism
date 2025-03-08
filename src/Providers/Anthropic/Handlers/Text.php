@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
+namespace PrismPHP\Prism\Providers\Anthropic\Handlers;
 
-use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Contracts\PrismRequest;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
-use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
-use EchoLabs\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
-use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
-use EchoLabs\Prism\Text\Request as TextRequest;
-use EchoLabs\Prism\Text\Response;
-use EchoLabs\Prism\Text\ResponseBuilder;
-use EchoLabs\Prism\Text\Step;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\ToolCall;
-use EchoLabs\Prism\ValueObjects\ToolResult;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
+use PrismPHP\Prism\Concerns\CallsTools;
+use PrismPHP\Prism\Contracts\PrismRequest;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Anthropic\Maps\FinishReasonMap;
+use PrismPHP\Prism\Providers\Anthropic\Maps\MessageMap;
+use PrismPHP\Prism\Providers\Anthropic\Maps\ToolChoiceMap;
+use PrismPHP\Prism\Providers\Anthropic\Maps\ToolMap;
+use PrismPHP\Prism\Text\Request as TextRequest;
+use PrismPHP\Prism\Text\Response;
+use PrismPHP\Prism\Text\ResponseBuilder;
+use PrismPHP\Prism\Text\Step;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\ValueObjects\ToolResult;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 /**
  * @template TRequest of TextRequest

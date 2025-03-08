@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Gemini;
 
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Tool;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Tool;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Document;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {

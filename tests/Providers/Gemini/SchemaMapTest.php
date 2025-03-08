@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Providers\Gemini\Maps\SchemaMap;
-use EchoLabs\Prism\Schema\ArraySchema;
-use EchoLabs\Prism\Schema\BooleanSchema;
-use EchoLabs\Prism\Schema\EnumSchema;
-use EchoLabs\Prism\Schema\NumberSchema;
-use EchoLabs\Prism\Schema\ObjectSchema;
-use EchoLabs\Prism\Schema\StringSchema;
+use PrismPHP\Prism\Providers\Gemini\Maps\SchemaMap;
+use PrismPHP\Prism\Schema\ArraySchema;
+use PrismPHP\Prism\Schema\BooleanSchema;
+use PrismPHP\Prism\Schema\EnumSchema;
+use PrismPHP\Prism\Schema\NumberSchema;
+use PrismPHP\Prism\Schema\ObjectSchema;
+use PrismPHP\Prism\Schema\StringSchema;
 
 it('maps array schema correctly', function (): void {
     $map = (new SchemaMap(new ArraySchema(

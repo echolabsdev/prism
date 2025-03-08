@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Enums;
+namespace PrismPHP\Prism\Enums;
 
 enum ToolChoice
 {

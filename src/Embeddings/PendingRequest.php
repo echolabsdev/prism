@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Embeddings;
+namespace PrismPHP\Prism\Embeddings;
 
-use EchoLabs\Prism\Concerns\ConfiguresClient;
-use EchoLabs\Prism\Concerns\ConfiguresProviders;
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Concerns\ConfiguresClient;
+use PrismPHP\Prism\Concerns\ConfiguresProviders;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 class PendingRequest
 {
@@ -52,7 +52,7 @@ class PendingRequest
         return $this;
     }
 
-    public function generate(): \EchoLabs\Prism\Embeddings\Response
+    public function generate(): \PrismPHP\Prism\Embeddings\Response
     {
         return (new Generator($this->provider))->generate($this->toRequest());
     }

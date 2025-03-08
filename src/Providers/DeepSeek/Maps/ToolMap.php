@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\DeepSeek\Maps;
+namespace PrismPHP\Prism\Providers\DeepSeek\Maps;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Tool;
 
 class ToolMap
 {

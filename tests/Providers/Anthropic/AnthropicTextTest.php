@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Providers\Anthropic\Handlers\Text;
-use EchoLabs\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Facades\Tool;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Providers\Anthropic\Handlers\Text;
+use PrismPHP\Prism\Providers\Anthropic\ValueObjects\MessagePartWithCitations;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Document;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {

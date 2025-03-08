@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
+namespace PrismPHP\Prism\Providers\OpenAI\Handlers;
 
-use EchoLabs\Prism\Embeddings\Request;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Embedding;
-use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use PrismPHP\Prism\Embeddings\Request;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 use Throwable;
 
 class Embeddings
@@ -38,7 +38,7 @@ class Embeddings
         }
 
         return new EmbeddingsResponse(
-            embeddings: array_map(fn (array $item): \EchoLabs\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
+            embeddings: array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
         );
     }

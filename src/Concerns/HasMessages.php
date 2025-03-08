@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Concerns;
+namespace PrismPHP\Prism\Concerns;
 
-use EchoLabs\Prism\Contracts\Message;
+use PrismPHP\Prism\Contracts\Message;
 
 trait HasMessages
 {

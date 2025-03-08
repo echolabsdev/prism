@@ -1,8 +1,8 @@
 <?php
 
-use EchoLabs\Prism\Http\Controllers\PrismChatController;
-use EchoLabs\Prism\Http\Controllers\PrismModelController;
 use Illuminate\Support\Facades\Route;
+use PrismPHP\Prism\Http\Controllers\PrismChatController;
+use PrismPHP\Prism\Http\Controllers\PrismModelController;
 
 Route::prefix('/prism/openai/v1')
     ->group(function (): void {

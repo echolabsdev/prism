@@ -31,10 +31,10 @@ Prism throws a `PrismRateLimitedException` when you hit a rate limit.
 You can catch that exception, gracefully fail and inspect the `rateLimits` property which contains an array of `ProviderRateLimit`s. 
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Enums\Provider;
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
-use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Enums\Provider;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 
 try {
     Prism::text()
@@ -61,7 +61,7 @@ However most providers implement various rate limits (e.g. request, input tokens
 For simple rate limits like "requests", the `remaining` property on `ProviderRateLimit` will be 0 if you have hit it. These are easy to find:
 
 ```php 
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Support\Arr;
 
 try {
@@ -77,7 +77,7 @@ For less simple rate limits like input tokens, the `remaining` property may not 
 Here, you may need to implement some logic to approximate how many tokens your request will use before sending it, and then test against that:
 
 ```php 
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Support\Arr;
 
 try {
@@ -105,9 +105,9 @@ If you aren't sure where to start with that, check out the [What should you do w
 Prism adds the same rate limit information to every successful request:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Enums\Provider;
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Enums\Provider;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
 $response = Prism::text()
     ->using(Provider::Anthropic, 'claude-3-5-sonnet-20241022')

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\XAI\Maps;
+namespace PrismPHP\Prism\Providers\XAI\Maps;
 
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Tool;
 
 class ToolMap
 {

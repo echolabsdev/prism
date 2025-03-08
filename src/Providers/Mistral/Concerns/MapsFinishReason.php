@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Mistral\Concerns;
+namespace PrismPHP\Prism\Providers\Mistral\Concerns;
 
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\Mistral\Maps\FinishReasonMap;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Providers\Mistral\Maps\FinishReasonMap;
 
 trait MapsFinishReason
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Groq\Maps;
+namespace PrismPHP\Prism\Providers\Groq\Maps;
 
-use EchoLabs\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Enums\FinishReason;
 
 class FinishReasonMap
 {

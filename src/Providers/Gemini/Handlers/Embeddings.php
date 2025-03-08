@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Gemini\Handlers;
+namespace PrismPHP\Prism\Providers\Gemini\Handlers;
 
-use EchoLabs\Prism\Embeddings\Request;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Embedding;
-use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use PrismPHP\Prism\Embeddings\Request;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 use Throwable;
 
 class Embeddings

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Messages;
+namespace PrismPHP\Prism\ValueObjects\Messages;
 
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 
 class AssistantMessage implements Message
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Providers\OpenAI;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Providers\OpenAI\Maps\ToolMap;
+use PrismPHP\Prism\Tool;
 
 it('maps tools', function (): void {
     $tool = (new Tool)

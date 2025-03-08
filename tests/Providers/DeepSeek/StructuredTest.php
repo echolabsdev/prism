@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Schema\BooleanSchema;
-use EchoLabs\Prism\Schema\ObjectSchema;
-use EchoLabs\Prism\Schema\StringSchema;
-use EchoLabs\Prism\Structured\Response as StructuredResponse;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Schema\BooleanSchema;
+use PrismPHP\Prism\Schema\ObjectSchema;
+use PrismPHP\Prism\Schema\StringSchema;
+use PrismPHP\Prism\Structured\Response as StructuredResponse;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns structured output', function (): void {

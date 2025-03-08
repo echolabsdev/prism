@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Messages;
+namespace PrismPHP\Prism\ValueObjects\Messages;
 
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\ValueObjects\ToolResult;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\ValueObjects\ToolResult;
 
 readonly class ToolResultMessage implements Message
 {

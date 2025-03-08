@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\XAI\Concerns;
+namespace PrismPHP\Prism\Providers\XAI\Concerns;
 
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\XAI\Maps\FinishReasonMap;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Providers\XAI\Maps\FinishReasonMap;
 
 trait MapsFinishReason
 {

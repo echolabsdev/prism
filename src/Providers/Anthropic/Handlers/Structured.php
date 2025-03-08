@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Anthropic\Handlers;
+namespace PrismPHP\Prism\Providers\Anthropic\Handlers;
 
-use EchoLabs\Prism\Contracts\PrismRequest;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Providers\Anthropic\Maps\FinishReasonMap;
-use EchoLabs\Prism\Providers\Anthropic\Maps\MessageMap;
-use EchoLabs\Prism\Structured\Request as StructuredRequest;
-use EchoLabs\Prism\Structured\Response;
-use EchoLabs\Prism\Structured\ResponseBuilder;
-use EchoLabs\Prism\Structured\Step;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
+use PrismPHP\Prism\Contracts\PrismRequest;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Providers\Anthropic\Maps\FinishReasonMap;
+use PrismPHP\Prism\Providers\Anthropic\Maps\MessageMap;
+use PrismPHP\Prism\Structured\Request as StructuredRequest;
+use PrismPHP\Prism\Structured\Response;
+use PrismPHP\Prism\Structured\ResponseBuilder;
+use PrismPHP\Prism\Structured\Step;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 class Structured extends AnthropicHandlerAbstract
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Contracts\Provider as ProviderContract;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Text\PendingRequest;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Contracts\View\View;
+use PrismPHP\Prism\Contracts\Provider as ProviderContract;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Enums\ToolChoice;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Facades\Tool;
+use PrismPHP\Prism\Text\PendingRequest;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 use Tests\TestDoubles\TestProvider;
 
 beforeEach(function (): void {

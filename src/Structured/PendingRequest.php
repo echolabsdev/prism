@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Structured;
+namespace PrismPHP\Prism\Structured;
 
-use EchoLabs\Prism\Concerns\ConfiguresClient;
-use EchoLabs\Prism\Concerns\ConfiguresModels;
-use EchoLabs\Prism\Concerns\ConfiguresProviders;
-use EchoLabs\Prism\Concerns\ConfiguresStructuredOutput;
-use EchoLabs\Prism\Concerns\HasMessages;
-use EchoLabs\Prism\Concerns\HasPrompts;
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Concerns\HasSchema;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\Concerns\ConfiguresClient;
+use PrismPHP\Prism\Concerns\ConfiguresModels;
+use PrismPHP\Prism\Concerns\ConfiguresProviders;
+use PrismPHP\Prism\Concerns\ConfiguresStructuredOutput;
+use PrismPHP\Prism\Concerns\HasMessages;
+use PrismPHP\Prism\Concerns\HasPrompts;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Concerns\HasSchema;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 
 class PendingRequest
 {
@@ -43,7 +43,7 @@ class PendingRequest
             $messages[] = new UserMessage($this->prompt);
         }
 
-        if (! $this->schema instanceof \EchoLabs\Prism\Contracts\Schema) {
+        if (! $this->schema instanceof \PrismPHP\Prism\Contracts\Schema) {
             throw new PrismException('A schema is required for structured output');
         }
 

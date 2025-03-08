@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Ollama\Handlers;
+namespace PrismPHP\Prism\Providers\Ollama\Handlers;
 
-use EchoLabs\Prism\Embeddings\Request;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Embedding;
-use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use PrismPHP\Prism\Embeddings\Request;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 use Throwable;
 
 class Embeddings
@@ -34,7 +34,7 @@ class Embeddings
         }
 
         return new EmbeddingsResponse(
-            embeddings: array_map(fn (array $item): \EchoLabs\Prism\ValueObjects\Embedding => Embedding::fromArray($item), data_get($data, 'embeddings', [])),
+            embeddings: array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item), data_get($data, 'embeddings', [])),
             usage: new EmbeddingsUsage(data_get($data, 'prompt_eval_count', null)),
         );
     }

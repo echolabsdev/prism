@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism;
+namespace PrismPHP\Prism;
 
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Embeddings\PendingRequest as PendingEmbeddingRequest;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
-use EchoLabs\Prism\Enums\Provider as ProviderEnum;
-use EchoLabs\Prism\Stream\PendingRequest as PendingStreamRequest;
-use EchoLabs\Prism\Structured\PendingRequest as PendingStructuredRequest;
-use EchoLabs\Prism\Structured\Response as StructuredResponse;
-use EchoLabs\Prism\Testing\PrismFake;
-use EchoLabs\Prism\Text\PendingRequest as PendingTextRequest;
-use EchoLabs\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\Contracts\Provider;
+use PrismPHP\Prism\Embeddings\PendingRequest as PendingEmbeddingRequest;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingResponse;
+use PrismPHP\Prism\Enums\Provider as ProviderEnum;
+use PrismPHP\Prism\Stream\PendingRequest as PendingStreamRequest;
+use PrismPHP\Prism\Structured\PendingRequest as PendingStructuredRequest;
+use PrismPHP\Prism\Structured\Response as StructuredResponse;
+use PrismPHP\Prism\Testing\PrismFake;
+use PrismPHP\Prism\Text\PendingRequest as PendingTextRequest;
+use PrismPHP\Prism\Text\Response as TextResponse;
 
 class Prism
 {

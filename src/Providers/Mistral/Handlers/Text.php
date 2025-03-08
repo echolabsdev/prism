@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Mistral\Handlers;
+namespace PrismPHP\Prism\Providers\Mistral\Handlers;
 
-use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\Mistral\Concerns\MapsFinishReason;
-use EchoLabs\Prism\Providers\Mistral\Concerns\ValidatesResponses;
-use EchoLabs\Prism\Providers\Mistral\Maps\MessageMap;
-use EchoLabs\Prism\Providers\Mistral\Maps\ToolMap;
-use EchoLabs\Prism\Text\Request;
-use EchoLabs\Prism\Text\Response;
-use EchoLabs\Prism\Text\ResponseBuilder;
-use EchoLabs\Prism\Text\Step;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\ToolCall;
-use EchoLabs\Prism\ValueObjects\ToolResult;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
+use PrismPHP\Prism\Concerns\CallsTools;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Mistral\Concerns\MapsFinishReason;
+use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponses;
+use PrismPHP\Prism\Providers\Mistral\Maps\MessageMap;
+use PrismPHP\Prism\Providers\Mistral\Maps\ToolMap;
+use PrismPHP\Prism\Text\Request;
+use PrismPHP\Prism\Text\Response;
+use PrismPHP\Prism\Text\ResponseBuilder;
+use PrismPHP\Prism\Text\Step;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\ValueObjects\ToolResult;
+use PrismPHP\Prism\ValueObjects\Usage;
 use Throwable;
 
 class Text
@@ -154,7 +154,7 @@ class Text
             return [];
         }
 
-        return array_map(fn ($toolCall): \EchoLabs\Prism\ValueObjects\ToolCall => new ToolCall(
+        return array_map(fn ($toolCall): \PrismPHP\Prism\ValueObjects\ToolCall => new ToolCall(
             id: data_get($toolCall, 'id'),
             name: data_get($toolCall, 'function.name'),
             arguments: data_get($toolCall, 'function.arguments'),

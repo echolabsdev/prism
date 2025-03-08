@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Gemini\Maps;
+namespace PrismPHP\Prism\Providers\Gemini\Maps;
 
-use EchoLabs\Prism\Enums\ToolChoice;
+use PrismPHP\Prism\Enums\ToolChoice;
 
 class ToolChoiceMap
 {

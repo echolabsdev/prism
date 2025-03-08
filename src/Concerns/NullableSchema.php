@@ -1,6 +1,6 @@
 <?php
 
-namespace EchoLabs\Prism\Concerns;
+namespace PrismPHP\Prism\Concerns;
 
 trait NullableSchema
 {

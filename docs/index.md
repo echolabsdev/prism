@@ -15,7 +15,7 @@ hero:
       link: /project-info/roadmap
     - theme: alt
       text: Github
-      link: https://github.com/echolabsdev/prism
+      link: https://github.com/prism-php/prism
 
 features:
   - title: Elegant Provider Integrations

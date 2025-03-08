@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Providers\Ollama\Maps\MessageMap;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\ToolResult;
+use PrismPHP\Prism\Providers\Ollama\Maps\MessageMap;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
+use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\ValueObjects\ToolResult;
 
 it('maps system messages correctly', function (): void {
     $systemMessage = new SystemMessage('System instruction');
@@ -135,7 +135,7 @@ it('maps multiple messages in sequence correctly', function (): void {
 });
 
 it('throws exception for unknown message type', function (): void {
-    $invalidMessage = new class implements \EchoLabs\Prism\Contracts\Message {};
+    $invalidMessage = new class implements \PrismPHP\Prism\Contracts\Message {};
     $messageMap = new MessageMap([$invalidMessage]);
 
     expect(fn (): array => $messageMap->map())

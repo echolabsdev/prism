@@ -1,12 +1,12 @@
 <?php
 
-namespace EchoLabs\Prism\Providers\Gemini\Maps;
+namespace PrismPHP\Prism\Providers\Gemini\Maps;
 
-use EchoLabs\Prism\Contracts\Schema;
-use EchoLabs\Prism\Schema\ArraySchema;
-use EchoLabs\Prism\Schema\BooleanSchema;
-use EchoLabs\Prism\Schema\NumberSchema;
-use EchoLabs\Prism\Schema\ObjectSchema;
+use PrismPHP\Prism\Contracts\Schema;
+use PrismPHP\Prism\Schema\ArraySchema;
+use PrismPHP\Prism\Schema\BooleanSchema;
+use PrismPHP\Prism\Schema\NumberSchema;
+use PrismPHP\Prism\Schema\ObjectSchema;
 
 class SchemaMap
 {

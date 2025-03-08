@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\OpenAI\Support;
+namespace PrismPHP\Prism\Providers\OpenAI\Support;
 
-use EchoLabs\Prism\Enums\StructuredMode;
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Enums\StructuredMode;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 class StructuredModeResolver
 {

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Providers\XAI;
 
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Enums\ToolChoice;
+use PrismPHP\Prism\Facades\Tool;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {

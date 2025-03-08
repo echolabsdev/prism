@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\OpenAI\Maps;
+namespace PrismPHP\Prism\Providers\OpenAI\Maps;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Tool;
 
 class ToolMap
 {

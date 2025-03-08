@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\OpenAI\Maps;
+namespace PrismPHP\Prism\Providers\OpenAI\Maps;
 
-use EchoLabs\Prism\Enums\ToolChoice;
 use InvalidArgumentException;
+use PrismPHP\Prism\Enums\ToolChoice;
 
 class ToolChoiceMap
 {

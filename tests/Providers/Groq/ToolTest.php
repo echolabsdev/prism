@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Groq;
 
-use EchoLabs\Prism\Providers\Groq\Maps\ToolMap;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Providers\Groq\Maps\ToolMap;
+use PrismPHP\Prism\Tool;
 
 it('maps tools', function (): void {
     $tool = (new Tool)

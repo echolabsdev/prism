@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Structured;
+namespace PrismPHP\Prism\Structured;
 
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Exceptions\PrismStructuredDecodingException;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Exceptions\PrismStructuredDecodingException;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 readonly class ResponseBuilder
 {

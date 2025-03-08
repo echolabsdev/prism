@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Groq;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Enums\ToolChoice;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Enums\ToolChoice;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Facades\Tool;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {

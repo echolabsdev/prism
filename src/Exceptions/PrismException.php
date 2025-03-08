@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Exceptions;
+namespace PrismPHP\Prism\Exceptions;
 
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use Exception;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 use Throwable;
 
 class PrismException extends Exception

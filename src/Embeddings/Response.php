@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Embeddings;
+namespace PrismPHP\Prism\Embeddings;
 
-use EchoLabs\Prism\ValueObjects\Embedding;
-use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 
 readonly class Response
 {

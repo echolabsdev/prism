@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Stream;
+namespace PrismPHP\Prism\Stream;
 
-use EchoLabs\Prism\Concerns\ConfiguresClient;
-use EchoLabs\Prism\Concerns\ConfiguresGeneration;
-use EchoLabs\Prism\Concerns\ConfiguresModels;
-use EchoLabs\Prism\Concerns\ConfiguresProviders;
-use EchoLabs\Prism\Concerns\ConfiguresTools;
-use EchoLabs\Prism\Concerns\HasMessages;
-use EchoLabs\Prism\Concerns\HasPrompts;
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Concerns\HasTools;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Generator;
+use PrismPHP\Prism\Concerns\ConfiguresClient;
+use PrismPHP\Prism\Concerns\ConfiguresGeneration;
+use PrismPHP\Prism\Concerns\ConfiguresModels;
+use PrismPHP\Prism\Concerns\ConfiguresProviders;
+use PrismPHP\Prism\Concerns\ConfiguresTools;
+use PrismPHP\Prism\Concerns\HasMessages;
+use PrismPHP\Prism\Concerns\HasPrompts;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Concerns\HasTools;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 
 class PendingRequest
 {

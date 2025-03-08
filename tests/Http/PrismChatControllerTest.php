@@ -2,18 +2,18 @@
 
 namespace Tests\Http;
 
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Text\PendingRequest;
-use EchoLabs\Prism\Text\Response;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Mockery;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Facades\PrismServer;
+use PrismPHP\Prism\Text\PendingRequest;
+use PrismPHP\Prism\Text\Response;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 beforeEach(function (): void {
     config()->set('prism.prism_server.enabled', true);

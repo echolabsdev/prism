@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use EchoLabs\Prism\Contracts\Provider as ContractsProvider;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\PrismManager;
-use EchoLabs\Prism\Providers\Anthropic\Anthropic;
-use EchoLabs\Prism\Providers\DeepSeek\DeepSeek;
-use EchoLabs\Prism\Providers\Gemini\Gemini;
-use EchoLabs\Prism\Providers\Mistral\Mistral;
-use EchoLabs\Prism\Providers\Ollama\Ollama;
-use EchoLabs\Prism\Providers\OpenAI\OpenAI;
-use EchoLabs\Prism\Providers\XAI\XAI;
 use Illuminate\Contracts\Foundation\Application;
 use Mockery;
+use PrismPHP\Prism\Contracts\Provider as ContractsProvider;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\PrismManager;
+use PrismPHP\Prism\Providers\Anthropic\Anthropic;
+use PrismPHP\Prism\Providers\DeepSeek\DeepSeek;
+use PrismPHP\Prism\Providers\Gemini\Gemini;
+use PrismPHP\Prism\Providers\Mistral\Mistral;
+use PrismPHP\Prism\Providers\Ollama\Ollama;
+use PrismPHP\Prism\Providers\OpenAI\OpenAI;
+use PrismPHP\Prism\Providers\XAI\XAI;
 
 it('can resolve Anthropic', function (): void {
     $manager = new PrismManager($this->app);

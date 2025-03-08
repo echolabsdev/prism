@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Mistral\Concerns;
+namespace PrismPHP\Prism\Providers\Mistral\Concerns;
 
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 trait ValidatesResponses
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Providers\OpenAI;
 
-use EchoLabs\Prism\Facades\Tool;
-use EchoLabs\Prism\Prism;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Facades\Tool;
+use PrismPHP\Prism\Prism;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
