@@ -11,6 +11,7 @@ use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\Mistral\Concerns\MapsFinishReason;
 use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponses;
 use PrismPHP\Prism\Providers\Mistral\Maps\MessageMap;
+use PrismPHP\Prism\Providers\Mistral\Maps\ToolChoiceMap;
 use PrismPHP\Prism\Providers\Mistral\Maps\ToolMap;
 use PrismPHP\Prism\Text\Request;
 use PrismPHP\Prism\Text\Response;
@@ -130,13 +131,15 @@ class Text
     protected function sendRequest(Request $request): array
     {
         try {
-            $response = $this->client->post('chat/completions', [
+            $response = $this->client->post('chat/completions', array_filter([
                 'model' => $request->model(),
                 'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
                 'tools' => ToolMap::map($request->tools()),
                 'temperature' => $request->temperature(),
                 'max_tokens' => $request->maxTokens(),
-            ]);
+                'top_p' => $request->topP(),
+                'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
+            ]));
 
             return $response->json();
         } catch (Throwable $e) {

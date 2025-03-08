@@ -128,6 +128,8 @@ describe('Text generation', function (): void {
     });
 
     it('throws an exception for ToolChoice::Any', function (): void {
+        Http::preventStrayRequests();
+
         $this->expectException(PrismException::class);
         $this->expectExceptionMessage('Invalid tool choice');
 
