@@ -1,23 +1,23 @@
 <?php
 
-namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
+namespace PrismPHP\Prism\Providers\OpenAI\Handlers;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Enums\StructuredMode;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
-use EchoLabs\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
-use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
-use EchoLabs\Prism\Providers\OpenAI\Support\StructuredModeResolver;
-use EchoLabs\Prism\Structured\Request;
-use EchoLabs\Prism\Structured\Response as StructuredResponse;
-use EchoLabs\Prism\Structured\ResponseBuilder;
-use EchoLabs\Prism\Structured\Step;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Http\Client\PendingRequest;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Enums\StructuredMode;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
+use PrismPHP\Prism\Providers\OpenAI\Maps\MessageMap;
+use PrismPHP\Prism\Providers\OpenAI\Support\StructuredModeResolver;
+use PrismPHP\Prism\Structured\Request;
+use PrismPHP\Prism\Structured\Response as StructuredResponse;
+use PrismPHP\Prism\Structured\ResponseBuilder;
+use PrismPHP\Prism\Structured\Step;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\Usage;
 use Throwable;
 
 class Structured

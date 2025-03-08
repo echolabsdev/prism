@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Text;
+namespace PrismPHP\Prism\Text;
 
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\ValueObjects\Usage;
 use Illuminate\Support\Collection;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\ValueObjects\Usage;
 
 readonly class ResponseBuilder
 {

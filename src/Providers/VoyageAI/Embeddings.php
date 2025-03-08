@@ -1,15 +1,15 @@
 <?php
 
-namespace EchoLabs\Prism\Providers\VoyageAI;
+namespace PrismPHP\Prism\Providers\VoyageAI;
 
-use EchoLabs\Prism\Embeddings\Request as EmbeddingsRequest;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingsResponse;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\ValueObjects\Embedding;
-use EchoLabs\Prism\ValueObjects\EmbeddingsUsage;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
+use PrismPHP\Prism\Embeddings\Request as EmbeddingsRequest;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 
 class Embeddings
 {

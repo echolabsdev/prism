@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\XAI;
+namespace PrismPHP\Prism\Providers\XAI;
 
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Embeddings\Request as EmbeddingRequest;
-use EchoLabs\Prism\Embeddings\Response as EmbeddingResponse;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\XAI\Handlers\Text;
-use EchoLabs\Prism\Stream\Request as StreamRequest;
-use EchoLabs\Prism\Structured\Request as StructuredRequest;
-use EchoLabs\Prism\Structured\Response as StructuredResponse;
-use EchoLabs\Prism\Text\Request as TextRequest;
-use EchoLabs\Prism\Text\Response as TextResponse;
 use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Contracts\Provider;
+use PrismPHP\Prism\Embeddings\Request as EmbeddingRequest;
+use PrismPHP\Prism\Embeddings\Response as EmbeddingResponse;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\XAI\Handlers\Text;
+use PrismPHP\Prism\Stream\Request as StreamRequest;
+use PrismPHP\Prism\Structured\Request as StructuredRequest;
+use PrismPHP\Prism\Structured\Response as StructuredResponse;
+use PrismPHP\Prism\Text\Request as TextRequest;
+use PrismPHP\Prism\Text\Response as TextResponse;
 
 readonly class XAI implements Provider
 {

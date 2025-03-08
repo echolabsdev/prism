@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Gemini;
 
-use EchoLabs\Prism\Providers\Gemini\Maps\ToolMap;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Providers\Gemini\Maps\ToolMap;
+use PrismPHP\Prism\Tool;
 
 it('maps tools to gemini format', function (): void {
     $tool = (new Tool)

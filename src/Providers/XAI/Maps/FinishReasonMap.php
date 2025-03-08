@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\XAI\Maps;
+namespace PrismPHP\Prism\Providers\XAI\Maps;
 
-use EchoLabs\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Enums\FinishReason;
 
 class FinishReasonMap
 {

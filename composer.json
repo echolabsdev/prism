@@ -1,11 +1,11 @@
 {
-  "name": "echolabsdev/prism",
+  "name": "prism-php/prism",
   "description": "A powerful Laravel package for integrating Large Language Models (LLMs) into your applications.",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "EchoLabs\\Prism\\": "src/"
+      "PrismPHP\\Prism\\": "src/"
     }
   },
   "authors": [
@@ -86,10 +86,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "EchoLabs\\Prism\\PrismServiceProvider"
+        "PrismPHP\\Prism\\PrismServiceProvider"
       ],
       "aliases": {
-        "PrismServer": "EchoLabs\\Prism\\Facades\\PrismServer"
+        "PrismServer": "PrismPHP\\Prism\\Facades\\PrismServer"
       }
     }
   }

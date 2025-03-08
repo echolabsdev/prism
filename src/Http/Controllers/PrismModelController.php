@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Http\Controllers;
+namespace PrismPHP\Prism\Http\Controllers;
 
-use EchoLabs\Prism\Facades\PrismServer;
 use Illuminate\Http\JsonResponse;
+use PrismPHP\Prism\Facades\PrismServer;
 
 class PrismModelController
 {

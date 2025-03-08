@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\OpenAI\Handlers;
+namespace PrismPHP\Prism\Providers\OpenAI\Handlers;
 
-use EchoLabs\Prism\Concerns\CallsTools;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Exceptions\PrismChunkDecodeException;
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Providers\OpenAI\Maps\FinishReasonMap;
-use EchoLabs\Prism\Providers\OpenAI\Maps\MessageMap;
-use EchoLabs\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
-use EchoLabs\Prism\Providers\OpenAI\Maps\ToolMap;
-use EchoLabs\Prism\Stream\Chunk;
-use EchoLabs\Prism\Text\Request;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\ToolResultMessage;
-use EchoLabs\Prism\ValueObjects\ToolCall;
 use Generator;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
+use PrismPHP\Prism\Concerns\CallsTools;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Exceptions\PrismChunkDecodeException;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\OpenAI\Maps\FinishReasonMap;
+use PrismPHP\Prism\Providers\OpenAI\Maps\MessageMap;
+use PrismPHP\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
+use PrismPHP\Prism\Providers\OpenAI\Maps\ToolMap;
+use PrismPHP\Prism\Stream\Chunk;
+use PrismPHP\Prism\Text\Request;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 use Psr\Http\Message\StreamInterface;
 use Throwable;
 

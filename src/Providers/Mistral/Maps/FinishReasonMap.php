@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Mistral\Maps;
+namespace PrismPHP\Prism\Providers\Mistral\Maps;
 
-use EchoLabs\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Enums\FinishReason;
 
 class FinishReasonMap
 {

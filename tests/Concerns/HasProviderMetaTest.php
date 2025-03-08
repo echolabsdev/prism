@@ -2,7 +2,7 @@
 
 namespace Tests\Http;
 
-use EchoLabs\Prism\Text\PendingRequest;
+use PrismPHP\Prism\Text\PendingRequest;
 
 test('providerMeta returns an array with all providerMeta if no valuePath is provided.', function (): void {
     $class = new PendingRequest;

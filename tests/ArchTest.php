@@ -8,13 +8,13 @@ describe('Arch presets', function (): void {
 
 describe('Custom relaxed preset', function (): void {
     arch('No final classes')
-        ->expect('EchoLabs\Prism')
+        ->expect('PrismPHP\Prism')
         ->classes()
         ->not
         ->toBeFinal();
 
     arch('No private methods')
-        ->expect('EchoLabs\Prism')
+        ->expect('PrismPHP\Prism')
         ->classes()
         ->not
         ->toHavePrivateMethods();

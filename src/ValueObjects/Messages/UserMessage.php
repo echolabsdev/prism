@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Messages;
+namespace PrismPHP\Prism\ValueObjects\Messages;
 
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Contracts\Message;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Document;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
-use EchoLabs\Prism\ValueObjects\Messages\Support\Text;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Contracts\Message;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Document;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Text;
 
 class UserMessage implements Message
 {

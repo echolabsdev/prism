@@ -7,8 +7,8 @@ Transform your text into powerful vector representations! Embeddings let you add
 Here's how to generate an embedding with just a few lines of code:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
 
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
@@ -27,8 +27,8 @@ echo $response->usage->tokens;
 You can generate multiple embeddings at once with all providers that support embeddings, other than Gemini:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
 
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
@@ -60,8 +60,8 @@ You've got two convenient ways to feed text into the embeddings generator:
 ### Direct Text Input
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
 
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
@@ -74,8 +74,8 @@ $response = Prism::embeddings()
 Need to analyze a larger document? No problem:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
 
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
@@ -91,8 +91,8 @@ $response = Prism::embeddings()
 Just like with text generation, you can fine-tune your embeddings requests:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
 
 $response = Prism::embeddings()
     ->using(Provider::OpenAI, 'text-embedding-3-large')
@@ -107,7 +107,7 @@ $response = Prism::embeddings()
 The embeddings response gives you everything you need:
 
 ```php
-namespace EchoLabs\Prism\ValueObjects\Embedding;
+namespace PrismPHP\Prism\ValueObjects\Embedding;
 
 // Get an array of Embedding value objects
 $embeddings = $response->embeddings;
@@ -130,9 +130,9 @@ $tokenCount = $response->usage->tokens;
 Always handle potential errors gracefully:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 try {
     $response = Prism::embeddings()

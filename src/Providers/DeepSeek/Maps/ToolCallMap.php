@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\DeepSeek\Maps;
+namespace PrismPHP\Prism\Providers\DeepSeek\Maps;
 
-use EchoLabs\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 
 class ToolCallMap
 {

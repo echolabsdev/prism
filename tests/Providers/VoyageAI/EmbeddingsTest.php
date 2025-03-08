@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\ValueObjects\Embedding;
 use Tests\Fixtures\FixtureResponse;
 
 it('returns embeddings from input', function (): void {

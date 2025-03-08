@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Ollama\Concerns;
+namespace PrismPHP\Prism\Providers\Ollama\Concerns;
 
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Providers\Ollama\Maps\FinishReasonMap;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Providers\Ollama\Maps\FinishReasonMap;
 
 trait MapsFinishReason
 {

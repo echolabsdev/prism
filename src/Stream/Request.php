@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Stream;
+namespace PrismPHP\Prism\Stream;
 
-use EchoLabs\Prism\Text\Request as TextRequest;
+use PrismPHP\Prism\Text\Request as TextRequest;
 
 class Request extends TextRequest
 {

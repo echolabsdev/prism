@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Anthropic;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
-use EchoLabs\Prism\Providers\Anthropic\Maps\ToolMap;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Providers\Anthropic\Enums\AnthropicCacheType;
+use PrismPHP\Prism\Providers\Anthropic\Maps\ToolMap;
+use PrismPHP\Prism\Tool;
 
 it('maps tools', function (): void {
     $tool = (new Tool)

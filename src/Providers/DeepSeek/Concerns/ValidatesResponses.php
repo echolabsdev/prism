@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\DeepSeek\Concerns;
+namespace PrismPHP\Prism\Providers\DeepSeek\Concerns;
 
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 trait ValidatesResponses
 {

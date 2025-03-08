@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use EchoLabs\Prism\Exceptions\PrismException;
-use EchoLabs\Prism\Facades\Tool as ToolFacade;
-use EchoLabs\Prism\Schema\BooleanSchema;
-use EchoLabs\Prism\Schema\StringSchema;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Facades\Tool as ToolFacade;
+use PrismPHP\Prism\Schema\BooleanSchema;
+use PrismPHP\Prism\Schema\StringSchema;
+use PrismPHP\Prism\Tool;
 
 it('can return tool details', function (): void {
     $searchTool = (new Tool)

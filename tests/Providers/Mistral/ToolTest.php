@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Mistral;
 
-use EchoLabs\Prism\Providers\Mistral\Maps\ToolMap;
-use EchoLabs\Prism\Tool;
+use PrismPHP\Prism\Providers\Mistral\Maps\ToolMap;
+use PrismPHP\Prism\Tool;
 
 it('maps tools', function (): void {
     $tool = (new Tool)

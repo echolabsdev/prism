@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects;
+namespace PrismPHP\Prism\ValueObjects;
 
 readonly class Usage
 {

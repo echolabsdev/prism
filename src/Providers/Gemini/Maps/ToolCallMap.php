@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Gemini\Maps;
+namespace PrismPHP\Prism\Providers\Gemini\Maps;
 
-use EchoLabs\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 
 class ToolCallMap
 {
@@ -18,7 +18,7 @@ class ToolCallMap
             return [];
         }
 
-        return array_map(fn (array $toolCall): \EchoLabs\Prism\ValueObjects\ToolCall => new ToolCall(
+        return array_map(fn (array $toolCall): \PrismPHP\Prism\ValueObjects\ToolCall => new ToolCall(
             id: data_get($toolCall, 'functionCall.name'),
             name: data_get($toolCall, 'functionCall.name'),
             arguments: data_get($toolCall, 'functionCall.args'),

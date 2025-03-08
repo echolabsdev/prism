@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\ValueObjects\Messages\Support;
+namespace PrismPHP\Prism\ValueObjects\Messages\Support;
 
 readonly class Text
 {

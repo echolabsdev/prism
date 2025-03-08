@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Concerns;
+namespace PrismPHP\Prism\Concerns;
 
-use EchoLabs\Prism\ValueObjects\Messages\SystemMessage;
 use Illuminate\Contracts\View\View;
+use PrismPHP\Prism\ValueObjects\Messages\SystemMessage;
 
 trait HasPrompts
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace EchoLabs\Prism\Http\Controllers;
+namespace PrismPHP\Prism\Http\Controllers;
 
-use EchoLabs\Prism\Exceptions\PrismServerException;
-use EchoLabs\Prism\Facades\PrismServer;
-use EchoLabs\Prism\Text\PendingRequest;
-use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\ValueObjects\Messages\AssistantMessage;
-use EchoLabs\Prism\ValueObjects\Messages\UserMessage;
 use Illuminate\Support\ItemNotFoundException;
+use PrismPHP\Prism\Exceptions\PrismServerException;
+use PrismPHP\Prism\Facades\PrismServer;
+use PrismPHP\Prism\Text\PendingRequest;
+use PrismPHP\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 

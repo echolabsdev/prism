@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Exceptions;
+namespace PrismPHP\Prism\Exceptions;
 
 use Throwable;
 

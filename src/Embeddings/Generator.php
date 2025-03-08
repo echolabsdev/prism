@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Embeddings;
+namespace PrismPHP\Prism\Embeddings;
 
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Contracts\Provider;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 class Generator
 {

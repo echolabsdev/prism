@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Ollama\Concerns;
+namespace PrismPHP\Prism\Providers\Ollama\Concerns;
 
-use EchoLabs\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismException;
 
 trait ValidatesResponse
 {

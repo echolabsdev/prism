@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Embeddings;
+namespace PrismPHP\Prism\Embeddings;
 
 use Closure;
-use EchoLabs\Prism\Concerns\ChecksSelf;
-use EchoLabs\Prism\Concerns\HasProviderMeta;
-use EchoLabs\Prism\Contracts\PrismRequest;
+use PrismPHP\Prism\Concerns\ChecksSelf;
+use PrismPHP\Prism\Concerns\HasProviderMeta;
+use PrismPHP\Prism\Contracts\PrismRequest;
 
 class Request implements PrismRequest
 {

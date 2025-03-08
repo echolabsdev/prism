@@ -1,14 +1,14 @@
 ![](assets/prism-banner.webp)
 
 <p align="center">
-    <a href="https://packagist.org/packages/echolabsdev/prism">
-        <img src="https://poser.pugx.org/echolabsdev/prism/d/total.svg" alt="Total Downloads">
+    <a href="https://packagist.org/packages/prism-php/prism">
+        <img src="https://poser.pugx.org/prism-php/prism/d/total.svg" alt="Total Downloads">
     </a>
-    <a href="https://packagist.org/packages/echolabsdev/prism">
-        <img src="https://poser.pugx.org/echolabsdev/prism/v/stable.svg" alt="Latest Stable Version">
+    <a href="https://packagist.org/packages/prism-php/prism">
+        <img src="https://poser.pugx.org/prism-php/prism/v/stable.svg" alt="Latest Stable Version">
     </a>
-    <a href="https://packagist.org/packages/echolabsdev/prism">
-        <img src="https://poser.pugx.org/echolabsdev/prism/license.svg" alt="License">
+    <a href="https://packagist.org/packages/prism-php/prism">
+        <img src="https://poser.pugx.org/prism-php/prism/license.svg" alt="License">
     </a>
 </p>
 
@@ -18,7 +18,7 @@ Prism is a powerful Laravel package for integrating Large Language Models (LLMs)
 
 ## Official Documentation
 
-Official documentation can be found on the [Prism website](https://prism.echolabs.dev).
+Official documentation can be found on the [Prism website](https://prismphp.com).
 
 ## Code of Conduct
 
@@ -26,7 +26,7 @@ While we aren't affiliated with Laravel, we follow the Laravel [Code of Conduct]
 
 ## Authors
 
-This library is created by [TJ Miller](https://tjmiller.me) with contributions from the [Open Source Community](https://github.com/echolabsdev/prism/graphs/contributors).
+This library is created by [TJ Miller](https://tjmiller.me) with contributions from the [Open Source Community](https://github.com/prismphp/prism/graphs/contributors).
 
 ## License
 

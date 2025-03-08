@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Concerns;
+namespace PrismPHP\Prism\Concerns;
 
-use EchoLabs\Prism\Contracts\Provider;
-use EchoLabs\Prism\Enums\Provider as ProviderEnum;
-use EchoLabs\Prism\PrismManager;
+use PrismPHP\Prism\Contracts\Provider;
+use PrismPHP\Prism\Enums\Provider as ProviderEnum;
+use PrismPHP\Prism\PrismManager;
 
 trait ConfiguresProviders
 {

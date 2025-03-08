@@ -7,12 +7,12 @@ Want to make sure your Prism integrations work flawlessly? Let's dive into testi
 First, let's look at how to set up basic response faking:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\ValueObjects\Usage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\Enums\FinishReason;
-use EchoLabs\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\ValueObjects\Usage;
+use PrismPHP\Prism\ValueObjects\ResponseMeta;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Text\Response as TextResponse;
 
 it('can generate text', function () {
     // Create a fake text response
@@ -48,10 +48,10 @@ it('can generate text', function () {
 When testing conversations or tool usage, you might need to simulate multiple responses:
 
 ```php
-use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\ValueObjects\Usage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\ValueObjects\Usage;
+use PrismPHP\Prism\ValueObjects\ResponseMeta;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 
 it('can handle tool calls', function () {
     $responses = [
@@ -96,11 +96,11 @@ it('can handle tool calls', function () {
 If you need to test a richer response object, e.g. with Steps, you may find it easier to use the ResponseBuilder:
 
 ```php
-use EchoLabs\Prism\Text\ResponseBuilder;
-use EchoLabs\Prism\Text\Step;
-use EchoLabs\Prism\ValueObjects\Usage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\Text\ResponseBuilder;
+use PrismPHP\Prism\Text\Step;
+use PrismPHP\Prism\ValueObjects\Usage;
+use PrismPHP\Prism\ValueObjects\ResponseMeta;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 
 Prism::fake([
     (new ResponseBuilder)
@@ -148,13 +148,13 @@ Prism::fake([
 When testing tools, you'll want to verify both the tool calls and their results. Here's a complete example:
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Text\Response as TextResponse;
-use EchoLabs\Prism\Tool;
-use EchoLabs\Prism\ValueObjects\Usage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Text\Response as TextResponse;
+use PrismPHP\Prism\Tool;
+use PrismPHP\Prism\ValueObjects\Usage;
+use PrismPHP\Prism\ValueObjects\ResponseMeta;
+use PrismPHP\Prism\ValueObjects\ToolCall;
 
 it('can use weather tool', function () {
     // Define the expected tool call and response sequence
@@ -231,12 +231,12 @@ it('can use weather tool', function () {
 ## Testing Structured Output
 
 ```php
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Structured\Response as StructuredResponse;
-use EchoLabs\Prism\ValueObjects\Usage;
-use EchoLabs\Prism\ValueObjects\Meta;
-use EchoLabs\Prism\Schema\ObjectSchema;
-use EchoLabs\Prism\Schema\StringSchema;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Structured\Response as StructuredResponse;
+use PrismPHP\Prism\ValueObjects\Usage;
+use PrismPHP\Prism\ValueObjects\ResponseMeta;
+use PrismPHP\Prism\Schema\ObjectSchema;
+use PrismPHP\Prism\Schema\StringSchema;
 
 it('can generate structured response', function () {
     $schema = new ObjectSchema(

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism;
+namespace PrismPHP\Prism;
 
 use Closure;
-use EchoLabs\Prism\Text\PendingRequest;
 use Illuminate\Support\Collection;
+use PrismPHP\Prism\Text\PendingRequest;
 
 readonly class PrismServer
 {

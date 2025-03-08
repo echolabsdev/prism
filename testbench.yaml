@@ -1,5 +1,5 @@
 providers:
-  - EchoLabs\Prism\PrismServiceProvider
+  - PrismPHP\Prism\PrismServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:

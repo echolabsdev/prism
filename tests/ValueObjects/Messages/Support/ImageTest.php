@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\ValueOpjects\Messages\Support;
 
-use EchoLabs\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
 
 it('can create an image from a file', function (): void {
     $image = Image::fromPath('tests/Fixtures/test-image.png');

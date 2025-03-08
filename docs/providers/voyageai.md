@@ -20,8 +20,8 @@ However, they taylor your vectors for the task they are intended for - for searc
 For search / querying:
 
 ```php
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
 
 Prism::embeddings()
     ->using(Provider::VoyageAI, 'voyage-3-lite')
@@ -33,8 +33,8 @@ Prism::embeddings()
 For document retrieval:
 
 ```php
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
 
 Prism::embeddings()
     ->using(Provider::VoyageAI, 'voyage-3-lite')
@@ -50,8 +50,8 @@ By default, Voyage AI truncates inputs that are over the context length.
 You can force it to throw an error instead by setting truncation to false.
 
 ```php
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
 
 Prism::embeddings()
     ->using(Provider::VoyageAI, 'voyage-3-lite')

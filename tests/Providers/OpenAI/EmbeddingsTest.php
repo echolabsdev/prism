@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Providers\OpenAI;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\ValueObjects\Embedding;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
@@ -22,7 +22,7 @@ it('returns embeddings from input', function (): void {
         ->generate();
 
     $embeddings = json_decode(file_get_contents('tests/Fixtures/openai/embeddings-input-1.json'), true);
-    $embeddings = array_map(fn (array $item): \EchoLabs\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
+    $embeddings = array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
 
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toBe($embeddings[0]->embedding);
@@ -38,7 +38,7 @@ it('returns embeddings from file', function (): void {
         ->generate();
 
     $embeddings = json_decode(file_get_contents('tests/Fixtures/openai/embeddings-file-1.json'), true);
-    $embeddings = array_map(fn (array $item): \EchoLabs\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
+    $embeddings = array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
 
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toBe($embeddings[0]->embedding);
@@ -57,7 +57,7 @@ it('works with multiple embeddings', function (): void {
         ->generate();
 
     $embeddings = json_decode(file_get_contents('tests/Fixtures/openai/embeddings-multiple-inputs-1.json'), true);
-    $embeddings = array_map(fn (array $item): \EchoLabs\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
+    $embeddings = array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
 
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toBe($embeddings[0]->embedding);
