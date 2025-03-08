@@ -11,9 +11,11 @@ readonly class Response
 {
     /**
      * @param  Embedding[]  $embeddings
+     * @param  ProviderRateLimit[]  $rateLimits
      */
     public function __construct(
         public array $embeddings,
         public EmbeddingsUsage $usage,
+        public array $rateLimits = [],
     ) {}
 }
