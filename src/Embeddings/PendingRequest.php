@@ -54,7 +54,11 @@ class PendingRequest
 
     public function generate(): \PrismPHP\Prism\Embeddings\Response
     {
-        return (new Generator($this->provider))->generate($this->toRequest());
+        if ($this->inputs === []) {
+            throw new PrismException('Embeddings input is required');
+        }
+
+        return $this->provider->embeddings($this->toRequest());
     }
 
     protected function toRequest(): Request
