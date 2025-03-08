@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace PrismPHP\Prism\Providers\Gemini\Handlers;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response as ClientResponse;
 use PrismPHP\Prism\Concerns\CallsTools;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Gemini\Concerns\ValidatesResponse;
 use PrismPHP\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use PrismPHP\Prism\Providers\Gemini\Maps\MessageMap;
 use PrismPHP\Prism\Providers\Gemini\Maps\ToolCallMap;
@@ -27,7 +29,7 @@ use Throwable;
 
 class Text
 {
-    use CallsTools;
+    use CallsTools, ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -40,9 +42,11 @@ class Text
 
     public function handle(Request $request): TextResponse
     {
-        $data = $this->sendRequest($request);
+        $response = $this->sendRequest($request);
 
-        $this->validateResponse($data);
+        $this->validateResponse($response);
+
+        $data = $response->json();
 
         $isToolCall = ! empty(data_get($data, 'candidates.0.content.parts.0.functionCall'));
 
@@ -67,10 +71,7 @@ class Text
         };
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function sendRequest(Request $request): array
+    protected function sendRequest(Request $request): ClientResponse
     {
         try {
             $generationConfig = array_filter([
@@ -81,7 +82,7 @@ class Text
 
             $tools = ToolMap::map($request->tools());
 
-            $response = $this->client->post(
+            return $this->client->post(
                 "{$request->model()}:generateContent",
                 array_filter([
                     ...(new MessageMap($request->messages(), $request->systemPrompts()))(),
@@ -91,26 +92,8 @@ class Text
                     'safetySettings' => $request->providerMeta(Provider::Gemini, 'safetySettings'),
                 ])
             );
-
-            return $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function validateResponse(array $data): void
-    {
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Gemini Error: [%s] %s',
-                [
-                    data_get($data, 'error.code', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
         }
     }
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Gemini\Concerns\ValidatesResponse;
 use PrismPHP\Prism\Providers\Gemini\Maps\FinishReasonMap;
 use PrismPHP\Prism\Providers\Gemini\Maps\MessageMap;
 use PrismPHP\Prism\Providers\Gemini\Maps\SchemaMap;
@@ -20,6 +21,8 @@ use Throwable;
 
 class Structured
 {
+    use ValidatesResponse;
+
     protected ResponseBuilder $responseBuilder;
 
     public function __construct(protected PendingRequest $client)
@@ -35,17 +38,9 @@ class Structured
             throw PrismException::providerRequestError($request->model(), $e);
         }
 
-        $data = $response->json();
+        $this->validateResponse($response);
 
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Gemini Error: [%s] %s',
-                [
-                    data_get($data, 'error.code', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
-        }
+        $data = $response->json();
 
         $text = data_get($data, 'candidates.0.content.parts.0.text') ?? '';
 
