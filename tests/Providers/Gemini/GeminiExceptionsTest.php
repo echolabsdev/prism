@@ -16,7 +16,7 @@ arch()->expect([
 ])
     ->toUseTrait(ValidatesResponse::class);
 
-it('throws a PrismRateLimitedException with a 429 response code', function (): void {
+it('throws a PrismRateLimitedException with a 429 response code for text and structured', function (): void {
     Http::fake([
         '*' => Http::response(
             status: 429,
@@ -26,6 +26,20 @@ it('throws a PrismRateLimitedException with a 429 response code', function (): v
     Prism::text()
         ->using(Provider::Gemini, 'fake-model')
         ->withPrompt('Hello world!')
+        ->generate();
+
+})->throws(PrismRateLimitedException::class);
+
+it('throws a PrismRateLimitedException with a 429 response code for emebddings', function (): void {
+    Http::fake([
+        '*' => Http::response(
+            status: 429,
+        ),
+    ])->preventStrayRequests();
+
+    Prism::embeddings()
+        ->using(Provider::Gemini, 'fake-model')
+        ->fromInput('Hello world!')
         ->generate();
 
 })->throws(PrismRateLimitedException::class);
