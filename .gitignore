@@ -6,4 +6,5 @@ task/
 scratch
 phpunit.xml
 *.code-workspace
+.vscode
 ray.php
