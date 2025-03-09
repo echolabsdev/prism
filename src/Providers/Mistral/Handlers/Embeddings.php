@@ -12,6 +12,7 @@ use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Meta;
 use Throwable;
 
 class Embeddings
@@ -32,20 +33,14 @@ class Embeddings
 
         $data = $response->json();
 
-        if (! $data || data_get($data, 'object') === 'error') {
-            throw PrismException::providerResponseError(vsprintf(
-                'Mistral Error:  [%s] %s',
-                [
-                    data_get($data, 'type', 'unknown'),
-                    data_get($data, 'message', 'unknown'),
-                ]
-            ));
-        }
-
         return new EmbeddingsResponse(
             embeddings: array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
-            rateLimits: $this->processRateLimits($response),
+            meta: new Meta(
+                id: data_get($data, 'id', ''),
+                model: data_get($data, 'model', ''),
+                rateLimits: $this->processRateLimits($response)
+            )
         );
     }
 

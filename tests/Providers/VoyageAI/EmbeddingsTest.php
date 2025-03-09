@@ -20,6 +20,7 @@ it('returns embeddings from input', function (): void {
     $embeddings = json_decode(file_get_contents('tests/Fixtures/voyageai/embeddings-from-input-1.json'), true);
     $embeddings = array_map(fn (array $item): Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
 
+    expect($response->meta->model)->toBe('voyage-3-lite');
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toEqual($embeddings[0]->embedding);
     expect($response->usage->tokens)->toBe(8);

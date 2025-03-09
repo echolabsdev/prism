@@ -25,6 +25,8 @@ it('returns embeddings from input', function (): void {
     $embeddings = json_decode(file_get_contents('tests/Fixtures/mistral/embeddings-input-1.json'), true);
     $embeddings = array_map(fn (array $item): Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
 
+    expect($response->meta->id)->toBe('2cb41e23e043468dac0e039f81dd9c23');
+    expect($response->meta->model)->toBe('mistral-embed');
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toBe($embeddings[0]->embedding);
     expect($response->usage->tokens)->toBe(7);
@@ -81,10 +83,10 @@ it('sets the rate limits on the response', function (): void {
             ->fromInput('Embed this sentence.')
             ->generate();
 
-        expect($response->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
-        expect($response->rateLimits[0]->name)->toEqual('tokens');
-        expect($response->rateLimits[0]->limit)->toEqual(500000);
-        expect($response->rateLimits[0]->remaining)->toEqual(499900);
-        expect($response->rateLimits[0]->resetsAt->equalTo($time->addSeconds(28)))->toBeTrue();
+        expect($response->meta->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+        expect($response->meta->rateLimits[0]->name)->toEqual('tokens');
+        expect($response->meta->rateLimits[0]->limit)->toEqual(500000);
+        expect($response->meta->rateLimits[0]->remaining)->toEqual(499900);
+        expect($response->meta->rateLimits[0]->resetsAt->equalTo($time->addSeconds(28)))->toBeTrue();
     });
 });
