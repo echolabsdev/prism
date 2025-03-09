@@ -62,6 +62,8 @@ $searchTool = Tool::as('search')
     });
 ```
 
+Tools can take a variety of parameters, but must always return a string.
+
 ## Parameter Definition
 
 Prism offers multiple ways to define tool parameters, from simple primitives to complex objects.
