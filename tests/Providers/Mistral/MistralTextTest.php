@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Mistral;
 
-use PrismPHP\Prism\Prism;
-use Illuminate\Support\Carbon;
-use PrismPHP\Prism\Facades\Tool;
-use PrismPHP\Prism\Enums\Provider;
 use Illuminate\Http\Client\Request;
-use Tests\Fixtures\FixtureResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Enums\ToolChoice;
 use PrismPHP\Prism\Exceptions\PrismException;
-use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
-use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\Facades\Tool;
+use PrismPHP\Prism\Prism;
 use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
+use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
+use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
     config()->set('prism.providers.mistral.api_key', env('MISTRAL_API_KEY', 'sk-1234'));

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace EchoLabs\Prism\Providers\Mistral\Concerns;
+namespace PrismPHP\Prism\Providers\Mistral\Concerns;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Carbon;
 use PrismPHP\Prism\Exceptions\PrismException;
-use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
 trait ValidatesResponse
 {

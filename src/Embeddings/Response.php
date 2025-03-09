@@ -6,6 +6,7 @@ namespace PrismPHP\Prism\Embeddings;
 
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
 readonly class Response
 {
