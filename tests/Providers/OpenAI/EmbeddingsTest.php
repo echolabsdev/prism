@@ -24,6 +24,8 @@ it('returns embeddings from input', function (): void {
     $embeddings = json_decode(file_get_contents('tests/Fixtures/openai/embeddings-input-1.json'), true);
     $embeddings = array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($embeddings, 'data'));
 
+    expect($response->meta->model)->toBe('text-embedding-ada-002');
+
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toBe($embeddings[0]->embedding);
     expect($response->usage->tokens)->toBe(8);

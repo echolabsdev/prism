@@ -11,6 +11,7 @@ use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Meta;
 use Throwable;
 
 class Embeddings
@@ -39,7 +40,11 @@ class Embeddings
 
         return new EmbeddingsResponse(
             embeddings: [Embedding::fromArray(data_get($data, 'embedding.values', []))],
-            usage: new EmbeddingsUsage(0) // Gemini doesn't provide token usage info
+            usage: new EmbeddingsUsage(0), // Gemini doesn't provide token usage info,
+            meta: new Meta(
+                id: '',
+                model: '',
+            ),
         );
     }
 

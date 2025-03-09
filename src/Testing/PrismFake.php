@@ -64,6 +64,7 @@ class PrismFake implements Provider
         return $this->nextEmbeddingResponse() ?? new EmbeddingResponse(
             embeddings: [],
             usage: new EmbeddingsUsage(10),
+            meta: new Meta('fake-id', 'fake-model'),
         );
     }
 

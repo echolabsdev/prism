@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace PrismPHP\Prism\Providers\Mistral\Handlers;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response as ClientResponse;
 use PrismPHP\Prism\Concerns\CallsTools;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\Mistral\Concerns\MapsFinishReason;
-use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponses;
+use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
 use PrismPHP\Prism\Providers\Mistral\Maps\MessageMap;
 use PrismPHP\Prism\Providers\Mistral\Maps\ToolMap;
 use PrismPHP\Prism\Text\Request;
@@ -28,7 +29,7 @@ class Text
 {
     use CallsTools;
     use MapsFinishReason;
-    use ValidatesResponses;
+    use ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -39,9 +40,11 @@ class Text
 
     public function handle(Request $request): Response
     {
-        $data = $this->sendRequest($request);
+        $response = $this->sendRequest($request);
 
-        $this->validateResponse($data);
+        $this->validateResponse($response);
+
+        $data = $response->json();
 
         $responseMessage = new AssistantMessage(
             data_get($data, 'choices.0.message.content') ?? '',
@@ -53,8 +56,8 @@ class Text
         $request->addMessage($responseMessage);
 
         return match ($this->mapFinishReason($data)) {
-            FinishReason::ToolCalls => $this->handleToolCalls($data, $request),
-            FinishReason::Stop => $this->handleStop($data, $request),
+            FinishReason::ToolCalls => $this->handleToolCalls($data, $request, $response),
+            FinishReason::Stop => $this->handleStop($data, $request, $response),
             default => throw PrismException::providerResponseError('Invalid tool choice'),
         };
     }
@@ -62,7 +65,7 @@ class Text
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleToolCalls(array $data, Request $request): Response
+    protected function handleToolCalls(array $data, Request $request, ClientResponse $clientResponse): Response
     {
         $toolResults = $this->callTools(
             $request->tools(),
@@ -71,7 +74,7 @@ class Text
 
         $request->addMessage(new ToolResultMessage($toolResults));
 
-        $this->addStep($data, $request, $toolResults);
+        $this->addStep($data, $request, $clientResponse, $toolResults);
 
         if ($this->shouldContinue($request)) {
             return $this->handle($request);
@@ -83,9 +86,9 @@ class Text
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleStop(array $data, Request $request): Response
+    protected function handleStop(array $data, Request $request, ClientResponse $clientResponse): Response
     {
-        $this->addStep($data, $request);
+        $this->addStep($data, $request, $clientResponse);
 
         return $this->responseBuilder->toResponse();
     }
@@ -103,7 +106,7 @@ class Text
      * @param  array<string, mixed>  $data
      * @param  ToolResult[]  $toolResults
      */
-    protected function addStep(array $data, Request $request, array $toolResults = []): void
+    protected function addStep(array $data, Request $request, ClientResponse $clientResponse, array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
             text: data_get($data, 'choices.0.message.content') ?? '',
@@ -115,6 +118,7 @@ class Text
             meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
+                rateLimits: $this->processRateLimits($clientResponse),
             ),
             messages: $request->messages(),
             toolResults: $toolResults,
@@ -124,21 +128,16 @@ class Text
         ));
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function sendRequest(Request $request): array
+    protected function sendRequest(Request $request): ClientResponse
     {
         try {
-            $response = $this->client->post('chat/completions', [
+            return $this->client->post('chat/completions', [
                 'model' => $request->model(),
                 'messages' => (new MessageMap($request->messages(), $request->systemPrompts()))(),
                 'tools' => ToolMap::map($request->tools()),
                 'temperature' => $request->temperature(),
                 'max_tokens' => $request->maxTokens(),
             ]);
-
-            return $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }

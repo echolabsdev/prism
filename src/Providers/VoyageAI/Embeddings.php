@@ -10,6 +10,7 @@ use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Meta;
 
 class Embeddings
 {
@@ -33,6 +34,10 @@ class Embeddings
             embeddings: array_map(fn (array $item): Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
             usage: new EmbeddingsUsage(
                 tokens: data_get($data, 'usage.total_tokens', null),
+            ),
+            meta: new Meta(
+                id: '',
+                model: data_get($data, 'model', ''),
             ),
         );
     }
