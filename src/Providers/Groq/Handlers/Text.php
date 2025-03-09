@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace PrismPHP\Prism\Providers\Groq\Handlers;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response as ClientResponse;
 use PrismPHP\Prism\Concerns\CallsTools;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Groq\Concerns\ValidateResponse;
 use PrismPHP\Prism\Providers\Groq\Maps\FinishReasonMap;
 use PrismPHP\Prism\Providers\Groq\Maps\MessageMap;
 use PrismPHP\Prism\Providers\Groq\Maps\ToolChoiceMap;
@@ -26,7 +28,7 @@ use Throwable;
 
 class Text
 {
-    use CallsTools;
+    use CallsTools, ValidateResponse;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -37,9 +39,11 @@ class Text
 
     public function handle(Request $request): TextResponse
     {
-        $data = $this->sendRequest($request);
+        $response = $this->sendRequest($request);
 
-        $this->validateResponse($data);
+        $this->validateResponse($response);
+
+        $data = $response->json();
 
         $responseMessage = new AssistantMessage(
             data_get($data, 'message.content') ?? '',
@@ -53,19 +57,16 @@ class Text
         $finishReason = FinishReasonMap::map(data_get($data, 'choices.0.finish_reason', ''));
 
         return match ($finishReason) {
-            FinishReason::ToolCalls => $this->handleToolCalls($data, $request),
-            FinishReason::Stop, FinishReason::Length => $this->handleStop($data, $request, $finishReason),
+            FinishReason::ToolCalls => $this->handleToolCalls($data, $request, $response),
+            FinishReason::Stop, FinishReason::Length => $this->handleStop($data, $request, $response, $finishReason),
             default => throw new PrismException('Groq: unhandled finish reason'),
         };
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function sendRequest(Request $request): array
+    protected function sendRequest(Request $request): ClientResponse
     {
         try {
-            $response = $this->client->post(
+            return $this->client->post(
                 'chat/completions',
                 array_filter([
                     'model' => $request->model(),
@@ -77,8 +78,6 @@ class Text
                     'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
                 ])
             );
-
-            return $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
@@ -87,23 +86,7 @@ class Text
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function validateResponse(array $data): void
-    {
-        if (! $data || data_get($data, 'error')) {
-            throw PrismException::providerResponseError(vsprintf(
-                'Groq Error:  [%s] %s',
-                [
-                    data_get($data, 'error.type', 'unknown'),
-                    data_get($data, 'error.message', 'unknown'),
-                ]
-            ));
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    protected function handleToolCalls(array $data, Request $request): TextResponse
+    protected function handleToolCalls(array $data, Request $request, ClientResponse $clientResponse): TextResponse
     {
         $toolResults = $this->callTools(
             $request->tools(),
@@ -112,7 +95,7 @@ class Text
 
         $request->addMessage(new ToolResultMessage($toolResults));
 
-        $this->addStep($data, $request, FinishReason::ToolCalls, $toolResults);
+        $this->addStep($data, $request, $clientResponse, FinishReason::ToolCalls, $toolResults);
 
         if ($this->shouldContinue($request)) {
             return $this->handle($request);
@@ -124,9 +107,9 @@ class Text
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleStop(array $data, Request $request, FinishReason $finishReason): TextResponse
+    protected function handleStop(array $data, Request $request, ClientResponse $clientResponse, FinishReason $finishReason): TextResponse
     {
-        $this->addStep($data, $request, $finishReason);
+        $this->addStep($data, $request, $clientResponse, $finishReason);
 
         return $this->responseBuilder->toResponse();
     }
@@ -140,7 +123,7 @@ class Text
      * @param  array<string, mixed>  $data
      * @param  ToolResult[]  $toolResults
      */
-    protected function addStep(array $data, Request $request, FinishReason $finishReason, array $toolResults = []): void
+    protected function addStep(array $data, Request $request, ClientResponse $clientResponse, FinishReason $finishReason, array $toolResults = []): void
     {
         $this->responseBuilder->addStep(new Step(
             text: data_get($data, 'choices.0.message.content') ?? '',
@@ -154,6 +137,7 @@ class Text
             meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
+                rateLimits: $this->processRateLimits($clientResponse),
             ),
             messages: $request->messages(),
             systemPrompts: $request->systemPrompts(),

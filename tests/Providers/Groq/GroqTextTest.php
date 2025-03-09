@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Tests\Providers\Groq;
 
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Enums\ToolChoice;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\Facades\Tool;
 use PrismPHP\Prism\Prism;
 use PrismPHP\Prism\ValueObjects\Messages\Support\Image;
 use PrismPHP\Prism\ValueObjects\Messages\UserMessage;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 use Tests\Fixtures\FixtureResponse;
 
 beforeEach(function (): void {
@@ -236,6 +239,121 @@ describe('Image support with grok', function (): void {
             expect($message[1]['image_url']['url'])->toBe($image);
 
             return true;
+        });
+    });
+});
+
+describe('rate limits', function (): void {
+    it('throws a PrismRateLimitedException with a 429 response code', function (): void {
+        Http::fake([
+            '*' => Http::response(
+                status: 429,
+            ),
+        ])->preventStrayRequests();
+
+        Prism::text()
+            ->using(Provider::Groq, 'fake-model')
+            ->withPrompt('Hello world!')
+            ->generate();
+
+    })->throws(PrismRateLimitedException::class);
+
+    it('sets the correct data on the PrismRateLimitedException', function (): void {
+        $this->freezeTime(function (Carbon $time): void {
+            $time = $time->toImmutable();
+            Http::fake([
+                '*' => Http::response(
+                    status: 429,
+                    headers: [
+                        'retry-after' => 5,
+                        'x-ratelimit-limit-requests' => 60,
+                        'x-ratelimit-limit-tokens' => 150000,
+                        'x-ratelimit-remaining-requests' => 0,
+                        'x-ratelimit-remaining-tokens' => 149984,
+                        'x-ratelimit-reset-requests' => '1s',
+                        'x-ratelimit-reset-tokens' => '6m30s',
+                    ]
+                ),
+            ])->preventStrayRequests();
+
+            try {
+                Prism::text()
+                    ->using(Provider::Groq, 'fake-model')
+                    ->withPrompt('Hello world!')
+                    ->generate();
+            } catch (PrismRateLimitedException $e) {
+                expect($e->retryAfter)->toEqual(5);
+                expect($e->rateLimits)->toHaveCount(2);
+                expect($e->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+                expect($e->rateLimits[0]->name)->toEqual('requests');
+                expect($e->rateLimits[0]->limit)->toEqual(60);
+                expect($e->rateLimits[0]->remaining)->toEqual(0);
+                expect($e->rateLimits[0]->resetsAt->equalTo($time->addSeconds(1)))->toBeTrue();
+
+                expect($e->rateLimits[1]->name)->toEqual('tokens');
+                expect($e->rateLimits[1]->limit)->toEqual(150000);
+                expect($e->rateLimits[1]->remaining)->toEqual(149984);
+                expect($e->rateLimits[1]->resetsAt->equalTo($time->addMinutes(6)->addSeconds(30)))->toBeTrue();
+            }
+        });
+    });
+
+    it('works with milleseconds', function (): void {
+        $this->freezeTime(function (Carbon $time): void {
+            $time = $time->toImmutable();
+            Http::fake([
+                '*' => Http::response(
+                    status: 429,
+                    headers: [
+                        'x-ratelimit-limit-requests' => 60,
+                        'x-ratelimit-remaining-requests' => 0,
+                        'x-ratelimit-reset-requests' => '70ms',
+                    ]
+                ),
+            ])->preventStrayRequests();
+
+            try {
+                Prism::text()
+                    ->using(Provider::Groq, 'fake-model')
+                    ->withPrompt('Hello world!')
+                    ->generate();
+            } catch (PrismRateLimitedException $e) {
+                expect($e->rateLimits[0])->toBeInstanceOf(ProviderRateLimit::class);
+                expect($e->rateLimits[0]->name)->toEqual('requests');
+                expect($e->rateLimits[0]->limit)->toEqual(60);
+                expect($e->rateLimits[0]->remaining)->toEqual(0);
+                expect($e->rateLimits[0]->resetsAt->equalTo($time->addMilliseconds(70)))->toBeTrue();
+            }
+        });
+    });
+
+    it('sets the rate limits on meta', function (): void {
+        $this->freezeTime(function (Carbon $time): void {
+            $time = $time->toImmutable();
+
+            FixtureResponse::fakeResponseSequence('chat/completions', 'groq/generate-text-with-a-prompt', [
+                'x-ratelimit-limit-requests' => 60,
+                'x-ratelimit-limit-tokens' => 150000,
+                'x-ratelimit-remaining-requests' => 0,
+                'x-ratelimit-remaining-tokens' => 149984,
+                'x-ratelimit-reset-requests' => '1s',
+                'x-ratelimit-reset-tokens' => '6m30s',
+            ]);
+
+            $response = Prism::text()
+                ->using(Provider::Groq, 'fake-model')
+                ->withPrompt('Who are you?')
+                ->generate();
+
+            expect($response->meta->rateLimits)->toHaveCount(2);
+            expect($response->meta->rateLimits[0]->name)->toEqual('requests');
+            expect($response->meta->rateLimits[0]->limit)->toEqual(60);
+            expect($response->meta->rateLimits[0]->remaining)->toEqual(0);
+            expect($response->meta->rateLimits[0]->resetsAt->equalTo(now()->addSeconds(1)))->toBeTrue();
+            expect($response->meta->rateLimits[1]->name)->toEqual('tokens');
+            expect($response->meta->rateLimits[1]->limit)->toEqual(150000);
+            expect($response->meta->rateLimits[1]->remaining)->toEqual(149984);
+            expect($response->meta->rateLimits[1]->resetsAt->equalTo(now()->addMinutes(6)->addSeconds(30)))->toBeTrue();
         });
     });
 });
