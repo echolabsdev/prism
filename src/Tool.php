@@ -176,7 +176,13 @@ class Tool
     public function handle(...$args): string
     {
         try {
-            return call_user_func($this->fn, ...$args);
+            $value = call_user_func($this->fn, ...$args);
+
+            if (! is_string($value)) {
+                throw PrismException::invalidReturnTypeInTool($this->name, new TypeError('Return value must be of type string'));
+            }
+
+            return $value;
         } catch (ArgumentCountError|Error|InvalidArgumentException|TypeError $e) {
             if ($e::class === Error::class && ! str_starts_with($e->getMessage(), 'Unknown named parameter')) {
                 throw $e;

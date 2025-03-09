@@ -161,3 +161,20 @@ it('can throw a prism custom exception for unknown named parameters', function (
 
     $searchTool->handle(input: 'What time is the event?');
 });
+
+it('can throw a prism custom exception for invalid return type', function (): void {
+    $searchTool = (new Tool)
+        ->as('search')
+        ->for('useful for searching current data')
+        ->withParameter(new StringSchema('query', 'the search query'))
+        ->using(function (string $query): int {
+            expect($query)->toBe('What time is the event?');
+
+            return 1;
+        });
+
+    $this->expectException(PrismException::class);
+    $this->expectExceptionMessage('Invalid return type for tool : search. Tools must return string.');
+
+    $searchTool->handle('What time is the event?');
+});
