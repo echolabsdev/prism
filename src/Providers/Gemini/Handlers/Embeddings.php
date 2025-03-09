@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace PrismPHP\Prism\Providers\Gemini\Handlers;
 
-use Throwable;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use PrismPHP\Prism\Embeddings\Request;
-use Illuminate\Http\Client\PendingRequest;
-use PrismPHP\Prism\ValueObjects\Embedding;
-use PrismPHP\Prism\Exceptions\PrismException;
-use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
-use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use Throwable;
 
 class Embeddings
 {
