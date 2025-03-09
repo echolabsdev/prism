@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PrismPHP\Prism\Providers\XAI\Handlers;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response as ClientResponse;
 use PrismPHP\Prism\Concerns\CallsTools;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Exceptions\PrismException;
@@ -40,9 +41,11 @@ class Text
 
     public function handle(Request $request): TextResponse
     {
-        $data = $this->sendRequest($request);
+        $response = $this->sendRequest($request);
 
-        $this->validateResponse($data);
+        $this->validateResponse($response);
+
+        $data = $response->json();
 
         $responseMessage = new AssistantMessage(
             data_get($data, 'choices.0.message.content') ?? '',
@@ -96,13 +99,10 @@ class Text
         return $this->responseBuilder->steps->count() < $request->maxSteps();
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function sendRequest(Request $request): array
+    protected function sendRequest(Request $request): ClientResponse
     {
         try {
-            $response = $this->client->post(
+            return $this->client->post(
                 'chat/completions',
                 array_merge([
                     'model' => $request->model(),
@@ -115,8 +115,6 @@ class Text
                     'tool_choice' => ToolChoiceMap::map($request->toolChoice()),
                 ]))
             );
-
-            return $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
