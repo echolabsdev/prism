@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Providers\Mistral;
 
-use EchoLabs\Prism\Enums\Provider;
-use EchoLabs\Prism\Exceptions\PrismRateLimitedException;
-use EchoLabs\Prism\Prism;
-use EchoLabs\Prism\Providers\Mistral\Concerns\ValidatesResponse;
-use EchoLabs\Prism\ValueObjects\ProviderRateLimit;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
+use PrismPHP\Prism\Prism;
+use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
+use PrismPHP\Prism\ValueObjects\ProviderRateLimit;
 
 arch()->expect([
     'Providers\Mistral\Handlers\Text',

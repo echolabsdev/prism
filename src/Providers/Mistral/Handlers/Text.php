@@ -24,7 +24,7 @@ use PrismPHP\Prism\Providers\Mistral\Maps\ToolChoiceMap;
 use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
 use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
 use PrismPHP\Prism\Providers\Mistral\Concerns\MapsFinishReason;
-use EchoLabs\Prism\Providers\Mistral\Concerns\ValidatesResponse;
+use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
 
 class Text
 {

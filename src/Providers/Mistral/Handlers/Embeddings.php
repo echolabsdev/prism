@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace PrismPHP\Prism\Providers\Mistral\Handlers;
 
-use Throwable;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use PrismPHP\Prism\Embeddings\Request;
-use Illuminate\Http\Client\PendingRequest;
-use PrismPHP\Prism\ValueObjects\Embedding;
-use PrismPHP\Prism\Exceptions\PrismException;
-use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
-use PrismPHP\Prism\Providers\Ollama\Concerns\ValidatesResponse;
+use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
+use PrismPHP\Prism\ValueObjects\Embedding;
+use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use Throwable;
 
 class Embeddings
 {
