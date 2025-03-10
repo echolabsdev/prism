@@ -3,11 +3,12 @@
 namespace PrismPHP\Prism\Providers\OpenAI\Handlers;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response as ClientResponse;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Enums\StructuredMode;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
-use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponses;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponse;
 use PrismPHP\Prism\Providers\OpenAI\Maps\MessageMap;
 use PrismPHP\Prism\Providers\OpenAI\Support\StructuredModeResolver;
 use PrismPHP\Prism\Structured\Request;
@@ -23,7 +24,7 @@ use Throwable;
 class Structured
 {
     use MapsFinishReason;
-    use ValidatesResponses;
+    use ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;
 
@@ -34,14 +35,17 @@ class Structured
 
     public function handle(Request $request): StructuredResponse
     {
-        $data = match ($request->mode()) {
+        $response = match ($request->mode()) {
             StructuredMode::Auto => $this->handleAutoMode($request),
             StructuredMode::Structured => $this->handleStructuredMode($request),
             StructuredMode::Json => $this->handleJsonMode($request),
 
         };
 
-        $this->validateResponse($data);
+        $this->validateResponse($response);
+
+        $data = $response->json();
+
         $this->handleRefusal(data_get($data, 'choices.0.message', []));
 
         $responseMessage = new AssistantMessage(
@@ -52,7 +56,7 @@ class Structured
 
         $request->addMessage($responseMessage);
 
-        $this->addStep($data, $request);
+        $this->addStep($data, $request, $response);
 
         return $this->responseBuilder->toResponse();
     }
@@ -60,7 +64,7 @@ class Structured
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function addStep(array $data, Request $request): void
+    protected function addStep(array $data, Request $request, ClientResponse $clientResponse): void
     {
         $this->responseBuilder->addStep(new Step(
             text: data_get($data, 'choices.0.message.content') ?? '',
@@ -72,6 +76,7 @@ class Structured
             meta: new Meta(
                 id: data_get($data, 'id'),
                 model: data_get($data, 'model'),
+                rateLimits: $this->processRateLimits($clientResponse)
             ),
             messages: $request->messages(),
             additionalContent: [],
@@ -81,12 +86,11 @@ class Structured
 
     /**
      * @param  array{type: 'json_schema', json_schema: array<string, mixed>}|array{type: 'json_object'}  $responseFormat
-     * @return array<string, mixed>
      */
-    protected function sendRequest(Request $request, array $responseFormat): array
+    protected function sendRequest(Request $request, array $responseFormat): ClientResponse
     {
         try {
-            $response = $this->client->post(
+            return $this->client->post(
                 'chat/completions',
                 array_merge([
                     'model' => $request->model(),
@@ -98,17 +102,12 @@ class Structured
                     'response_format' => $responseFormat,
                 ]))
             );
-
-            return $response->json();
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
         }
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function handleAutoMode(Request $request): array
+    protected function handleAutoMode(Request $request): ClientResponse
     {
         $mode = StructuredModeResolver::forModel($request->model());
 
@@ -119,10 +118,7 @@ class Structured
         };
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function handleStructuredMode(Request $request): array
+    protected function handleStructuredMode(Request $request): ClientResponse
     {
         $mode = StructuredModeResolver::forModel($request->model());
 
@@ -140,10 +136,7 @@ class Structured
         ]);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function handleJsonMode(Request $request): array
+    protected function handleJsonMode(Request $request): ClientResponse
     {
         $request = $this->appendMessageForJsonMode($request);
 
