@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace PrismPHP\Prism\Providers\Mistral\Handlers;
 
-use Throwable;
-use PrismPHP\Prism\Text\Step;
-use PrismPHP\Prism\Text\Request;
-use PrismPHP\Prism\Text\Response;
-use PrismPHP\Prism\ValueObjects\Meta;
-use PrismPHP\Prism\Enums\FinishReason;
-use PrismPHP\Prism\ValueObjects\Usage;
-use PrismPHP\Prism\Concerns\CallsTools;
-use PrismPHP\Prism\Text\ResponseBuilder;
-use PrismPHP\Prism\ValueObjects\ToolCall;
 use Illuminate\Http\Client\PendingRequest;
-use PrismPHP\Prism\ValueObjects\ToolResult;
-use PrismPHP\Prism\Exceptions\PrismException;
-use PrismPHP\Prism\Providers\Mistral\Maps\ToolMap;
-use PrismPHP\Prism\Providers\Mistral\Maps\MessageMap;
 use Illuminate\Http\Client\Response as ClientResponse;
-use PrismPHP\Prism\Providers\Mistral\Maps\ToolChoiceMap;
-use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
-use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
+use PrismPHP\Prism\Concerns\CallsTools;
+use PrismPHP\Prism\Enums\FinishReason;
+use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\Mistral\Concerns\MapsFinishReason;
 use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
+use PrismPHP\Prism\Providers\Mistral\Maps\MessageMap;
+use PrismPHP\Prism\Providers\Mistral\Maps\ToolChoiceMap;
+use PrismPHP\Prism\Providers\Mistral\Maps\ToolMap;
+use PrismPHP\Prism\Text\Request;
+use PrismPHP\Prism\Text\Response;
+use PrismPHP\Prism\Text\ResponseBuilder;
+use PrismPHP\Prism\Text\Step;
+use PrismPHP\Prism\ValueObjects\Messages\AssistantMessage;
+use PrismPHP\Prism\ValueObjects\Messages\ToolResultMessage;
+use PrismPHP\Prism\ValueObjects\Meta;
+use PrismPHP\Prism\ValueObjects\ToolCall;
+use PrismPHP\Prism\ValueObjects\ToolResult;
+use PrismPHP\Prism\ValueObjects\Usage;
+use Throwable;
 
 class Text
 {
