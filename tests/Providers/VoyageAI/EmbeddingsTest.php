@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Http;
 use PrismPHP\Prism\Enums\Provider;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\Prism;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use Tests\Fixtures\FixtureResponse;
@@ -94,3 +96,17 @@ it('returns embeddings with inputType and truncation', function (): void {
     expect($response->embeddings[0]->embedding)->toEqual($embeddings[0]->embedding);
     expect($response->usage->tokens)->toBe(7);
 });
+
+it('throws a PrismRateLimitedException for a 429 response code', function (): void {
+    Http::fake([
+        '*' => Http::response(
+            status: 429,
+        ),
+    ])->preventStrayRequests();
+
+    Prism::embeddings()
+        ->using(Provider::VoyageAI, 'fake-model')
+        ->fromInput('Hello world!')
+        ->generate();
+
+})->throws(PrismRateLimitedException::class);

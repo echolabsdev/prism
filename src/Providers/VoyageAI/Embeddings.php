@@ -8,6 +8,7 @@ use PrismPHP\Prism\Embeddings\Request as EmbeddingsRequest;
 use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 
@@ -55,6 +56,10 @@ class Embeddings
 
     protected function validateResponse(): void
     {
+        if ($this->httpResponse->getStatusCode() === 429) {
+            throw new PrismRateLimitedException([]);
+        }
+
         $data = $this->httpResponse->json();
 
         if (! $data || data_get($data, 'detail')) {
