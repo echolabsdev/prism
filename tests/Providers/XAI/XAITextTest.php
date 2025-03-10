@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Enums\ToolChoice;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\Facades\Tool;
 use PrismPHP\Prism\Prism;
 use PrismPHP\Prism\Text\Response as TextResponse;
@@ -305,3 +306,17 @@ it('handles required tool choice', function (): void {
     // Assert tool calls
     expect($response->steps[0]->toolCalls[0]->name)->toBeIn(['weather', 'search']);
 });
+
+it('throws a PrismRateLimitedException for a 429 response code', function (): void {
+    Http::fake([
+        '*' => Http::response(
+            status: 429,
+        ),
+    ])->preventStrayRequests();
+
+    Prism::text()
+        ->using(Provider::XAI, 'fake-model')
+        ->withPrompt('Who are you?')
+        ->generate();
+
+})->throws(PrismRateLimitedException::class);
