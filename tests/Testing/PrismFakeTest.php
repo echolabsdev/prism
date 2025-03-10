@@ -91,7 +91,11 @@ it('fake responses using the prism fake for emeddings', function (): void {
                 -0.022748338,
                 -0.005906468,
             ],
-            usage: new EmbeddingsUsage(100)
+            usage: new EmbeddingsUsage(100),
+            meta: new Meta(
+                id: 'fake-id',
+                model: 'fake-model'
+            )
         ),
     ]);
 

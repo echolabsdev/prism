@@ -20,6 +20,7 @@ it('returns embeddings from input', function (): void {
     $embeddings = json_decode(file_get_contents('tests/Fixtures/ollama/embeddings-input-1.json'), true);
     $embeddings = array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item), data_get($embeddings, 'embeddings'));
 
+    expect($response->meta->model)->toBe('mxbai-embed-large');
     expect($response->embeddings)->toBeArray();
     expect($response->embeddings[0]->embedding)->toBe($embeddings[0]->embedding);
     expect($response->usage->tokens)->toBe(10);

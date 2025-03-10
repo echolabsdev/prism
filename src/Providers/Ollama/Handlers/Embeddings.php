@@ -11,6 +11,7 @@ use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Meta;
 use Throwable;
 
 class Embeddings
@@ -36,6 +37,10 @@ class Embeddings
         return new EmbeddingsResponse(
             embeddings: array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item), data_get($data, 'embeddings', [])),
             usage: new EmbeddingsUsage(data_get($data, 'prompt_eval_count', null)),
+            meta: new Meta(
+                id: '',
+                model: data_get($data, 'model', ''),
+            ),
         );
     }
 

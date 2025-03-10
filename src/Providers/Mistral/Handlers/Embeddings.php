@@ -9,12 +9,16 @@ use Illuminate\Http\Client\Response;
 use PrismPHP\Prism\Embeddings\Request;
 use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Providers\Mistral\Concerns\ValidatesResponse;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
+use PrismPHP\Prism\ValueObjects\Meta;
 use Throwable;
 
 class Embeddings
 {
+    use ValidatesResponse;
+
     public function __construct(protected PendingRequest $client) {}
 
     public function handle(Request $request): EmbeddingsResponse
@@ -25,21 +29,18 @@ class Embeddings
             throw PrismException::providerRequestError($request->model(), $e);
         }
 
-        $data = $response->json();
+        $this->validateResponse($response);
 
-        if (! $data || data_get($data, 'object') === 'error') {
-            throw PrismException::providerResponseError(vsprintf(
-                'Mistral Error:  [%s] %s',
-                [
-                    data_get($data, 'type', 'unknown'),
-                    data_get($data, 'message', 'unknown'),
-                ]
-            ));
-        }
+        $data = $response->json();
 
         return new EmbeddingsResponse(
             embeddings: array_map(fn (array $item): \PrismPHP\Prism\ValueObjects\Embedding => Embedding::fromArray($item['embedding']), data_get($data, 'data', [])),
             usage: new EmbeddingsUsage(data_get($data, 'usage.total_tokens', null)),
+            meta: new Meta(
+                id: data_get($data, 'id', ''),
+                model: data_get($data, 'model', ''),
+                rateLimits: $this->processRateLimits($response)
+            )
         );
     }
 
