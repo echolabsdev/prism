@@ -6,12 +6,15 @@ namespace PrismPHP\Prism\Providers\OpenAI\Handlers;
 
 use Generator;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 use PrismPHP\Prism\Concerns\CallsTools;
 use PrismPHP\Prism\Enums\FinishReason;
 use PrismPHP\Prism\Exceptions\PrismChunkDecodeException;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\ProcessesRateLimits;
 use PrismPHP\Prism\Providers\OpenAI\Maps\FinishReasonMap;
 use PrismPHP\Prism\Providers\OpenAI\Maps\MessageMap;
 use PrismPHP\Prism\Providers\OpenAI\Maps\ToolChoiceMap;
@@ -26,7 +29,7 @@ use Throwable;
 
 class Stream
 {
-    use CallsTools;
+    use CallsTools, ProcessesRateLimits;
 
     public function __construct(protected PendingRequest $client) {}
 
@@ -219,6 +222,10 @@ class Stream
                     ]))
                 );
         } catch (Throwable $e) {
+            if ($e instanceof RequestException && $e->response->getStatusCode() === 429) {
+                throw new PrismRateLimitedException($this->processRateLimits($e->response));
+            }
+
             throw PrismException::providerRequestError($request->model(), $e);
         }
     }

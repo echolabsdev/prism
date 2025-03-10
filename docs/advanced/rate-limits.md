@@ -8,11 +8,9 @@ In this guide we will look at handling:
 
 ## Provider support
 
-Rate limit handling is a new feature in Prism. 
+Prism throws a `PrismRateLimitedException` for all providers other than DeepSeek (which does not have rate limits).
 
-We currently only support Anthropic, but we're working to add support for more providers.
-
-If you are keen to contribute, take a look at the issues tab on Github - implementing rate limits for a provider is a great first contribution!
+Prism provides an array of `ProviderRateLimit` value objects on the exception and on meta for all providers other than Gemini, xAI and VoyageAI - as they do not provide the necessary headers to do so.
 
 ## The ProviderRateLimit value object
 
