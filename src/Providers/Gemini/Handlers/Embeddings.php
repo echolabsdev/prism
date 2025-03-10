@@ -9,6 +9,7 @@ use Illuminate\Http\Client\Response;
 use PrismPHP\Prism\Embeddings\Request;
 use PrismPHP\Prism\Embeddings\Response as EmbeddingsResponse;
 use PrismPHP\Prism\Exceptions\PrismException;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\ValueObjects\Embedding;
 use PrismPHP\Prism\ValueObjects\EmbeddingsUsage;
 use Throwable;
@@ -27,6 +28,10 @@ class Embeddings
             $response = $this->sendRequest($request);
         } catch (Throwable $e) {
             throw PrismException::providerRequestError($request->model(), $e);
+        }
+
+        if ($response->getStatusCode() === 429) {
+            throw new PrismRateLimitedException([]);
         }
 
         $data = $response->json();
