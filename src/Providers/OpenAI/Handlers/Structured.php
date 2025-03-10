@@ -8,6 +8,7 @@ use PrismPHP\Prism\Enums\Provider;
 use PrismPHP\Prism\Enums\StructuredMode;
 use PrismPHP\Prism\Exceptions\PrismException;
 use PrismPHP\Prism\Providers\OpenAI\Concerns\MapsFinishReason;
+use PrismPHP\Prism\Providers\OpenAI\Concerns\ProcessesRateLimits;
 use PrismPHP\Prism\Providers\OpenAI\Concerns\ValidatesResponse;
 use PrismPHP\Prism\Providers\OpenAI\Maps\MessageMap;
 use PrismPHP\Prism\Providers\OpenAI\Support\StructuredModeResolver;
@@ -24,6 +25,7 @@ use Throwable;
 class Structured
 {
     use MapsFinishReason;
+    use ProcessesRateLimits;
     use ValidatesResponse;
 
     protected ResponseBuilder $responseBuilder;

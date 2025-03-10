@@ -6,6 +6,7 @@ namespace Tests\Providers\OpenAI;
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use PrismPHP\Prism\Exceptions\PrismRateLimitedException;
 use PrismPHP\Prism\Facades\Tool;
 use PrismPHP\Prism\Prism;
 use Tests\Fixtures\FixtureResponse;
@@ -136,3 +137,20 @@ it('can process a complete conversation with multiple tool calls', function (): 
     // Verify we made multiple requests for a conversation with tool calls
     Http::assertSentCount(3);
 });
+
+it('throws a PrismRateLimitedException with a 429 response code', function (): void {
+    Http::fake([
+        '*' => Http::response(
+            status: 429,
+        ),
+    ])->preventStrayRequests();
+
+    $response = Prism::stream()
+        ->using('openai', 'gpt-4')
+        ->withPrompt('Who are you?')
+        ->generate();
+
+    foreach ($response as $chunk) {
+        // Don't remove me rector!
+    }
+})->throws(PrismRateLimitedException::class);
